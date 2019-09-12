@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 from time import sleep
 
-
+#Inverse Kinematic Model for shoulder to writ for Compliant Arm mk7
 
 
 def cartesian_to_spherical(x,y,z):
