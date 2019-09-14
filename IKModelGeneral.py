@@ -65,11 +65,19 @@ l1 = 0.40625 # upper arm
 l2 = 0.59375 # lower arm l1+l2=1, easiest if upper and lower arm are same length
 l3 = 0.375 #wrist to end effector
 
-#Enter desired x y and z values here: ---------------------
-xIn = -0.5
-yIn = 0.5
-zIn =  0.5
-count = 0
+#------------------Enter desired x y and z values here: ---------------------
+x = 0.0
+y = -0.25
+z = 0.375
+wTheta = (numpy.pi)
+wPhi =  (numpy.pi)
+#----------------------------------------------------------------------------
+
+#adjusts inputs in IK function to account for length of l3 (wrist) component
+xIn = x - l3*numpy.cos(wTheta)*numpy.sin(wPhi)
+yIn = y - l3*numpy.sin(wTheta)*numpy.sin(wPhi)
+zIn = z - l3*numpy.cos(wPhi)
+#count = 0
 
 fig = plt.figure()
 ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
@@ -77,33 +85,71 @@ ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d',
 plt.xlabel("x",fontdict=None,labelpad=None)
 plt.ylabel("y",fontdict=None,labelpad=None)
 #plt.zlabel("z",fontdict=None,labelpad=None)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+
+count = 0
+while count <= 200:
+
+	xIn = x - l3*numpy.cos(wTheta)*numpy.sin(wPhi)
+	yIn = y - l3*numpy.sin(wTheta)*numpy.sin(wPhi)
+	zIn = z - l3*numpy.cos(wPhi)
+
+
+	print(xIn,yIn,zIn)
+	r,phi,theta = cartesian_to_spherical(xIn,yIn,zIn)
+	print(r)
+	a0,a1,a2 = get_joint_angles(xIn,yIn,zIn)
+	xElbow,yElbow,zElbow = get_elbow_pos(xIn,yIn,zIn)
+	print (numpy.rad2deg(a0), numpy.rad2deg(a1),  numpy.rad2deg(a2))
+	print (xElbow,yElbow,zElbow)
+	#get l3 pos
+	uwX, uwY, uwZ = get_l3_pos(xIn,yIn,zIn)
+	print(uwX,uwY,uwZ)
+	print(' ')
 
 
 
+	xs = [0,xElbow,uwX,x]
+	ys = [0,yElbow,uwY,y]
+	zs = [0,zElbow,uwZ,z]
+
+	line = ax.plot(xs,ys,zs, 'o-', mec = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], mew = 5, lw = 10)
+
+	shoulder = ax.plot([0],[0],[0], 'o-', color = [0.5*abs(numpy.sin(theta)),0.25*abs(numpy.cos(theta)),0.75], lw = 10, ms = 15) 
+	elbow = ax.plot([xElbow],[yElbow],[zElbow], 'o-', color=[abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
+	upperWrist = ax.plot([uwX],[uwY],[uwZ], 'o-', color = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
+
+	plt.draw()
+	plt.pause(0.05)
+	ax.cla()
+	ax.set_xlim(-1,1)
+	ax.set_ylim(-1,1)
+	ax.set_zlim(0,1)
+	#ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
+	count = count + 1
+	
+	if count <= 50:
+		wTheta = wTheta + (numpy.pi)/25
+		wPhi = wPhi + (numpy.pi)/25
+
+	if count > 50 and count <= 100:
+		x = x + 0.01
+		y = y + 0.005
+		z = z - 0.01
+
+	if count > 100 and count <= 150:
+		z = z - 0.0025
 
 
-print(xIn,yIn,zIn)
-r,phi,theta = cartesian_to_spherical(xIn,yIn,zIn)
-print(r)
-a0,a1,a2 = get_joint_angles(xIn,yIn,zIn)
-xElbow,yElbow,zElbow = get_elbow_pos(xIn,yIn,zIn)
-print (numpy.rad2deg(a0), numpy.rad2deg(a1),  numpy.rad2deg(a2))
-print (xElbow,yElbow,zElbow)
-#get l3 pos
-uwX, uwY, uwZ = get_l3_pos(xIn,yIn,zIn)
-print(uwX,uwY,uwZ)
-print(' ')
+	if count > 150:
+
+		x = x - 0.01
+		y = y - 0.01
+
+plt.pause(10)
 
 
 
-xs = [0,xElbow,uwX]
-ys = [0,yElbow,uwY]
-zs = [0,zElbow,uwZ]
-
-line = ax.plot(xs,ys,zs, 'o-', mec = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], mew = 5, lw = 10)
-
-shoulder = ax.plot([0],[0],[0], 'o-', color = [0.5*abs(numpy.sin(theta)),0.25*abs(numpy.cos(theta)),0.75], lw = 10, ms = 15) 
-elbow = ax.plot([xElbow],[yElbow],[zElbow], 'o-', color=[abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
-upperWrist = ax.plot([uwX],[uwY],[uwZ], 'o-', color = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
-
-plt.show()
+	
