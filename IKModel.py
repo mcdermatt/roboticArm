@@ -67,7 +67,7 @@ l2 = l1 #easiest if upper and lower arm are same length
 #Enter desired x y and z values here: ---------------------
 xIn = 0.0
 yIn = -0.25
-zIn =  0.75
+zIn =  0.25
 count = 0
 
 fig = plt.figure()
