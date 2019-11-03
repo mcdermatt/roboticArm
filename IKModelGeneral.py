@@ -66,7 +66,7 @@ l2 = 0.59375 # lower arm l1+l2=1, easiest if upper and lower arm are same length
 l3 = 0.375 #wrist to end effector
 
 #------------------Enter desired x y and z values here: ---------------------
-x = 0.0
+x = 0.5
 y = -0.25
 z = 0.375
 wTheta = (numpy.pi)
