@@ -143,17 +143,17 @@ while 1:
 	events = get_gamepad()
 	for event in events:
 		if event.code == 'ABS_X':
-			if event.state > 5000:
+			if event.state > 6000:
 				print("right",event.state)
 				x = x + 0.05
-			if event.state < -5000:
+			if event.state < -6000:
 				print("left",event.state)
 				x = x - 0.05
 		if event.code == 'ABS_Y':
-			if event.state > 5000:
+			if event.state > 6000:
 				print("up",event.state)
 				y = y + 0.05
-			if event.state < -5000:
+			if event.state < -6000:
 				print("down",event.state)
 				y = y - 0.05
 		if event.code == 'RightTrigger':
