@@ -9,14 +9,14 @@ import numpy as np
 #system parameters
 
 #l1- shoulder up/down
-l1m = 80 #kg was 3.07
+l1m = 90 #kg was 3.07
 l1com = 0.0729 #m from center of rotation
 l1 = 0.1651
 l1cpr = 910
 l1reduction = 9
 l1kv = 16
 #beta1 = 0
-beta1 = -0.005 #to do- make beta a function motor velocity to cancel out inertia?
+beta1 = 0.005 #to do- make beta a function motor velocity to cancel out inertia?
 serial1 = "2084377D3548"
 
 #l2- elbow
