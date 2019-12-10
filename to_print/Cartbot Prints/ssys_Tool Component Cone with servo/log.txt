@@ -1,0 +1,46 @@
+session {7/26 1:40:44pm > BrayGuest opened job C:/ProgramData/Stratasys/FDMControlCenter/11.1/jobs/BrayGuest1c31c72a80a96666f180289/Default.sjb.  Insight 11.1 (4870).}
+msg {1:40:45pm > Read 21840 facets in 0:00 from "E:/To Print/Tool Component Cone with servo.stl"}
+msg {1:40:45pm > STL comment: STLB ATF 2.0.0.9000}
+msg {1:40:45pm > Bounding box of this STL X, Y, Z:}
+msg {1:40:45pm >       min = (-1.9685, -3.5000, -1.1601)}
+msg {1:40:45pm >       max = (1.9685, 1.1811, 1.2005)}
+msg {1:40:45pm > Done loading STL file after 1 sec.}
+msg {1:40:56pm > 	Slice height:	0.0100}
+msg {1:40:57pm > Done slicing.}
+msg {1:40:57pm > Supports removed}
+msg {1:40:57pm > 	Support style:	SMART}
+msg {1:40:57pm > Inspecting part curves}
+msg {1:40:57pm > Generating supports}
+msg {1:41:06pm > Done generating supports after 8 sec.}
+msg {1:41:07pm > Done writing boundary curves.}
+msg {1:41:07pm > Saved job:  E:/To Print/ssys_Tool Component Cone with servo/Tool Component Cone with servo.sjb}
+msg {1:41:07pm > 	Part fill style:	One contour /  rasters}
+msg {1:41:07pm > 	Part interior style:	Solid}
+msg {1:41:07pm > 	Contour width:	0.0200}
+msg {1:41:07pm > 	Part raster width:	0.0200}
+msg {1:41:11pm > Done generating toolpaths after 3 sec.}
+msg {1:41:11pm > CMB moved to envelope center.}
+msg {1:41:15pm > Toolpath Information}
+msg {1:41:15pm > 	Est. build time:	4 hr 39 min }
+msg {1:41:15pm > 	Model material:	6.450 in³}
+msg {1:41:15pm > 	Support material:	1.103 in³}
+msg {1:41:15pm > Done writing CMB file after 4 sec.}
+msg {1:41:15pm > Job Summary}
+msg {1:41:15pm > 	Full job path:	E:/To Print/ssys_Tool Component Cone with servo/Tool Component Cone with servo.sjb}
+msg {1:41:15pm > 	Toolpath file name:	Tool Component Cone with servo.cmb}
+msg {1:41:15pm > 	Modeler:		Fortus 360mc Small}
+msg {1:41:15pm > 	Est. build time:	4 hr 39 min }
+msg {1:41:15pm > 	Model material:	6.450 in³,	T16,	ABS-M30}
+msg {1:41:15pm > 	Support material:	1.103 in³,	T12,	SR30 support}
+msg {1:41:15pm > 	Slice height:	0.0100}
+msg {1:41:15pm > 	Part fill style:	One contour /  rasters}
+msg {1:41:15pm > 	Part interior style:	Solid}
+msg {1:41:15pm > 	Visible surface style:	Normal}
+msg {1:41:15pm > 	Support style:	SMART}
+msg {1:41:15pm > 	Contour width:	0.0200}
+msg {1:41:15pm > 	Number of contours:	0.2500}
+msg {1:41:15pm > 	Part interior contours:	0.0220}
+msg {1:41:15pm > 	Part raster width:	0.0200}
+msg {1:41:15pm > 	Application:	Insight 11.1, Build version: 4870}
+msg {1:41:15pm > Saved job:  E:/To Print/ssys_Tool Component Cone with servo/Tool Component Cone with servo.sjb,  approximate build time 4 hr 39 min }
+msg {1:41:32pm > Saved job:  E:/To Print/ssys_Tool Component Cone with servo/Tool Component Cone with servo.sjb}

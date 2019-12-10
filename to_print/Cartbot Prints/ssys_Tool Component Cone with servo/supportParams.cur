@@ -1,0 +1,79 @@
+
+global restoreLock;
+if { $restoreLock != "restoreSets" } {
+	errormsg "Cannot restore a set file without restoreSets.";
+	return;
+};
+
+				# Variables in supportParams
+setVersionVar alt:baseLevels 	{5} 1.0;
+setVersionVar alt:baseOversize 	{0.060} 1.0;
+setVersionVar alt:support:doubleBaseTop 	{true} 1.0;
+setVersionVar alt:support:doubleBaseTopMaterial 	{false} 1.0;
+setVersionVar alt:support:doubleFace 	{true} 1.0;
+setVersionVar alt:support:faceOffset 	{0.035} 1.0;
+setVersionVar alt:support:growAmount 	{0.0003} 1.0;
+setVersionVar alt:support:growLimit 	{10.0} 1.0;
+setVersionVar alt:support:originalSelfSupport 	{45.0} 1.0;
+setVersionVar alt:support:perforate 	{false} 1.0;
+setVersionVar alt:support:perforateHeight 	{1.0} 1.0;
+setVersionVar alt:support:perforateNLayers 	{1} 1.0;
+setVersionVar alt:support:selfSupport 	{45.0} 1.0;
+setVersionVar alt:support:sparseAge 	{5} 1.0;
+setVersionVar alt:support:sparseRasterAir 	{0.200} 1.0;
+setVersionVar alt:support:supportBottom 	{true} 1.0;
+setVersionVar anchorPlatenDiam 	{0.10} 1.0;
+setVersionVar anchorTopDiam 	{0.10} 1.0;
+setVersionVar basicSparseFillFlag 	{false} 1.0;
+setVersionVar boxPartitionGapSize 	{0.05} 1.0;
+setVersionVar boxPartitionSize 	{0.5} 1.0;
+setVersionVar cylindricalSMART 	{false} 1.0;
+setVersionVar doBoxPartition 	{false} 1.0;
+setVersionVar doHorizonXXX 	{false} 1.0;
+setVersionVar doubleHighSupportFlag 	{false} 1.0;
+setVersionVar growAllGrowthAngle 	{1.71835800165} 1.0;
+setVersionVar growSupports 	{smallgrow} 1.0;
+setVersionVar main:baseLevels 	{5} 1.0;
+setVersionVar main:baseOversize 	{0.050} 1.0;
+setVersionVar main:part:originalPrefContourWidth 	{0.02} 1.0;
+setVersionVar main:part:prefContourWidth 	{0.020} 1.2;
+setVersionVar main:part:rasterAngle 	{45.0} 1.0;
+setVersionVar main:part:sparseRasterAngle 	{45.0} 1.0;
+setVersionVar main:support:doubleBaseTop 	{false} 1.0;
+setVersionVar main:support:doubleBaseTopMaterial 	{false} 1.0;
+setVersionVar main:support:doubleFace 	{false} 1.0;
+setVersionVar main:support:faceOffset 	{0.035} 1.0;
+setVersionVar main:support:growAmount 	{0.001} 1.0;
+setVersionVar main:support:growLimit 	{0.1} 1.0;
+setVersionVar main:support:originalSelfSupport 	{43.0} 1.0;
+setVersionVar main:support:perforate 	{false} 1.0;
+setVersionVar main:support:perforateHeight 	{1.0} 1.0;
+setVersionVar main:support:perforateNLayers 	{1} 1.0;
+setVersionVar main:support:selfSupport 	{43.0} 1.0;
+setVersionVar main:support:sparseAge 	{5} 1.0;
+setVersionVar main:support:sparseRasterAir 	{0.25} 1.0;
+setVersionVar main:support:supportBottom 	{false} 1.0;
+setVersionVar modelSupportFlag 	{false} 1.0;
+setVersionVar optimizeBase 	{true} 1.0;
+setVersionVar partSupportSpacingFlag 	{true} 1.0;
+setVersionVar removeHoles 	{true} 1.0;
+setVersionVar sliceHeight 	{0.010} 1.0;
+setVersionVar supportBaseMode 	{supportsAndExtBase} 1.0;
+setVersionVar supportBottomZ 	{-0.030000} 1.0;
+setVersionVar supportTop 	{2.360000} 1.0;
+setVersionVar supportType 	{convex} 1.0;
+setVersionVar surroundDepth 	{0.05} 1.0;
+setVersionVar surroundPart 	{false} 1.0;
+setVersionVar useSupportBottom 	{true} 1.0;
+setVersionVar useSupportTop 	{false} 1.0;
+setVersionVar wallCurveWidth 	{0.020} 1.0;
+setVersionVar wallCycleLength 	{2.0} 1.0;
+setVersionVar wallDepth 	{2.0} 1.0;
+setVersionVar wallFlatBack 	{false} 1.0;
+setVersionVar wallLayerContact 	{10} 1.0;
+setVersionVar wallLowerLimit 	{0} 1.0;
+setVersionVar wallNonContactGap 	{0.015} 1.0;
+setVersionVar wallPenetration 	{0.005} 1.0;
+
+null " "
+

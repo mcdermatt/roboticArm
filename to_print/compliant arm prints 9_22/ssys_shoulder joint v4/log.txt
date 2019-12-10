@@ -1,0 +1,46 @@
+session {9/23 12:03:07pm > BrayGuest opened job C:/ProgramData/Stratasys/FDMControlCenter/11.1/jobs/BrayGuest547a98e03cca9a20194caae0/Default.sjb.  Insight 11.1 (4870).}
+msg {12:03:08pm > Read 25064 facets in 0:00 from "E:/To Print/compliant arm prints 9_22/shoulder joint v4.stl"}
+msg {12:03:08pm > STL comment: STLB ATF 2.0.0.9000}
+msg {12:03:08pm > Bounding box of this STL X, Y, Z:}
+msg {12:03:08pm >       min = (-3.6250, -3.6250, 0.0000)}
+msg {12:03:08pm >       max = (3.6250, 3.6250, 5.5000)}
+msg {12:03:08pm > Done loading STL file after 1 sec.}
+msg {12:23:58pm > 	Slice height:	0.0100}
+msg {12:23:59pm > Done slicing.}
+msg {12:23:59pm > Supports removed}
+msg {12:23:59pm > 	Support style:	SMART}
+msg {12:24:00pm > Inspecting part curves}
+msg {12:24:00pm > Generating supports}
+msg {12:24:13pm > Done generating supports after 13 sec.}
+msg {12:24:15pm > Done writing boundary curves after 1 sec.}
+msg {12:24:15pm > Saved job:  E:/To Print/compliant arm prints 9_22/ssys_shoulder joint v4/shoulder joint v4.sjb}
+msg {12:24:15pm > 	Part fill style:	One contour /  rasters}
+msg {12:24:15pm > 	Part interior style:	Sparse - double dense}
+msg {12:24:15pm > 	Contour width:	0.0200}
+msg {12:24:15pm > 	Part raster width:	0.0200}
+msg {12:24:42pm > Done generating toolpaths after 27 sec.}
+msg {12:24:43pm > CMB moved to envelope center.}
+msg {12:24:52pm > Toolpath Information}
+msg {12:24:52pm > 	Est. build time:	14 hr 45 min }
+msg {12:24:52pm > 	Model material:	22.720 in³}
+msg {12:24:52pm > 	Support material:	3.966 in³}
+msg {12:24:52pm > Done writing CMB file after 10 sec.}
+msg {12:24:52pm > Job Summary}
+msg {12:24:52pm > 	Full job path:	E:/To Print/compliant arm prints 9_22/ssys_shoulder joint v4/shoulder joint v4.sjb}
+msg {12:24:52pm > 	Toolpath file name:	shoulder joint v4.cmb}
+msg {12:24:52pm > 	Modeler:		Fortus 360mc Small}
+msg {12:24:52pm > 	Est. build time:	14 hr 45 min }
+msg {12:24:52pm > 	Model material:	22.720 in³,	T16,	ABS-M30}
+msg {12:24:52pm > 	Support material:	3.966 in³,	T12,	SR30 support}
+msg {12:24:52pm > 	Slice height:	0.0100}
+msg {12:24:52pm > 	Part fill style:	One contour /  rasters}
+msg {12:24:52pm > 	Part interior style:	Sparse - double dense}
+msg {12:24:52pm > 	Visible surface style:	Normal}
+msg {12:24:52pm > 	Support style:	SMART}
+msg {12:24:52pm > 	Contour width:	0.0200}
+msg {12:24:52pm > 	Number of contours:	0.2500}
+msg {12:24:52pm > 	Part interior contours:	0.0220}
+msg {12:24:52pm > 	Part raster width:	0.0200}
+msg {12:24:52pm > 	Application:	Insight 11.1, Build version: 4870}
+msg {12:24:52pm > Saved job:  E:/To Print/compliant arm prints 9_22/ssys_shoulder joint v4/shoulder joint v4.sjb,  approximate build time 14 hr 45 min }
+msg {12:27:36pm > Saved job:  E:/To Print/compliant arm prints 9_22/ssys_shoulder joint v4/shoulder joint v4.sjb}

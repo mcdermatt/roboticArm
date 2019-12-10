@@ -1,0 +1,6 @@
+# Product version 11.1
+# Build version 4870
+setVersionVar currentJobCore "ToolHousingV3 messner proof";
+setVersionVar stlDirectory "E:/To Print/Compliant arm prints 8_12";
+setVersionVar stlPath "E:/To Print/Compliant arm prints 8_12/ToolHousingV3 messner proof.stl";
+setVersionVar toolpathFile "ToolHousingV3 messner proof.cmb";

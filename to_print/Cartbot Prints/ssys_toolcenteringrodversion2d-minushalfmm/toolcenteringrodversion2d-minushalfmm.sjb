@@ -1,0 +1,6 @@
+# Product version 11.1
+# Build version 4870
+setVersionVar currentJobCore "toolcenteringrodversion2d-minushalfmm";
+setVersionVar stlDirectory "E:/To Print";
+setVersionVar stlPath "E:/To Print/toolcenteringrodversion2d-minushalfmm.stl";
+setVersionVar toolpathFile "toolcenteringrodversion2d-minushalfmm.cmb";

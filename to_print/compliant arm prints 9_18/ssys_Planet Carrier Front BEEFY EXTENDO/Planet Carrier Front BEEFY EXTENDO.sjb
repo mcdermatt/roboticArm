@@ -1,0 +1,6 @@
+# Product version 11.1
+# Build version 4870
+setVersionVar currentJobCore "Planet Carrier Front BEEFY EXTENDO";
+setVersionVar stlDirectory "E:/To Print/compliant arm prints 9_18";
+setVersionVar stlPath "E:/To Print/compliant arm prints 9_18/Planet Carrier Front BEEFY EXTENDO.stl";
+setVersionVar toolpathFile "Planet Carrier Front BEEFY EXTENDO.cmb";

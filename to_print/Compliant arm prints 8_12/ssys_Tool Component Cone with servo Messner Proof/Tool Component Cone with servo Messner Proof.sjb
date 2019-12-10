@@ -1,0 +1,6 @@
+# Product version 11.1
+# Build version 4870
+setVersionVar currentJobCore "Tool Component Cone with servo Messner Proof";
+setVersionVar stlDirectory "E:/To Print/Compliant arm prints 8_12";
+setVersionVar stlPath "E:/To Print/Compliant arm prints 8_12/Tool Component Cone with servo Messner Proof.stl";
+setVersionVar toolpathFile "Tool Component Cone with servo Messner Proof.cmb";

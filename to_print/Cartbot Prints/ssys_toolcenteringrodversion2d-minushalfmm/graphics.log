@@ -1,0 +1,77 @@
+Graphics System Information:
+	Vendor     : Intel
+	Renderer   : Intel(R) HD Graphics 530
+	Version    : 4.4.0 - Build 21.20.16.4590
+	Extensions : GL_3DFX_texture_compression_FXT1 GL_AMD_depth_clamp_separate GL_AMD_vertex_shader_layer GL_AMD_vertex_shader_viewport_index GL_ARB_ES2_compatibility GL_ARB_ES3_compatibility GL_ARB_arrays_of_arrays GL_ARB_base_instance GL_ARB_blend_func_extended GL_ARB_buffer_storage GL_ARB_cl_event GL_ARB_clear_buffer_object GL_ARB_clear_texture GL_ARB_clip_control GL_ARB_color_buffer_float GL_ARB_compatibility GL_ARB_compressed_texture_pixel_storage GL_ARB_compute_shader GL_ARB_conservative_depth GL_ARB_copy_buffer GL_ARB_copy_image GL_ARB_debug_output GL_ARB_depth_buffer_float GL_ARB_depth_clamp GL_ARB_depth_texture GL_ARB_derivative_control GL_ARB_draw_buffers GL_ARB_draw_buffers_blend GL_ARB_draw_elements_base_vertex GL_ARB_draw_indirect GL_ARB_draw_instanced GL_ARB_enhanced_layouts GL_ARB_explicit_attrib_location GL_ARB_explicit_uniform_location GL_ARB_fragment_coord_conventions GL_ARB_fragment_layer_viewport GL_ARB_fragment_program GL_ARB_fragment_program_shadow GL_ARB_fragment_shader GL_ARB_fragment_shader_interlock GL_ARB_framebuffer_no_attachments GL_ARB_framebuffer_object GL_ARB_framebuffer_sRGB GL_ARB_geometry_shader4 GL_ARB_get_program_binary GL_ARB_gpu_shader5 GL_ARB_gpu_shader_fp64 GL_ARB_half_float_pixel GL_ARB_half_float_vertex GL_ARB_indirect_parameters GL_ARB_instanced_arrays GL_ARB_internalformat_query GL_ARB_internalformat_query2 GL_ARB_invalidate_subdata GL_ARB_map_buffer_alignment GL_ARB_map_buffer_range GL_ARB_multi_bind GL_ARB_multi_draw_indirect GL_ARB_multisample GL_ARB_multitexture GL_ARB_occlusion_query GL_ARB_occlusion_query2 GL_ARB_pixel_buffer_object GL_ARB_point_parameters GL_ARB_point_sprite GL_ARB_post_depth_coverage GL_ARB_program_interface_query GL_ARB_provoking_vertex GL_ARB_query_buffer_object GL_ARB_robust_buffer_access_behavior GL_ARB_robustness GL_ARB_robustness_isolation GL_ARB_sample_shading GL_ARB_sampler_objects GL_ARB_seamless_cube_map GL_ARB_seamless_cubemap_per_texture GL_ARB_separate_shader_objects GL_ARB_shader_atomic_counters GL_ARB_shader_bit_encoding GL_ARB_shader_image_load_store GL_ARB_shader_image_size GL_ARB_shader_objects GL_ARB_shader_precision GL_ARB_shader_stencil_export GL_ARB_shader_storage_buffer_object GL_ARB_shader_subroutine GL_ARB_shading_language_100 GL_ARB_shading_language_420pack GL_ARB_shading_language_packing GL_ARB_shadow GL_ARB_stencil_texturing GL_ARB_sync GL_ARB_tessellation_shader GL_ARB_texture_barrier GL_ARB_texture_border_clamp GL_ARB_texture_buffer_object_rgb32 GL_ARB_texture_buffer_range GL_ARB_texture_compression GL_ARB_texture_compression_bptc GL_ARB_texture_compression_rgtc GL_ARB_texture_cube_map GL_ARB_texture_cube_map_array GL_ARB_texture_env_add GL_ARB_texture_env_combine GL_ARB_texture_env_crossbar GL_ARB_texture_env_dot3 GL_ARB_texture_float GL_ARB_texture_gather GL_ARB_texture_mirror_clamp_to_edge GL_ARB_texture_mirrored_repeat GL_ARB_texture_multisample GL_ARB_texture_non_power_of_two GL_ARB_texture_query_levels GL_ARB_texture_query_lod GL_ARB_texture_rectangle GL_ARB_texture_rg GL_ARB_texture_rgb10_a2ui GL_ARB_texture_stencil8 GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_texture_swizzle GL_ARB_texture_view GL_ARB_timer_query GL_ARB_transform_feedback2 GL_ARB_transform_feedback3 GL_ARB_transform_feedback_instanced GL_ARB_transpose_matrix GL_ARB_uniform_buffer_object GL_ARB_vertex_array_bgra GL_ARB_vertex_array_object GL_ARB_vertex_attrib_64bit GL_ARB_vertex_attrib_binding GL_ARB_vertex_buffer_object GL_ARB_vertex_program GL_ARB_vertex_shader GL_ARB_vertex_type_10f_11f_11f_rev GL_ARB_vertex_type_2_10_10_10_rev GL_ARB_viewport_array GL_ARB_window_pos GL_ATI_separate_stencil GL_EXT_abgr GL_EXT_bgra GL_EXT_blend_color GL_EXT_blend_equation_separate GL_EXT_blend_func_separate GL_EXT_blend_minmax GL_EXT_blend_subtract GL_EXT_clip_volume_hint GL_EXT_compiled_vertex_array GL_EXT_direct_state_access GL_EXT_draw_buffers2 GL_EXT_draw_range_elements GL_EXT_fog_coord GL_EXT_framebuffer_blit GL_EXT_framebuffer_multisample GL_EXT_framebuffer_object GL_EXT_geometry_shader4 GL_EXT_gpu_program_parameters GL_EXT_gpu_shader4 GL_EXT_multi_draw_arrays GL_EXT_packed_depth_stencil GL_EXT_packed_float GL_EXT_packed_pixels GL_EXT_polygon_offset_clamp GL_EXT_rescale_normal GL_EXT_secondary_color GL_EXT_separate_specular_color GL_EXT_shader_framebuffer_fetch GL_EXT_shader_integer_mix GL_EXT_shadow_funcs GL_EXT_stencil_two_side GL_EXT_stencil_wrap GL_EXT_texture3D GL_EXT_texture_array GL_EXT_texture_compression_s3tc GL_EXT_texture_edge_clamp GL_EXT_texture_env_add GL_EXT_texture_env_combine GL_EXT_texture_filter_anisotropic GL_EXT_texture_integer GL_EXT_texture_lod_bias GL_EXT_texture_rectangle GL_EXT_texture_sRGB GL_EXT_texture_sRGB_decode GL_EXT_texture_shared_exponent GL_EXT_texture_snorm GL_EXT_texture_storage GL_EXT_texture_swizzle GL_EXT_timer_query GL_EXT_transform_feedback GL_IBM_texture_mirrored_repeat GL_INTEL_conservative_rasterization GL_INTEL_fragment_shader_ordering GL_INTEL_framebuffer_CMAA GL_INTEL_map_texture GL_INTEL_multi_rate_fragment_shader GL_INTEL_performance_query GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_KHR_debug GL_KHR_texture_compression_astc_hdr GL_KHR_texture_compression_astc_ldr GL_NV_blend_square GL_NV_conditional_render GL_NV_primitive_restart GL_NV_texgen_reflection GL_SGIS_generate_mipmap GL_SGIS_texture_edge_clamp GL_SGIS_texture_lod GL_SUN_multi_draw_arrays GL_WIN_swap_hint
+	Resolution : 1920x1080
+	Color Depth: 32
+	Depth Bits : 16
+	Double-buffering enabled
+	Using pixel format 9 from:
+ 1: 32 bit   RGBA,  0 bit Depth, single buffer,              No swap,    Full accel, Main plane
+ 2: 32 bit   RGBA,  0 bit Depth, double buffer,        Exchange swap,    Full accel, Main plane
+ 3: 32 bit   RGBA, 24 bit Depth, single buffer,              No swap,    Full accel, Main plane
+ 4: 32 bit   RGBA, 24 bit Depth, single buffer,              No swap,    Full accel, Main plane
+ 5: 32 bit   RGBA, 24 bit Depth, double buffer,        Exchange swap,    Full accel, Main plane
+ 6: 32 bit   RGBA, 16 bit Depth, single buffer,              No swap,    Full accel, Main plane
+ 7: 32 bit   RGBA, 16 bit Depth, double buffer,        Exchange swap,    Full accel, Main plane
+ 8: 32 bit   RGBA,  0 bit Depth, double buffer,            Copy swap,    Full accel, Main plane
+ 9: 32 bit   RGBA, 16 bit Depth, double buffer,            Copy swap,    Full accel, Main plane
+10: 32 bit   RGBA, 24 bit Depth, double buffer,            Copy swap,    Full accel, Main plane
+59: 32 bit   RGBA, 32 bit Depth, single buffer,              No swap,      No accel, Main plane
+60: 32 bit   RGBA, 16 bit Depth, single buffer,              No swap,      No accel, Main plane
+61: 32 bit   RGBA, 32 bit Depth, double buffer,            Copy swap,      No accel, Main plane
+62: 32 bit   RGBA, 16 bit Depth, double buffer,            Copy swap,      No accel, Main plane
+63: 32 bit   RGBA, 32 bit Depth, single buffer,              No swap,      No accel, Main plane
+64: 32 bit   RGBA, 16 bit Depth, single buffer,              No swap,      No accel, Main plane
+65: 32 bit   RGBA, 32 bit Depth, double buffer,            Copy swap,      No accel, Main plane
+66: 32 bit   RGBA, 16 bit Depth, double buffer,            Copy swap,      No accel, Main plane
+67: 32 bit CIndex, 32 bit Depth, single buffer,              No swap,      No accel, Main plane
+68: 32 bit CIndex, 16 bit Depth, single buffer,              No swap,      No accel, Main plane
+69: 32 bit CIndex, 32 bit Depth, double buffer,            Copy swap,      No accel, Main plane
+70: 32 bit CIndex, 16 bit Depth, double buffer,            Copy swap,      No accel, Main plane
+	GL Shading Language support : 4.40 - Build 21.20.16.4590
+	Graphics Shader Messages: 
+	 GL extension wrangler initialized.
+	 Glew Version: 1.12.0
+Shader compilation log for - Polygon Renderer
+ Vertex Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Shader compilation log for - Polyline Renderer
+Vertex Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Shader compilation log for - Polygon/Polyline Selection
+Vertex Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Shader compilation log for - Shaded Toolpath Renderer
+Vertex Shader: 
+Geometry Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Shader compilation log for - Shaded Toolpath Selection
+Vertex Shader: 
+Geometry Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Shader compilation log for - Text Renderer
+Vertex Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Shader compilation log for - Polygon Passthru
+Vertex Shader: 
+Fragment Shader: 
+Program:  - Valid
+
+Graphics Hardware Limits: 
+Max Vertex Attributes: 16
+Max Geometry Shader Output: 256
+Max Geometry Total Shader Output: 1024

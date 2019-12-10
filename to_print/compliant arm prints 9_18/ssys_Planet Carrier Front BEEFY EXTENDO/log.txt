@@ -1,0 +1,45 @@
+session {9/20 10:29:48am > BrayGuest opened job C:/ProgramData/Stratasys/FDMControlCenter/11.1/jobs/BrayGuest2f9645b832bb330820135237/Default.sjb.  Insight 11.1 (4870).}
+msg {10:29:49am > Read 7938 facets in 0:00 from "E:/To Print/compliant arm prints 9_18/Planet Carrier Front BEEFY EXTENDO.stl"}
+msg {10:29:49am > STL comment: STLB ATF 2.0.0.9000}
+msg {10:29:49am > Bounding box of this STL X, Y, Z:}
+msg {10:29:49am >       min = (-1.3710, -1.3778, -0.8268)}
+msg {10:29:49am >       max = (1.3710, 1.2717, 0.7281)}
+msg {10:29:49am > Done loading STL file after 1 sec.}
+msg {10:30:28am > 	Slice height:	0.0100}
+msg {10:30:28am > Done slicing.}
+msg {10:30:28am > Supports removed}
+msg {10:30:28am > 	Support style:	SMART}
+msg {10:30:29am > Inspecting part curves}
+msg {10:30:29am > Generating supports}
+msg {10:30:32am > Done generating supports after 4 sec.}
+msg {10:30:33am > Done writing boundary curves after 1 sec.}
+msg {10:30:33am > Saved job:  E:/To Print/compliant arm prints 9_18/ssys_Planet Carrier Front BEEFY EXTENDO/Planet Carrier Front BEEFY EXTENDO.sjb}
+msg {10:30:33am > 	Part fill style:	One contour /  rasters}
+msg {10:30:33am > 	Part interior style:	Sparse - double dense}
+msg {10:30:33am > 	Contour width:	0.0200}
+msg {10:30:33am > 	Part raster width:	0.0200}
+msg {10:30:45am > Done generating toolpaths after 11 sec.}
+msg {10:30:46am > CMB moved to envelope center.}
+msg {10:30:48am > Toolpath Information}
+msg {10:30:48am > 	Est. build time:	3 hr 7 min }
+msg {10:30:48am > 	Model material:	3.020 in³}
+msg {10:30:48am > 	Support material:	0.707 in³}
+msg {10:30:48am > Done writing CMB file after 3 sec.}
+msg {10:30:48am > Job Summary}
+msg {10:30:48am > 	Full job path:	E:/To Print/compliant arm prints 9_18/ssys_Planet Carrier Front BEEFY EXTENDO/Planet Carrier Front BEEFY EXTENDO.sjb}
+msg {10:30:48am > 	Toolpath file name:	Planet Carrier Front BEEFY EXTENDO.cmb}
+msg {10:30:48am > 	Modeler:		Fortus 360mc Small}
+msg {10:30:48am > 	Est. build time:	3 hr 7 min }
+msg {10:30:48am > 	Model material:	3.020 in³,	T16,	ABS-M30}
+msg {10:30:48am > 	Support material:	0.707 in³,	T12,	SR30 support}
+msg {10:30:48am > 	Slice height:	0.0100}
+msg {10:30:48am > 	Part fill style:	One contour /  rasters}
+msg {10:30:48am > 	Part interior style:	Sparse - double dense}
+msg {10:30:48am > 	Visible surface style:	Normal}
+msg {10:30:48am > 	Support style:	SMART}
+msg {10:30:48am > 	Contour width:	0.0200}
+msg {10:30:48am > 	Number of contours:	0.2500}
+msg {10:30:48am > 	Part interior contours:	0.0220}
+msg {10:30:48am > 	Part raster width:	0.0200}
+msg {10:30:48am > 	Application:	Insight 11.1, Build version: 4870}
+msg {10:30:48am > Saved job:  E:/To Print/compliant arm prints 9_18/ssys_Planet Carrier Front BEEFY EXTENDO/Planet Carrier Front BEEFY EXTENDO.sjb,  approximate build time 3 hr 7 min }

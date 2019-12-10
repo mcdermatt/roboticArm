@@ -9,14 +9,14 @@ import numpy as np
 #system parameters
 
 #l1- shoulder up/down
-l1m = 90 #kg was 3.07
+l1m = 3.07 #kg was 3.07
 l1com = 0.0729 #m from center of rotation
 l1 = 0.1651
-l1cpr = 910
+l1cpr = 90
 l1reduction = 9
 l1kv = 16
 #beta1 = 0
-beta1 = 0.005 #to do- make beta a function motor velocity to cancel out inertia?
+beta1 = -0.025 #to do- make beta a function motor velocity to cancel out inertia?
 serial1 = "2084377D3548"
 
 #l2- elbow
@@ -60,8 +60,8 @@ while True:
 	#get joint angle and velocity
 	pos2 = od2.axis0.encoder.pos_estimate
 	vel2 = od2.axis0.encoder.vel_estimate
-	pos1 = (-1)*od1.axis0.encoder.pos_estimate
-	vel1 = (-1)*od1.axis0.encoder.vel_estimate
+	pos1 = od1.axis0.encoder.pos_estimate
+	vel1 = od1.axis0.encoder.vel_estimate
 
 	#zero position is straight up
 	theta2 = (2 * np.pi * pos2) / (l2cpr * l2reduction)

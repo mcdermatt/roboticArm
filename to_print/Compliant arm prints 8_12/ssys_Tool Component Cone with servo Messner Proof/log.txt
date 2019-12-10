@@ -1,0 +1,48 @@
+session {8/14 11:57:59am > BrayGuest opened job C:/ProgramData/Stratasys/FDMControlCenter/11.1/jobs/BrayGuest85b328f1b544a483ad8bcf8/Default.sjb.  Insight 11.1 (4870).}
+msg {11:58:01am > Read 22904 facets in 0:01 from "E:/To Print/Compliant arm prints 8_12/Tool Component Cone with servo Messner Proof.stl"}
+msg {11:58:01am > STL comment: STLB ATF 2.0.0.9000}
+msg {11:58:01am > Bounding box of this STL X, Y, Z:}
+msg {11:58:01am >       min = (-1.9685, -3.5000, -1.1601)}
+msg {11:58:01am >       max = (1.9685, 1.1811, 1.2008)}
+msg {11:58:01am > Done loading STL file after 2 sec.}
+msg {11:58:11am > 	Slice height:	0.0100}
+msg {11:58:11am > Curves too small to build will be removed}
+msg {11:58:11am > Done slicing.}
+msg {11:58:11am > Supports removed}
+msg {11:58:11am > 	Support style:	SMART}
+msg {11:58:12am > Inspecting part curves}
+msg {11:58:12am > Generating supports}
+msg {11:58:22am > Done generating supports after 10 sec.}
+msg {11:58:22am > Done writing boundary curves.}
+msg {11:58:22am > Saved job:  E:/To Print/Compliant arm prints 8_12/ssys_Tool Component Cone with servo Messner Proof/Tool Component Cone with servo Messner Proof.sjb}
+msg {11:58:22am > 	Part fill style:	One contour /  rasters}
+msg {11:58:22am > 	Part interior style:	Sparse - double dense}
+msg {11:58:22am > 	Contour width:	0.0200}
+msg {11:58:22am > 	Part raster width:	0.0200}
+msg {11:58:34am > Done generating toolpaths after 12 sec.}
+msg {11:58:35am > CMB moved to envelope center.}
+msg {11:58:39am > Toolpath Information}
+msg {11:58:39am > 	Est. build time:	4 hr 26 min }
+msg {11:58:39am > 	Model material:	4.546 in³}
+msg {11:58:39am > 	Support material:	1.131 in³}
+msg {11:58:39am > Done writing CMB file after 4 sec.}
+msg {11:58:39am > Job Summary}
+msg {11:58:39am > 	Full job path:	E:/To Print/Compliant arm prints 8_12/ssys_Tool Component Cone with servo Messner Proof/Tool Component Cone with servo Messner Proof.sjb}
+msg {11:58:39am > 	Toolpath file name:	Tool Component Cone with servo Messner Proof.cmb}
+msg {11:58:39am > 	Modeler:		Fortus 360mc Small}
+msg {11:58:39am > 	Est. build time:	4 hr 26 min }
+msg {11:58:39am > 	Model material:	4.546 in³,	T16,	ABS-M30}
+msg {11:58:39am > 	Support material:	1.131 in³,	T12,	SR30 support}
+msg {11:58:39am > 	Slice height:	0.0100}
+msg {11:58:39am > 	Part fill style:	One contour /  rasters}
+msg {11:58:39am > 	Part interior style:	Sparse - double dense}
+msg {11:58:39am > 	Visible surface style:	Normal}
+msg {11:58:39am > 	Support style:	SMART}
+msg {11:58:39am > 	Contour width:	0.0200}
+msg {11:58:39am > 	Number of contours:	0.2500}
+msg {11:58:39am > 	Part interior contours:	0.0220}
+msg {11:58:39am > 	Part raster width:	0.0200}
+msg {11:58:39am > 	Application:	Insight 11.1, Build version: 4870}
+msg {11:58:39am > Saved job:  E:/To Print/Compliant arm prints 8_12/ssys_Tool Component Cone with servo Messner Proof/Tool Component Cone with servo Messner Proof.sjb,  approximate build time 4 hr 26 min }
+msg {11:58:41am > Saved job:  E:/To Print/Compliant arm prints 8_12/ssys_Tool Component Cone with servo Messner Proof/Tool Component Cone with servo Messner Proof.sjb}
+session {8/14 11:58:52am > BrayGuest closed job.}

@@ -1,0 +1,46 @@
+session {7/26 12:38:38pm > BrayGuest opened job C:/ProgramData/Stratasys/FDMControlCenter/11.1/jobs/BrayGuest6d0aa73d566995ca2de900c6/Default.sjb.  Insight 11.1 (4870).}
+msg {12:38:39pm > Read 9318 facets in 0:00 from "E:/To Print/toolcenteringrodversion2d-minushalfmm.stl"}
+msg {12:38:39pm > STL comment: STLB ATF 2.0.0.9000}
+msg {12:38:39pm > Bounding box of this STL X, Y, Z:}
+msg {12:38:39pm >       min = (-0.2236, -0.2236, -0.8413)}
+msg {12:38:39pm >       max = (0.2236, 0.2236, 1.5342)}
+msg {12:38:39pm > Done loading STL file after 1 sec.}
+msg {12:38:49pm > 	Slice height:	0.0100}
+msg {12:38:49pm > Done slicing.}
+msg {12:38:49pm > Supports removed}
+msg {12:38:49pm > 	Support style:	SMART}
+msg {12:38:50pm > Inspecting part curves}
+msg {12:38:50pm > Generating supports}
+msg {12:38:51pm > Done generating supports.}
+msg {12:38:51pm > Done writing boundary curves.}
+msg {12:38:51pm > Saved job:  E:/To Print/ssys_toolcenteringrodversion2d-minushalfmm/toolcenteringrodversion2d-minushalfmm.sjb}
+msg {12:38:51pm > 	Part fill style:	One contour /  rasters}
+msg {12:38:51pm > 	Part interior style:	Sparse - double dense}
+msg {12:38:51pm > 	Contour width:	0.0200}
+msg {12:38:51pm > 	Part raster width:	0.0200}
+msg {12:38:53pm > Done generating toolpaths after 2 sec.}
+msg {12:38:54pm > CMB moved to envelope center.}
+msg {12:38:55pm > Toolpath Information}
+msg {12:38:55pm > 	Est. build time:	43 min }
+msg {12:38:55pm > 	Model material:	0.289 in³}
+msg {12:38:55pm > 	Support material:	0.124 in³}
+msg {12:38:55pm > Done writing CMB file after 1 sec.}
+msg {12:38:55pm > Job Summary}
+msg {12:38:55pm > 	Full job path:	E:/To Print/ssys_toolcenteringrodversion2d-minushalfmm/toolcenteringrodversion2d-minushalfmm.sjb}
+msg {12:38:55pm > 	Toolpath file name:	toolcenteringrodversion2d-minushalfmm.cmb}
+msg {12:38:55pm > 	Modeler:		Fortus 360mc Small}
+msg {12:38:55pm > 	Est. build time:	43 min }
+msg {12:38:55pm > 	Model material:	0.289 in³,	T16,	ABS-M30}
+msg {12:38:55pm > 	Support material:	0.124 in³,	T12,	SR30 support}
+msg {12:38:55pm > 	Slice height:	0.0100}
+msg {12:38:55pm > 	Part fill style:	One contour /  rasters}
+msg {12:38:55pm > 	Part interior style:	Sparse - double dense}
+msg {12:38:55pm > 	Visible surface style:	Normal}
+msg {12:38:55pm > 	Support style:	SMART}
+msg {12:38:55pm > 	Contour width:	0.0200}
+msg {12:38:55pm > 	Number of contours:	0.2500}
+msg {12:38:55pm > 	Part interior contours:	0.0220}
+msg {12:38:55pm > 	Part raster width:	0.0200}
+msg {12:38:55pm > 	Application:	Insight 11.1, Build version: 4870}
+msg {12:38:55pm > Saved job:  E:/To Print/ssys_toolcenteringrodversion2d-minushalfmm/toolcenteringrodversion2d-minushalfmm.sjb,  approximate build time 43 min }
+msg {12:38:57pm > Saved job:  E:/To Print/ssys_toolcenteringrodversion2d-minushalfmm/toolcenteringrodversion2d-minushalfmm.sjb}

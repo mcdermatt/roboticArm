@@ -1,0 +1,6 @@
+# Product version 11.1
+# Build version 4870
+setVersionVar currentJobCore "shoulder joint v4";
+setVersionVar stlDirectory "E:/To Print/compliant arm prints 9_22";
+setVersionVar stlPath "E:/To Print/compliant arm prints 9_22/shoulder joint v4.stl";
+setVersionVar toolpathFile "shoulder joint v4.cmb";
