@@ -1,2 +1,2 @@
-import numpy
+import rrtpath.rrtpath as rrtpath
 
