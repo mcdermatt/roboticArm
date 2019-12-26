@@ -13,6 +13,7 @@ import bezier
 def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obstacle=[]):
 	fig = plt.figure()
 	ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
+	ax.grid(False)
 
 	plt.xlabel("x",fontdict=None,labelpad=None)
 	plt.ylabel("y",fontdict=None,labelpad=None)
@@ -23,6 +24,7 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 	plt.draw()
 	plt.pause(0.5)
 	plt.cla()
+	ax.grid(False)
 	ax.set_xlim(0,20)
 	ax.set_ylim(0,20)
 	ax.set_zlim(0,20)

@@ -46,7 +46,7 @@ while x2 < 16:
 	y2 = 0
 	x2 = x2 + 1
 
-bestPath,ax = rrtpath.rrtpath(5,5,5,20,10,0,fidelity=500,obstacle=obstacle)
+bestPath,ax = rrtpath.rrtpath(10,0,10,0,15,-5,fidelity=1000,obstacle=obstacle)
 
 #draw prism surrounding point cloud rather than drawing points individually
 cube_definition1 = [(7,5,3), (7,12,3), (12,5,3), (7,5,17)]

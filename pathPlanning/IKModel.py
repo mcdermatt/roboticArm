@@ -4,19 +4,22 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 from time import sleep
 
-def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=0,wPhi=0):
+def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=numpy.pi,wPhi=numpy.pi):
 
 	l1 = 0.40625*25.4 # upper arm
 	l2 = 0.59375*25.4 # lower arm l1+l2=1, easiest if upper and lower arm are same length
 	l3 = 0.375*25.4 #wrist to end effector
 
-	#test start vales
-	x = 5
-	y = 10
-	z = 4
+	#make path go from start to finish
+	path = numpy.flip(path,axis=1)
 
-	count = 0
-	while count <= 50:
+	#test start vales
+	x = path[0][0]
+	y = path[1][0]
+	z = path[2][0]
+
+	count = 1
+	while count < path.shape[1]:
 
 		##adjusts inputs in IK function to account for length of l3 (wrist) component
 		xIn = x - l3*numpy.cos(wTheta)*numpy.sin(wPhi)
@@ -39,41 +42,30 @@ def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=0,wPhi=0):
 		ys = [0,yElbow,uwY,y]
 		zs = [0,zElbow,uwZ,z]
 
-		lineOfArm, = ax.plot(xs,ys,zs, 'o-', mec = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], mew = 5, lw = 10)
+		lineOfArm, = ax.plot(xs,ys,zs, 'o-', mec = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], mew = 5, lw = 10, color=[0.8,0.2,0.5])
 
-		shoulder = ax.plot([0],[0],[0], 'o-', color = [0.5*abs(numpy.sin(theta)),0.25*abs(numpy.cos(theta)),0.75], lw = 10, ms = 15) 
-		elbow = ax.plot([xElbow],[yElbow],[zElbow], 'o-', color=[abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
-		upperWrist = ax.plot([uwX],[uwY],[uwZ], 'o-', color = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
+		shoulder, = ax.plot([0],[0],[0], 'o-', color = [0.5*abs(numpy.sin(theta)),0.25*abs(numpy.cos(theta)),0.75], lw = 10, ms = 15) 
+		elbow, = ax.plot([xElbow],[yElbow],[zElbow], 'o-', color=[abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
+		upperWrist, = ax.plot([uwX],[uwY],[uwZ], 'o-', color = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], lw = 10, ms = 15)
 
 		plt.draw()
 		plt.pause(0.05)
 		lineOfArm.remove()
+		shoulder.remove()
+		elbow.remove()
+		upperWrist.remove()
+
+		x = path[0][count]
+		y = path[1][count]
+		z = path[2][count]
+
+		count = count + 1
 
 		#ax.cla()
 		#ax.set_xlim(-1,1)
 		#ax.set_ylim(-1,1)
 		#ax.set_zlim(0,1)
 		#ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
-		count = count + 1
-		
-		if count <= 50:
-			wTheta = wTheta + (numpy.pi)/25
-			wPhi = wPhi + (numpy.pi)/25
-
-		if count > 50 and count <= 100:
-			x = x + 0.01
-			y = y + 0.005
-			z = z - 0.01
-
-		if count > 100 and count <= 150:
-			z = z - 0.0025
-
-
-		if count > 150:
-
-			x = x - 0.01
-			y = y - 0.01
-
 
 
 
