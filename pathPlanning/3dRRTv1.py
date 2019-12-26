@@ -4,6 +4,8 @@ import numpy
 import matplotlib.pyplot as plt
 import IKModel as ikm
 
+#test function for RRT path planning applied to 6dof arm
+
 #add arbitrary obstacles for testing
 #set up obstacles - read in as 3d grid representing search space. if xyz cordinate is 1, it is obstacle
 xMax = 20
@@ -46,7 +48,7 @@ while x2 < 16:
 	y2 = 0
 	x2 = x2 + 1
 
-bestPath,ax = rrtpath.rrtpath(10,0,10,0,15,-5,fidelity=1000,obstacle=obstacle)
+bestPath,ax = rrtpath.rrtpath(10,0,10,10,20,5,fidelity=500,obstacle=obstacle)
 
 #draw prism surrounding point cloud rather than drawing points individually
 cube_definition1 = [(7,5,3), (7,12,3), (12,5,3), (7,5,17)]

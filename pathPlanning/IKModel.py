@@ -4,11 +4,48 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 from time import sleep
 
-def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=numpy.pi,wPhi=numpy.pi):
+def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=2*numpy.pi*float(numpy.random.rand(1)),wPhi=2*numpy.pi*float(numpy.random.rand(1))):
 
 	l1 = 0.40625*25.4 # upper arm
 	l2 = 0.59375*25.4 # lower arm l1+l2=1, easiest if upper and lower arm are same length
 	l3 = 0.375*25.4 #wrist to end effector
+
+	#return list of points inside arm for rrt function- only for inside rrt, will not display any output
+	if path is None:
+		print("using IKModel for rrt solver")
+		x = xIn
+		y = yIn
+		z = zIn
+		xIn = x - l3*numpy.cos(wTheta)*numpy.sin(wPhi)
+		yIn = y - l3*numpy.sin(wTheta)*numpy.sin(wPhi)
+		zIn = z - l3*numpy.cos(wPhi)
+
+		r,phi,theta = cartesian_to_spherical(xIn,yIn,zIn)
+		a0,a1,a2 = get_joint_angles(xIn,yIn,zIn)
+		xElbow,yElbow,zElbow = get_elbow_pos(xIn,yIn,zIn)
+		#get l3 pos
+		uwX, uwY, uwZ = get_l3_pos(xIn,yIn,zIn)
+		
+		#xs = [0,xElbow,uwX,x]
+		xa = numpy.linspace(0,xElbow,10,endpoint = False)
+		xb = numpy.linspace(xElbow, uwX, 10, endpoint = False)
+		xc = numpy.linspace(uwX, x, 10, endpoint = False)
+		xs = numpy.concatenate((xa,xb,xc), axis = None)
+
+		#ys = [0,yElbow,uwY,y]
+		ya = numpy.linspace(0,yElbow,10, endpoint = False)
+		yb = numpy.linspace(yElbow, uwY, 10, endpoint = False)
+		yc = numpy.linspace(uwY, y, 10, endpoint = False)
+		ys = numpy.concatenate((ya,yb, yc), axis = None)
+
+		#zs = [0,zElbow,uwZ,z]
+		za = numpy.linspace(0,zElbow,10, endpoint = False)
+		zb = numpy.linspace(zElbow, uwZ, 10, endpoint = False)
+		zc = numpy.linspace(uwZ, z, 10, endpoint = False)
+		zs = numpy.concatenate((za,zb,zc), axis = None)
+
+		print(xs,ys,zs)
+		return(xs,ys,zs)
 
 	#make path go from start to finish
 	path = numpy.flip(path,axis=1)
@@ -26,18 +63,12 @@ def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=numpy.pi,wPhi=numpy.pi):
 		yIn = y - l3*numpy.sin(wTheta)*numpy.sin(wPhi)
 		zIn = z - l3*numpy.cos(wPhi)
 
-		#print(xIn,yIn,zIn)
 		r,phi,theta = cartesian_to_spherical(xIn,yIn,zIn)
-		#print(r)
 		a0,a1,a2 = get_joint_angles(xIn,yIn,zIn)
 		xElbow,yElbow,zElbow = get_elbow_pos(xIn,yIn,zIn)
-		#print (numpy.rad2deg(a0), numpy.rad2deg(a1),  numpy.rad2deg(a2))
-		#print (xElbow,yElbow,zElbow)
 		#get l3 pos
 		uwX, uwY, uwZ = get_l3_pos(xIn,yIn,zIn)
-		#print(uwX,uwY,uwZ)
-		#print(' ')
-
+		
 		xs = [0,xElbow,uwX,x]
 		ys = [0,yElbow,uwY,y]
 		zs = [0,zElbow,uwZ,z]

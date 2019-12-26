@@ -5,6 +5,7 @@ import numpy
 from time import sleep
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 import bezier
+import IKModel as ikm
 
 #to do
 #make graphical output optional
@@ -32,8 +33,6 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 	startpt = plt.plot([xstart],[ystart],[zstart], 'o', lw = 6, color = [1,0,0])
 	endpt = plt.plot([xend],[yend],[zend], 'o', lw = 6, color = [1,0,0])
 	plt.draw()
-
-
 
 	xMax = 20
 	yMax = 20
@@ -99,16 +98,34 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 		ys = [nodey[bestNode],nodey[n]]
 		zs = [nodez[bestNode],nodez[n]]
 
+		inObstacle = 1 #flag of arm inside obstacle
 		if obstacle[int(numpy.floor(nodex[n])),int(numpy.floor(nodey[n])),int(numpy.floor(nodez[n]))] != 1:
 			#line = ax.plot(xs,ys,zs, '-', lw = 2, color = [ 0.2, 0.5, 0.5])
-			pass
+			inObstacle = 0
+			#pass
 		else:
 			nodex[n] = nodex[int(nodeParent[n])]
 			nodey[n] = nodey[int(nodeParent[n])]
 			nodez[n] = nodez[int(nodeParent[n])]
+		#if end effector is not in obstacle at proposed node, make sure the rest of arm is not inside obstacle as well
+		if inObstacle == 0:
+			#might not need to take floor
+			xs, ys, zs = ikm.IKModel(path=None,ax=ax,xIn=int(numpy.floor(nodex[n])),yIn=int(numpy.floor(nodey[n])),zIn=int(numpy.floor(nodez[n])))
+			xs = xs[~numpy.isnan(xs)]
+			ys = ys[~numpy.isnan(ys)]
+			zs = zs[~numpy.isnan(zs)]
+			countVar = 0
+			while countVar < len(xs):
+				if inObstacle == 1:
+					nodex[n] = nodex[int(nodeParent[n])]
+					nodey[n] = nodey[int(nodeParent[n])]
+					nodez[n] = nodez[int(nodeParent[n])]
+					break
+				if obstacle[int(numpy.ceil(xs[countVar])),int(numpy.ceil(ys[countVar])),int(numpy.ceil(zs[countVar]))] == 1:
+					inObstacle = 1
 
 
-
+				countVar = countVar + 1
 
 		n = n + 1
 
@@ -171,7 +188,6 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 	points_fine = curve.evaluate_multi(t_fine)
 	#display spline on graph
 	plt.plot(*points_fine, lw = 3, color = [1,0.1,0.1])
-
 
 	#return (solnChain, xsoln, ysoln, zsoln) 
 	#plt.pause(10)
