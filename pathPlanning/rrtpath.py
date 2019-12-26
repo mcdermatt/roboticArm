@@ -6,8 +6,9 @@ from time import sleep
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 import bezier
 
-#import scipy as sp
-#import scipy.interpolate
+#to do
+#make graphical output optional
+#dynamically check linkage position for collision detection- make changes to obstacle
 	
 def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obstacle=[]):
 	fig = plt.figure()
@@ -49,56 +50,6 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 	nodey[0] = ystart
 	nodez[0] = zstart
 
-	#set up obstacles - read in as 3d grid representing search space. if xyz cordinate is 1, it is obstacle
-	cloudDensity = 2
-	i = xMax*cloudDensity
-	j = yMax*cloudDensity
-	k = zMax*cloudDensity
-	obstacle = numpy.zeros((i,j,k))
-
-	#add arbitrary obstacles for testing ----------------------------------------
-	x1 = 7
-	y1 = 5
-	z1 = 3
-	while x1 < 13:
-		while y1 < 13:
-			while z1 < 18:
-				obstacle[x1,y1,z1] = 1
-				#display obstacle on graph
-				#obsPoint = ax.plot([x1],[y1],[z1], '.', lw = 5, color = [ 0.7, 0.5, 0.5])
-				#plt.draw()
-				z1 = z1 + 1
-			z1 = 3
-			y1 = y1 + 1
-		y1 = 5
-		x1 = x1 + 1
-
-	#draw prism surrounding point cloud rather than drawing points individually
-	cube_definition1 = [(7,5,3), (7,12,3), (12,5,3), (7,5,17)]
-	plot_cube(cube_definition1,ax)
-
-	x2 = 11
-	y2 = 0
-	z2 = 10
-	while x2 < 16:
-		while y2 < 5:
-			while z2 < 15:
-				obstacle[x2,y2,z2] = 1
-				#display obstacle on graph
-				#obsPoint = ax.plot([x2],[y2],[z2], '.', lw = 5, color = [ 0.7, 0.5, 0.5])
-				#plt.draw()
-				z2 = z2 + 1
-			z2 = 10
-			y2 = y2 + 1
-		y2 = 0
-		x2 = x2 + 1
-
-	#draw prism surrounding point cloud rather than drawing points individually
-	cube_definition2 = [(11,0,10), (11,4,10), (15,0,10), (11,0,14)]
-	plot_cube(cube_definition2,ax)
-
-	#print(obstacle)
-	#-----------------------------------------------------------------------------
 
 	#debug
 	nodeParent[2] = 1
@@ -113,10 +64,6 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 		print('randomly chosen point: ', pt)
 
 		#check if point is in obstacle
-
-
-
-
 		mindist = 1000
 		#finds closest existing node to new random point
 		nodecheck = 0
@@ -225,7 +172,8 @@ def rrtpath(xstart=1,ystart=1,zstart=1,xend=15,yend=15,zend=15,fidelity=300,obst
 
 
 	#return (solnChain, xsoln, ysoln, zsoln) 
-	return(points_fine)
+	#plt.pause(10)
+	return(points_fine,ax)
 
 #def isInside()
 
