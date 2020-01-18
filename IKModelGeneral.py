@@ -5,10 +5,7 @@ import numpy
 from time import sleep
 
 #Inverse Kinematic Model for shoulder to writ for Compliant Arm mk7
-
-
 def cartesian_to_spherical(x,y,z):
-	
 	r = numpy.sqrt((x*x)+(y*y)+(z*z))
 	phi = numpy.arctan2((numpy.sqrt((x  * x) + (y * y))), z )
 	theta = numpy.arctan2(y, x)

@@ -13,15 +13,15 @@ l1m = 3.07 #kg was 3.07
 l1com = 0.0729 #m from center of rotation
 l1 = 0.1651
 l1cpr = 90
-l1reduction = 9
+l1reduction = 6 #was 9, switched to og opentorque for less friction
 l1kv = 16
 #beta1 = 0
-beta1 = -0.025 #to do- make beta a function motor velocity to cancel out inertia?
+beta1 = -0.000005 #to do- make beta a function motor velocity to cancel out inertia? was -0.025 with 9:1
 serial1 = "2084377D3548"
 
 #l2- elbow
-l2m = 2.6 #kg was 1.85, moved up to compensate for wrist?
-l2com = 0.1893 #m
+l2m = 3 #kg was 1.85, moved up to compensate for wrist? was 2.6 before end effector
+l2com = 0.25 #m was 0.1893 moved up to compensate for wrist and end effector
 l2cpr = 8192 
 l2reduction = 6
 l2kv = 100

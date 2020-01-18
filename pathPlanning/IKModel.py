@@ -4,7 +4,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy
 from time import sleep
 
-def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=2*numpy.pi*float(numpy.random.rand(1)),wPhi=2*numpy.pi*float(numpy.random.rand(1))):
+def IKModel(path,ax,xIn=0,yIn=0,zIn=0,wTheta=numpy.pi,wPhi=-numpy.pi/2): #wTheta=2*numpy.pi*float(numpy.random.rand(1)),wPhi=2*numpy.pi*float(numpy.random.rand(1))
 
 	l1 = 0.40625*25.4 # upper arm
 	l2 = 0.59375*25.4 # lower arm l1+l2=1, easiest if upper and lower arm are same length
