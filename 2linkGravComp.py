@@ -16,12 +16,12 @@ l1cpr = 90
 l1reduction = 6 #was 9, switched to og opentorque for less friction
 l1kv = 16
 #beta1 = 0
-beta1 = -0.000005 #to do- make beta a function motor velocity to cancel out inertia? was -0.025 with 9:1
+beta1 = -0.025 #to do- make beta a function motor velocity to cancel out inertia? was -0.025 with 9:1
 serial1 = "2084377D3548"
 
 #l2- elbow
-l2m = 3 #kg was 1.85, moved up to compensate for wrist? was 2.6 before end effector
-l2com = 0.25 #m was 0.1893 moved up to compensate for wrist and end effector
+l2m = 3.1 #kg was 1.85, moved up to compensate for wrist? was 2.6 before end effector
+l2com = 0.30 #m was 0.1893 moved up to compensate for wrist and end effector
 l2cpr = 8192 
 l2reduction = 6
 l2kv = 100
@@ -38,8 +38,10 @@ while od2.axis0.current_state != AXIS_STATE_IDLE:
 
 od2.axis0.controller.config.control_mode = 1
 od2.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
-print("move elbow to position")
+print("move elbow to vertical position")
 time.sleep(2)
+j2offset = od2.axis0.encoder.pos_estimate
+
 
 od1 = odrive.find_any(serial_number=serial1)
 print("calibrating odrive1")
@@ -49,8 +51,9 @@ while od1.axis0.current_state != AXIS_STATE_IDLE:
 
 od1.axis0.controller.config.control_mode = 1
 od1.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
-print("move shoulder to position")
+print("move shoulder to vertical position")
 time.sleep(2)
+j1offset = od1.axis0.encoder.pos_estimate
 
 theta2 = 0
 theta1 = 0
@@ -58,9 +61,9 @@ theta2eff = 0
 
 while True:
 	#get joint angle and velocity
-	pos2 = od2.axis0.encoder.pos_estimate
+	pos2 = od2.axis0.encoder.pos_estimate - j2offset
 	vel2 = od2.axis0.encoder.vel_estimate
-	pos1 = od1.axis0.encoder.pos_estimate
+	pos1 = od1.axis0.encoder.pos_estimate - j1offset
 	vel1 = od1.axis0.encoder.vel_estimate
 
 	#zero position is straight up
