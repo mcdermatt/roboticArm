@@ -16,7 +16,7 @@ while count < 100:
 	count += 1
 np.savetxt('armPath.txt',arr)
 loadedArray = np.loadtxt('armPath.txt',dtype=float)
-
+	
 # loadedArray = np.append(loadedArray,[[1,1,1]],axis=0)
 # np.savetxt('armPath.txt',loadedArray)
 count2 = 0

@@ -1,14 +1,18 @@
-from __future__ import print_function	
+from __future__ import print_function
 import odrive
 from odrive.enums import*
 import time
 import math
 import numpy as np
+import keyboard
+import matplotlib.pyplot as plt
 
 #system parameters
 
 #l0- shoulder side/side
 serial0 = "206A337B304B"
+l0cpr = 90
+l0reduction = 6
 
 #l1- shoulder up/down
 l1m = 3.07 #kg was 3.07
@@ -75,67 +79,136 @@ theta2eff = 0
 
 recording = 0
 
+print("press q to teach sequence. press w to stop teaching sequence. press f to quit")
+recording = 0
+simulating = 0
+
 while True:
 	#get joint angle and velocity
 	pos2 = od2.axis0.encoder.pos_estimate - j2offset
 	vel2 = od2.axis0.encoder.vel_estimate
 	pos1 = od1.axis0.encoder.pos_estimate - j1offset
 	vel1 = od1.axis0.encoder.vel_estimate
-	pos0 = od0.axis0.encoder.pos_estimate = j0offset
-	vel0 = od0.axis0.encdoer.vel_estimate
+	pos0 = od0.axis0.encoder.pos_estimate - j0offset
+	vel0 = od0.axis0.encoder.vel_estimate
 	
 	#zero position is straight up
 	theta2 = (2 * np.pi * pos2) / (l2cpr * l2reduction)
 	theta1 = (2 * np.pi * pos1) / (l1cpr * l1reduction)
+	theta0 = (2 * np.pi * pos0) / (l0cpr * l0reduction)
 	theta2eff = theta2 + theta1
 
 	force2 = (l2m*9.81*l2com*np.sin(theta2eff) / l2reduction) + beta2*vel2
-
 	currentSetpoint2 = (-1 * force2 * l2kv) / 8.27
 	od2.axis0.controller.current_setpoint = currentSetpoint2
-
 	time.sleep(0.01)
-
 	measuredCurrent2 = od2.axis0.motor.current_meas_phB
-
 	
 	force1 = (l1m*9.81*l1com*np.sin(theta1)) + (l2m*9.81*(l1*np.sin(theta1)+l2com*np.sin(theta2eff))) + beta1*vel1
 	currentSetpoint1 = (-1 * l1kv*force1)/(8.27*l1reduction)
 	measuredCurrent1 = od1.axis0.motor.current_control.Iq_measured
-
 	od1.axis0.controller.current_setpoint = currentSetpoint1
-
-
 	error1 = od1.axis0.error
-
-
 	#print("Theta2eff: ",theta2eff,"   Theta1: ", theta1," CSJ2: ", currentSetpoint2, " CSJ1: ", currentSetpoint1, " CMJ1: ", measuredCurrent1, error1)
- 	
- 	#keyboard interrupt to record position 
- 	if key == ord(s) :
- 		#get current angles of each joint
- 		
- 		
- 		#append to array
+	
+	#manually moving arm through range of motion to be recorded
+	if recording == 1:
+		#arr = [[theta0, theta1, theta2]]
+		loadedArray = np.genfromtxt('armPath.txt',delimiter=" ")
+		currPos = [[theta0,theta1,theta2]]
+		print(currPos)
+		loadedArray = np.append(loadedArray,currPos,axis=0)
+		np.savetxt('armPath.txt',loadedArray)
 
- 		#save array to external file?
+	if simulating == 1:
 
- 		#continue with grav comp until next keypress
+		#calculate x y and z elbow and wrist
+		l1sim = 0.40625*25.4 # upper arm
+		l2sim = 0.59375*25.4 # lower arm l1+l2=1, easiest if upper and lower arm are same length
+		#l3sim = 0.375*25.4 #wrist to end effector
+		xElbow = ( l1sim * np.cos(theta0)*np.sin(theta1))
+		yElbow = ( l1sim * np.sin(theta0)*np.sin(theta1))
+		zElbow = ( l1sim * np.cos(theta1))
+
+		xWrist = xElbow + l2sim*np.cos(theta1-theta2)*np.cos(theta0)
+		yWrist = yElbow + l2sim*np.cos(theta1-theta2)*np.sin(theta0)
+		zWrist = zElbow + l2sim*np.sin(theta1-theta2)
+
+		#draw link1 and link2
+		xpts = [0,xElbow,xWrist]
+		ypts = [0,yElbow,yWrist]
+		zpts = [0,zElbow,zWrist]
+
+		lineOfArm = ax.plot(xpts,ypts,zpts, 'o-', mec = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], mew = 5, lw = 10)
+		plt.draw()
+		plt.pause(0.05)
+		lineOfArm.remove()
 
 
- 	#alternate keyboard interrupt to end hand guided sequence
- 	if key == ord(q):
- 		#slowly power down each joint
- 		while currentSetpoint1 > 3 || currentSetpoint2 > 5:
- 			currentSetpoint1 = 0.99 * currentSetpoint1
- 			currentSetpoint2 = 0.99 * currentSetpoint2
- 			time.sleep(0.1)
- 		currentSetpoint1 = 0
- 		currentSetpoint2 = 0
- 		od0.reboot()
- 		od1.reboot()
- 		od2.reboot()
 
+
+	#keyboard interrupt to record position 
+	try:
+		if keyboard.is_pressed('q'):
+			print("recording path sequence")
+			recording = 1
+			arr = [[theta0,theta1,theta2],[theta0,theta1,theta2]]
+			np.savetxt('armPath.txt',arr)
+	except:
+		pass
+
+	try:
+		if keyboard.is_pressed('w'):
+			recording = 0
+			print("stopping recording")
+			print("Press q to teach sequence. Press s to simulate. Press f to quit")
+	except:
+		pass
+	#	break
+
+	try: 
+		if keyboard.is_pressed('s'):
+			simulating = 1
+			print("starting simulation")
+			fig = plt.figure()
+			ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
+			ax.grid(False)
+
+			plt.xlabel("x",fontdict=None,labelpad=None)
+			plt.ylabel("y",fontdict=None,labelpad=None)
+			#plt.zlabel("z",fontdict=None,labelpad=None)
+			ax.set_xlabel('x')
+			ax.set_ylabel('y')
+			ax.set_zlabel('z')
+			plt.draw()
+			plt.pause(0.5)
+			plt.cla()
+			ax.grid(False)
+			ax.set_xlim(0,20)
+			ax.set_ylim(0,20)
+			ax.set_zlim(0,20)
+	except:
+		pass
+
+
+	#alternate keyboard interrupt to end hand guided sequence
+	try:
+		if keyboard.is_pressed('f'):
+			print("powering down")
+			#slowly power down each joint
+			while currentSetpoint1 > 3:
+				currentSetpoint1 = 0.99 * currentSetpoint1
+				currentSetpoint2 = 0.99 * currentSetpoint2
+				time.sleep(0.1)
+			currentSetpoint1 = 0
+			currentSetpoint2 = 0
+			od0.reboot()
+			od1.reboot()
+			od2.reboot()
+			break
+	except:
+		pass
+		#break
 	time.sleep(0.01)
 
 
