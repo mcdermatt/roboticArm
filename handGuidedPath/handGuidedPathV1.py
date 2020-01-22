@@ -38,10 +38,11 @@ od0.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
 while od0.axis0.current_state != AXIS_STATE_IDLE:
 	time.sleep(0.1)
 
-od0.axis0.controller.config.control_mode = 3
+od0.axis0.controller.config.control_mode = 1
 od0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
-print("j0 calibrated")
+print("rotate shoulder away from work station")
 time.sleep(1)
+j0offset = od0.axis0.encoder.pos_estimate
 
 od2 = odrive.find_any(serial_number=serial2)
 print("calibrating odrive2")
@@ -80,7 +81,9 @@ while True:
 	vel2 = od2.axis0.encoder.vel_estimate
 	pos1 = od1.axis0.encoder.pos_estimate - j1offset
 	vel1 = od1.axis0.encoder.vel_estimate
-
+	pos0 = od0.axis0.encoder.pos_estimate = j0offset
+	vel0 = od0.axis0.encdoer.vel_estimate
+	
 	#zero position is straight up
 	theta2 = (2 * np.pi * pos2) / (l2cpr * l2reduction)
 	theta1 = (2 * np.pi * pos1) / (l1cpr * l1reduction)
