@@ -6,9 +6,28 @@ import math
 import numpy as np
 import keyboard
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+#get simulation plot running in background
+fig = plt.figure()
+ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
+ax.grid(False)
+
+plt.xlabel("x",fontdict=None,labelpad=None)
+plt.ylabel("y",fontdict=None,labelpad=None)
+#plt.zlabel("z",fontdict=None,labelpad=None)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+plt.draw()
+plt.pause(0.5)
+plt.cla()
+ax.grid(False)
+ax.set_xlim(0,20)
+ax.set_ylim(0,20)
+ax.set_zlim(0,20)
 
 #system parameters
-
 #l0- shoulder side/side
 serial0 = "206A337B304B"
 l0cpr = 90
@@ -126,22 +145,22 @@ while True:
 		l1sim = 0.40625*25.4 # upper arm
 		l2sim = 0.59375*25.4 # lower arm l1+l2=1, easiest if upper and lower arm are same length
 		#l3sim = 0.375*25.4 #wrist to end effector
-		xElbow = ( l1sim * np.cos(theta0)*np.sin(theta1))
-		yElbow = ( l1sim * np.sin(theta0)*np.sin(theta1))
+		xElbow = ( l1sim * np.sin(theta0)*np.sin(theta1))
+		yElbow = ( l1sim * np.cos(theta0)*np.sin(theta1))
 		zElbow = ( l1sim * np.cos(theta1))
 
-		xWrist = xElbow + l2sim*np.cos(theta1-theta2)*np.cos(theta0)
-		yWrist = yElbow + l2sim*np.cos(theta1-theta2)*np.sin(theta0)
-		zWrist = zElbow + l2sim*np.sin(theta1-theta2)
+		xWrist = xElbow + l2sim*np.cos(np.pi/2-(theta1+theta2))*np.sin(theta0)
+		yWrist = yElbow + l2sim*np.cos(np.pi/2-(theta1+theta2))*np.cos(theta0)
+		zWrist = zElbow + l2sim*np.sin(np.pi/2-(theta1+theta2))
 
 		#draw link1 and link2
 		xpts = [0,xElbow,xWrist]
 		ypts = [0,yElbow,yWrist]
 		zpts = [0,zElbow,zWrist]
 
-		lineOfArm = ax.plot(xpts,ypts,zpts, 'o-', mec = [abs(numpy.cos(phi)),abs(numpy.sin(phi)),.25], mew = 5, lw = 10)
+		lineOfArm, = ax.plot(xpts,ypts,zpts, 'o-', color = [0.5,0.5,1], mec = [0.5,0.5,0.5], mew = 5, lw = 10)
 		plt.draw()
-		plt.pause(0.05)
+		plt.pause(0.01)
 		lineOfArm.remove()
 
 
@@ -170,23 +189,6 @@ while True:
 		if keyboard.is_pressed('s'):
 			simulating = 1
 			print("starting simulation")
-			fig = plt.figure()
-			ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=False)
-			ax.grid(False)
-
-			plt.xlabel("x",fontdict=None,labelpad=None)
-			plt.ylabel("y",fontdict=None,labelpad=None)
-			#plt.zlabel("z",fontdict=None,labelpad=None)
-			ax.set_xlabel('x')
-			ax.set_ylabel('y')
-			ax.set_zlabel('z')
-			plt.draw()
-			plt.pause(0.5)
-			plt.cla()
-			ax.grid(False)
-			ax.set_xlim(0,20)
-			ax.set_ylim(0,20)
-			ax.set_zlim(0,20)
 	except:
 		pass
 
