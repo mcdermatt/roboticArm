@@ -18,7 +18,7 @@ l1cpr = 90
 l1reduction = 6 #was 9, switched to og opentorque for less friction
 l1kv = 16
 #beta1 = 0
-beta1 = -0.025 #to do- make beta a function motor velocity to cancel out inertia? was -0.025 with 9:1
+beta1 = -0.025 #to do- make beta a function of motor velocity to cancel out inertia? was -0.025 with 9:1
 serial1 = "2084377D3548"
 
 #l2- elbow
@@ -71,6 +71,8 @@ j1offset = od1.axis0.encoder.pos_estimate
 theta2 = 0
 theta1 = 0
 theta2eff = 0
+
+recording = 0
 
 while True:
 	#get joint angle and velocity
