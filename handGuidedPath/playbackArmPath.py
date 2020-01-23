@@ -66,19 +66,55 @@ print("move arm to downward resting position")
 time.sleep(3)
 
 #sets j0 to reference tracking position control (PID)
-od0.axis0.controller.config.control_mode = 3
+#od0.axis0.controller.config.control_mode = 3
 
 
 pathArr = np.genfromtxt('armPath.txt',delimiter=" ")
 
 #raise arm from horizontal position to starting position
 
+
 i = 0
 while i < len(pathArr):
 
+	#get goal angles
 	theta0Goal = pathArr[i,0]
 	theta1Goal = pathArr[i,1]
 	theta2Goal = pathArr[i,2]
+
+	#convert to current setpoints for j1, j2
+
+	#convert to position setpoint for j0
+
+	#get actual position and velocity of actuator encoders
+	pos2 = od2.axis0.encoder.pos_estimate #- j2offset # assumes arm had been zeroed properly in handGuidedPath.py
+	#vel2 = od2.axis0.encoder.vel_estimate
+	pos1 = od1.axis0.encoder.pos_estimate #- j1offset
+	#vel1 = od1.axis0.encoder.vel_estimate
+	pos0 = od0.axis0.encoder.pos_estimate #- j0offset
+	#vel0 = od0.axis0.encoder.vel_estimate
+
+	#convert encoder positions to joint angles
+	theta0Actual = pos0*
+	theta1Actual = pos1*
+	theta2Actual = pos2*
+
+	#displays actual position of arm
+	xElbowActual = ( l1sim * np.sin(theta0Actual)*np.sin(theta1Actual))
+	yElbowActual = ( l1sim * np.cos(theta0Actual)*np.sin(theta1Actual))
+	zElbowActual = ( l1sim * np.cos(theta1Actual))
+	xWristActual = xElbowActual + l2sim*np.cos(np.pi/2-(theta1Actual+theta2Actual))*np.sin(theta0Actual)
+	yWristActual = yElbowActual + l2sim*np.cos(np.pi/2-(theta1Actual+theta2Actual))*np.cos(theta0Actual)
+	zWristActual = zElbowActual + l2sim*np.sin(np.pi/2-(theta1Actual+theta2Actual))
+
+	#draw simulated link1 and link2 of real position
+	xptsActual = [0,xElbowActual,xWristActual]
+	yptsActual = [0,yElbowActual,yWristActual]
+	zptsActual = [0,zElbowActual,zWristActual]
+	
+	lineOfArmActual, = ax.plot(xptsActual,yptsActual,zptsActual, 'o-', color = [1,0.5,0.5], mec = [0.5,0.5,0.5], mew = 5, lw = 5)
+
+	#displays simulated ideal position of arm
 	xElbowGoal = ( l1sim * np.sin(theta0Goal)*np.sin(theta1Goal))
 	yElbowGoal = ( l1sim * np.cos(theta0Goal)*np.sin(theta1Goal))
 	zElbowGoal = ( l1sim * np.cos(theta1Goal))
@@ -86,7 +122,7 @@ while i < len(pathArr):
 	yWristGoal = yElbowGoal + l2sim*np.cos(np.pi/2-(theta1Goal+theta2Goal))*np.cos(theta0Goal)
 	zWristGoal = zElbowGoal + l2sim*np.sin(np.pi/2-(theta1Goal+theta2Goal))
 
-	#draw link1 and link2
+	#draw simulated link1 and link2
 	xptsGoal = [0,xElbowGoal,xWristGoal]
 	yptsGoal = [0,yElbowGoal,yWristGoal]
 	zptsGoal = [0,zElbowGoal,zWristGoal]
@@ -95,6 +131,7 @@ while i < len(pathArr):
 	plt.draw()
 	plt.pause(0.01)
 	lineOfArmGoal.remove()
+	lineOfArmActual.remove()
 
 	time.sleep(0.01)
 	i += 1
