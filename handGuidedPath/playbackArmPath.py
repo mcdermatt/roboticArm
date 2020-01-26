@@ -53,38 +53,50 @@ l2kv = 100
 beta2 = -0.000005
 serial2 = "205737993548"
 
+#lengths in visual simulation are scaled up from those used in current setpoint calculations
 l1sim = 0.40625*25.4 # upper arm
 l2sim = 0.59375*25.4 # lower arm
 
-# od0 = odrive.find_any(serial_number=serial0)
-# od2 = odrive.find_any(serial_number=serial2)
-# od1 = odrive.find_any(serial_number=serial1)
+print("finding odrive0")
+od0 = odrive.find_any(serial_number=serial0)
+print("finding odrive2")
+od2 = odrive.find_any(serial_number=serial2)
+print("finding odrive1")
+od1 = odrive.find_any(serial_number=serial1)
 
 #arm moves through pre-recorded sequence
 print("WARNING PROGRAM ASSUMES ARM IS CALIBRATED TO VERTICAL POSITION")
 print("move arm to downward resting position")
-time.sleep(3)
+time.sleep(5)
+print("press q for ESTOP")
+time.sleep(1)
 
 #sets j0 to reference tracking position control (PID)
-#od0.axis0.controller.config.control_mode = 3
+od0.axis0.controller.config.control_mode = 3
 
+#all axis enter closed loop control
+od0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+od1.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+od2.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 
 pathArr = np.genfromtxt('armPath.txt',delimiter=" ")
 
 #raise arm from horizontal position to starting position
 
-
+estop = 0 #emergency stop- needs improvements for safety
 i = 0
 while i < len(pathArr):
+
+	if estop == 1:
+		od0.reboot()
+		od1.reboot()
+		od2.reboot()
 
 	#get goal angles
 	theta0Goal = pathArr[i,0]
 	theta1Goal = pathArr[i,1]
 	theta2Goal = pathArr[i,2]
-
-	#convert to current setpoints for j1, j2
-
-	#convert to position setpoint for j0
+	theta2effGoal = theta1Goal + theta2Goal
 
 	#get actual position and velocity of actuator encoders
 	pos2 = od2.axis0.encoder.pos_estimate #- j2offset # assumes arm had been zeroed properly in handGuidedPath.py
@@ -95,9 +107,27 @@ while i < len(pathArr):
 	#vel0 = od0.axis0.encoder.vel_estimate
 
 	#convert encoder positions to joint angles
-	theta0Actual = pos0*
-	theta1Actual = pos1*
-	theta2Actual = pos2*
+	theta2Actual = (2 * np.pi * pos2) / (l2cpr * l2reduction)
+	theta1Actual = (2 * np.pi * pos1) / (l1cpr * l1reduction)
+	theta0Actual = (2 * np.pi * pos0) / (l0cpr * l0reduction)
+	theta2effActual = theta2Actual + theta1Actual
+
+	#convert to current setpoints for j1, j2
+	force2 = (l2m*9.81*l2com*np.sin(theta2effGoal) / l2reduction) #+ beta2*vel2
+	currentSetpoint2 = (-1 * force2 * l2kv) / 8.27
+	od2.axis0.controller.current_setpoint = currentSetpoint2
+	#time.sleep(0.01)
+	measuredCurrent2 = od2.axis0.motor.current_meas_phB
+	
+	force1 = (l1m*9.81*l1com*np.sin(theta1Goal)) + (l2m*9.81*(l1*np.sin(theta1Goal)+l2com*np.sin(theta2effGoal))) #+ beta1*vel1
+	currentSetpoint1 = (-1 * l1kv*force1)/(8.27*l1reduction)
+	measuredCurrent1 = od1.axis0.motor.current_control.Iq_measured
+	od1.axis0.controller.current_setpoint = currentSetpoint1
+	error1 = od1.axis0.error
+
+	#convert to position setpoint for j0
+	j0encoderGoal = (theta0Goal * l0cpr * l0reduction) / (np.pi * 2)
+	od0.axis0.controller.pos_setpoint = j0encoderGoal
 
 	#displays actual position of arm
 	xElbowActual = ( l1sim * np.sin(theta0Actual)*np.sin(theta1Actual))
@@ -136,3 +166,13 @@ while i < len(pathArr):
 	time.sleep(0.01)
 	i += 1
 
+	try: 
+		if keyboard.is_pressed('q'):
+			estop = 1
+			print("ESTOP HIT")
+	except:
+		pass
+
+od0.axis0.requested_state = AXIS_STATE_IDLE
+od1.axis0.requested_state = AXIS_STATE_IDLE
+od2.axis0.requested_state = AXIS_STATE_IDLE

@@ -204,9 +204,9 @@ while True:
 				time.sleep(0.1)
 			currentSetpoint1 = 0
 			currentSetpoint2 = 0
-			od0.reboot()
-			od1.reboot()
-			od2.reboot()
+			od0.axis0.requested_state = AXIS_STATE_IDLE
+			od1.axis0.requested_state = AXIS_STATE_IDLE
+			od2.axis0.requested_state = AXIS_STATE_IDLE
 			break
 	except:
 		pass
