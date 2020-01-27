@@ -17,53 +17,88 @@ l2 = l1 #forearm
 
 def cartesian_to_spherical(x,y,z):
     
+    # r = numpy.sqrt((x*x)+(y*y)+(z*z))
+    # phi = numpy.arctan2((numpy.sqrt((x  * x) + (z * z))), y )
+    # theta = numpy.arctan2(z, x)
+    # return (r,phi,theta)
     r = numpy.sqrt((x*x)+(y*y)+(z*z))
-    phi = numpy.arctan2((numpy.sqrt((x  * x) + (z * z))), y )
-    theta = numpy.arctan2(z, x)
+    phi = numpy.arctan2((numpy.sqrt((x  * x) + (y * y))), z )
+    theta = numpy.arctan2(y, x)
     return (r,phi,theta)
 
 def get_joint_angles(x,y,z):
     
     (r,phi,theta) = cartesian_to_spherical(x,y,z)
     
-    #elbow
-    a2 = numpy.arcsin(r/(2*l1))
+    l0=0.25 #shoulder offset
+    l1 = 9.5 #upper arm
+    l2 = l1 #forearm
+
+    # #elbow
+    # a2 = numpy.arcsin(r/(2*l1))
     
+    # #shoulder side to side
+    # a0 = theta
+    
+    # #shoulder up down
+    # a1 = phi - (numpy.pi-(a2 / 2))
+    #elbow
+    a2 = numpy.arccos(((l1*l1)+(l2*l2)-(r*r))/(-2*l1*l2))
     #shoulder side to side
     a0 = theta
-    
     #shoulder up down
-    a1 = phi - (numpy.pi-(a2 / 2))
+    a1 = numpy.pi + phi + numpy.arccos(((l1*l1)-(l2*l2)+(r*r))/(-2*l1*r))
     
     return(a0,a1,a2)
 
-def get_elbow_pos(a0,a1,a2):
+def get_elbow_pos(x,y,z):
+    
+    # xElbow = ( l1 * numpy.cos(a0)*numpy.sin(a1))
+    # yElbow = ( l1 * numpy.sin(a0)*numpy.sin(a1))
+    # zElbow = ( l1 * numpy.cos(a0))
+    
+    # return (xElbow, yElbow, zElbow)
+    l0 = 0.25 #shoulder offset
+    l1 = 9.5 #upper arm
+    l2 = l1 #forearm
+
+    (r, phi, theta) = cartesian_to_spherical(x,y,z)
+    (a0,a1,a2) = get_joint_angles(x,y,z)
     
     xElbow = ( l1 * numpy.cos(a0)*numpy.sin(a1))
     yElbow = ( l1 * numpy.sin(a0)*numpy.sin(a1))
-    zElbow = ( l1 * numpy.cos(a0))
+    zElbow = ( l1 * numpy.cos(a1))
     
     return (xElbow, yElbow, zElbow)
 
 def get_l3_pos(x,y,z):
     
-    a0,a1,a2 = get_joint_angles(x,y,z)
-    xElbow,yElbow,zElbow = get_elbow_pos(a0,a1,a2)
+    # a0,a1,a2 = get_joint_angles(x,y,z)
+    # xElbow,yElbow,zElbow = get_elbow_pos(a0,a1,a2)
     
-    if xElbow > 0:
-        xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
-    else:
-        xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
+    # if xElbow > 0:
+    #     xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
+    # else:
+    #     xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
         
-    yl3 = (zElbow + (7 * numpy.cos(a1)))
+    # yl3 = (zElbow + (7 * numpy.cos(a1)))
     
-    if zElbow > 0:
-        zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
-    else: 
-        zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
+    # if zElbow > 0:
+    #     zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
+    # else: 
+    #     zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
 
     
-    return (xl3,yl3,zl3)  
+    # return (xl3,yl3,zl3)  
+    r,phi,theta = cartesian_to_spherical(x,y,z)
+    a0,a1,a2 = get_joint_angles(x,y,z)
+    xElbow,yElbow,zElbow = get_elbow_pos(a0,a1,a2)
+        
+    xl3 = r*numpy.cos(theta)*numpy.sin(phi)     
+    yl3 = r*numpy.sin(theta)*numpy.sin(phi) 
+    zl3 = r*numpy.cos(phi)
+    
+    return (xl3,yl3,zl3)
     
     
 
@@ -73,9 +108,16 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 #ENTER DESIRED POSITION HERE----------------------------------------------
-(A0,A1,A2) = get_joint_angles(-6,-6,6)
-(xElb,yElb,zElb) = get_elbow_pos(A0,A1,A2)
-(xl3,yl3,zl3) = get_l3_pos(-6,-6,6)
+xgoal = 0
+ygoal = -10
+zgoal = 5
+
+goals = [xgoal,ygoal,zgoal]
+print(goals)
+
+(A0,A1,A2) = get_joint_angles(xgoal,ygoal,zgoal)
+(xElb,yElb,zElb) = get_elbow_pos(xgoal,ygoal,zgoal)
+(xl3,yl3,zl3) = get_l3_pos(xgoal,ygoal,zgoal)
 
 print("xElb func: ", xElb,yElb,zElb)
 print("actual elbow: ", (9.5*numpy.cos(A0)*numpy.sin(A1)))
@@ -106,7 +148,8 @@ lightfv = ctypes.c_float * 4
 def on_resize(width, height):
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(50., float(width)/height, 1., 100.)
+    gluPerspective(50., float(width)/height, 1., 100.) #change first argument for fov
+    glTranslated(0,-5,-30) #fits arm into camera view
     glMatrixMode(GL_MODELVIEW)
     return True
 
@@ -118,54 +161,55 @@ def on_draw():
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
 
-    draw_link0(link0, 0, 0, -30)
-    draw_link1(link1, 0, 0, -30)
-    draw_link2(link2, xElb, yElb, zElb-30)
-    draw_link3(link3, xl3, yl3, zl3-30)
-    #    draw_box(box3, 4.0, 2.0)
+    draw_link0(link0, 0, 0, 0, link0Rot)
+    draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
+    draw_link2(link2, yElb, zElb, xElb, link0Rot, link1Rot, link2Rot)
+    draw_link3(link3, yl3, zl3, xl3, link0Rot, link1Rot, link2Rot,rotation)
 
-#    draw_box(box4, -4.0, -2.0)
-#    draw_box(box5, 0.0, -2.0)
-#    draw_box(box6, 4.0, -2.0)
-
-
-def draw_link0(link, x, y, z):
+def draw_link0(link, x, y, z, link0Rot):
     glLoadIdentity()
-    glTranslated(x, y, z)
+    glMatrixMode(GL_MODELVIEW)
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
+    glTranslated(x, y, z)
 #    glRotatef(-25.0, 1.0, 0.0, 0.0)
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
     visualization.draw(link)
 
-def draw_link1(link, x, y, z):
+def draw_link1(link, x, y, z,link0Rot, link1Rot):
     glLoadIdentity()
-    glTranslated(x, y, z)
+    glMatrixMode(GL_MODELVIEW)
+    #glRotatef(180,0,1,0) #flips l1 around so it isnt bending backwards
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
     glRotatef(link1Rot, 1.0, 0.0 , 0.0)
+    #glTranslated(x, y, z) # link 1 does not translate about workspace, only pivots on shoulder base
 #    glRotatef(-25.0, 1.0, 0.0, 0.0)
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
     visualization.draw(link)
     
-def draw_link2(link, x, y, z):
+def draw_link2(link, x, y, z, link0Rot, link1Rot, link2Rot):
     glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
     glTranslated(x, y, z)
+    #print("link0Rot: ", link0Rot, " Link1Rot: ", link1Rot, " Link2Rot: ", link2Rot)
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
     glRotatef(link1Rot, 1.0, 0.0 , 0.0)
-    glRotatef(link2Rot, -1.0, 0.0, 0.0)
+    glRotatef(link2Rot, 1.0, 0.0, 0.0)
+    
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
     visualization.draw(link)
     
-def draw_link3(link, x, y, z):
+def draw_link3(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
     glTranslated(x, y, z)
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
     glRotatef(link1Rot, 1.0, 0.0 , 0.0)
-    glRotatef(270 + link2Rot, -1.0, 0.0, 0.0)
-    glRotatef(rotation,0.0,0.0,1.0)
+    glRotatef(link2Rot + 90, 1.0, 0.0, 0.0)
+    # glRotatef(rotation,0.0,0.0,1.0)
+    
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
     visualization.draw(link)
