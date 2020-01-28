@@ -3,6 +3,9 @@ from pyglet.gl import *
 from pyglet.window import key
 from pywavefront import visualization, Wavefront
 import numpy
+#from euclid import *
+#import pyrr
+
 
 #game plan:
 #   1: convert x,y,z to spherical coordinates
@@ -73,32 +76,33 @@ def get_elbow_pos(x,y,z):
 
 def get_l3_pos(x,y,z):
     
-    # a0,a1,a2 = get_joint_angles(x,y,z)
-    # xElbow,yElbow,zElbow = get_elbow_pos(a0,a1,a2)
-    
-    # if xElbow > 0:
-    #     xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
-    # else:
-    #     xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
-        
-    # yl3 = (zElbow + (7 * numpy.cos(a1)))
-    
-    # if zElbow > 0:
-    #     zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
-    # else: 
-    #     zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
-
-    
-    # return (xl3,yl3,zl3)  
-    r,phi,theta = cartesian_to_spherical(x,y,z)
     a0,a1,a2 = get_joint_angles(x,y,z)
     xElbow,yElbow,zElbow = get_elbow_pos(a0,a1,a2)
-        
-    xl3 = r*numpy.cos(theta)*numpy.sin(phi)     
-    yl3 = r*numpy.sin(theta)*numpy.sin(phi) 
-    zl3 = r*numpy.cos(phi)
     
-    return (xl3,yl3,zl3)
+    if xElbow > 0:
+        xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
+    else:
+        xl3 = (xElbow + (7 * numpy.cos(a1)*numpy.sin(a0)))
+        
+    yl3 = (zElbow + (7 * numpy.cos(a1)))
+    
+    if zElbow > 0:
+        zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
+    else: 
+        zl3 = (yElbow + (7 * numpy.sin(a1)*numpy.sin(a0)))
+
+    
+    return (xl3,yl3,zl3)  
+   
+    # r,phi,theta = cartesian_to_spherical(x,y,z)
+    # a0,a1,a2 = get_joint_angles(x,y,z)
+    # xElbow,yElbow,zElbow = get_elbow_pos(a0,a1,a2)
+        
+    # xl3 = r*numpy.cos(theta)*numpy.sin(phi)     
+    # yl3 = r*numpy.sin(theta)*numpy.sin(phi) 
+    # zl3 = r*numpy.cos(phi)
+    
+    # return (xl3,yl3,zl3)
     
     
 
@@ -108,9 +112,9 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 #ENTER DESIRED POSITION HERE----------------------------------------------
-xgoal = 0
-ygoal = -10
-zgoal = 5
+xgoal = 5
+ygoal = 10 #+ 2*numpy.random.rand(1)
+zgoal = 5 #+ 5*numpy.random.rand(1)
 
 goals = [xgoal,ygoal,zgoal]
 print(goals)
@@ -127,7 +131,7 @@ link0 = Wavefront('link0.obj')
 link0Rot = numpy.rad2deg(A0)
 
 link1 = Wavefront('link1.obj')
-link1Rot = numpy.rad2deg(A1)
+link1Rot = -1*numpy.rad2deg(A1)
 
 link2 = Wavefront('link2.obj')
 link2Rot = numpy.rad2deg(A2)
@@ -149,28 +153,28 @@ def on_resize(width, height):
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
     gluPerspective(50., float(width)/height, 1., 100.) #change first argument for fov
-    glTranslated(0,-5,-30) #fits arm into camera view
+    glTranslatef(0,-5,-30) #fits arm into camera view
     glMatrixMode(GL_MODELVIEW)
     return True
-
 
 @window.event
 def on_draw():
     window.clear()
+    glViewport(0,0,1280,720)
     glLoadIdentity()
 
-    glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
+    glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
 
     draw_link0(link0, 0, 0, 0, link0Rot)
     draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
-    draw_link2(link2, yElb, zElb, xElb, link0Rot, link1Rot, link2Rot)
-    draw_link3(link3, yl3, zl3, xl3, link0Rot, link1Rot, link2Rot,rotation)
+    draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
+    draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,rotation)
 
 def draw_link0(link, x, y, z, link0Rot):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
-    glTranslated(x, y, z)
+    glTranslatef(x, y, z)
 #    glRotatef(-25.0, 1.0, 0.0, 0.0)
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
@@ -179,7 +183,7 @@ def draw_link0(link, x, y, z, link0Rot):
 def draw_link1(link, x, y, z,link0Rot, link1Rot):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
-    #glRotatef(180,0,1,0) #flips l1 around so it isnt bending backwards
+    glRotatef(180,0,1,0) #flips l1 around so it isnt bending backwards
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
     glRotatef(link1Rot, 1.0, 0.0 , 0.0)
     #glTranslated(x, y, z) # link 1 does not translate about workspace, only pivots on shoulder base
@@ -191,11 +195,14 @@ def draw_link1(link, x, y, z,link0Rot, link1Rot):
 def draw_link2(link, x, y, z, link0Rot, link1Rot, link2Rot):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
-    glTranslated(x, y, z)
+    glTranslatef(x, y, z)
     #print("link0Rot: ", link0Rot, " Link1Rot: ", link1Rot, " Link2Rot: ", link2Rot)
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
-    glRotatef(link1Rot, 1.0, 0.0 , 0.0)
+    glRotatef(link1Rot, -1.0, 0.0 , 0.0)
     glRotatef(link2Rot, 1.0, 0.0, 0.0)
+    glRotatef(180,0,1,0) #flipped around to match l1
+
+    #glTranslatef(-x, -y, -z)
     
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
@@ -204,11 +211,11 @@ def draw_link2(link, x, y, z, link0Rot, link1Rot, link2Rot):
 def draw_link3(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
-    glTranslated(x, y, z)
+    glTranslatef(x, y, z)
     glRotatef(link0Rot, 0.0, 1.0 , 0.0)
-    glRotatef(link1Rot, 1.0, 0.0 , 0.0)
+    glRotatef(link1Rot, -1.0, 0.0 , 0.0)
     glRotatef(link2Rot + 90, 1.0, 0.0, 0.0)
-    # glRotatef(rotation,0.0,0.0,1.0)
+    glRotatef(rotation,0.0,0.0,1.0)
     
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
 
