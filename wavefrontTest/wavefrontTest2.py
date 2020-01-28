@@ -10,13 +10,13 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 link0 = Wavefront('link0.obj')
-link0Rot = 90
+link0Rot = 45
 
 link1 = Wavefront('link1.obj')
-link1Rot = 10
+link1Rot = -30
 
 link2 = Wavefront('link2.obj')
-link2Rot = 45
+link2Rot = 90
 
 link3 = Wavefront('link3.obj')
 link3Rot = 90
@@ -24,13 +24,28 @@ rotation = 0.0 #count variable for spinning l3
 
 lightfv = ctypes.c_float * 4
 
-xElb = 0
-yElb = 9.5
-zElb = 0
+# xElb = 0
+# yElb = 9.5
+# zElb = 0
 
-xl3 = 0
-yl3 = 15
-zl3 = 0
+l1 = 9.5
+l2 = 6.5
+
+xElb = ( l1 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(-link1Rot*(numpy.pi/180)))
+yElb = ( l1 * numpy.cos((-link1Rot*(numpy.pi/180)))) 
+zElb =  ( l1 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(-link1Rot*(numpy.pi/180)))
+
+link2RotEff = -link1Rot + link2Rot
+
+# xl3 = 0
+# yl3 = 16
+# zl3 = 0
+
+xl3 = xElb + ( l2 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+yl3 = yElb + ( l2 * numpy.cos((link2RotEff*(numpy.pi/180)))) 
+zl3 = zElb + ( l2 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+
+
 
 @window.event
 def on_resize(width, height):
@@ -45,10 +60,11 @@ def on_resize(width, height):
 @window.event
 def on_draw():
     window.clear()
+    glClearColor(1,1,0,0.5) #sets background to yellow
     glViewport(0,0,1280,720)
     glLoadIdentity()
 
-    glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
+    glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(numpy.pi), 1.0, 0.0))
 
     draw_link0(link0, 0, 0, 0, link0Rot)
     draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
