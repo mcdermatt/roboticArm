@@ -10,43 +10,37 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 base = Wavefront('base.obj')
-
 link0 = Wavefront('l0.obj')
-link0Rot = 45
-
 link1 = Wavefront('l1.obj')
-link1Rot = 30
-
 link2 = Wavefront('l2.obj')
-link2Rot = 80
-
 link3 = Wavefront('l3.obj')
-link3Rot = 90
+link4 = Wavefront('l4.obj')
+link0Rot = 45
+link1Rot = 30
+link2Rot = 80
+link3Rot = 0
+link4Rot = 45
 rotation = 0.0 #count variable for spinning l3
-
 lightfv = ctypes.c_float * 4
-
-# xElb = 0
-# yElb = 9.5
-# zElb = 0
 
 l1 = 6.5
 l2 = 6.5
+l3 = 2.65
+
+link2RotEff = link1Rot + link2Rot
 
 xElb = ( l1 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
 yElb = ( l1 * numpy.cos((link1Rot*(numpy.pi/180)))) 
 zElb =  ( l1 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
 
-link2RotEff = link1Rot + link2Rot
-
-# xl3 = 0
-# yl3 = 16
-# zl3 = 0
 
 xl3 = xElb + ( l2 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 yl3 = yElb + ( l2 * numpy.cos((link2RotEff*(numpy.pi/180)))) 
 zl3 = zElb + ( l2 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 
+xl4 = xElb + ( (l2+l3) * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+yl4 = yElb + ( (l2+l3) * numpy.cos((link2RotEff*(numpy.pi/180)))) 
+zl4 = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 
 
 @window.event
@@ -67,13 +61,15 @@ def on_draw():
     glLoadIdentity()
 
     #glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.3, 0.3, 0.3, 1.0))
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.3, 0.3, 0.3, 1))
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightfv(0.0,0.0,0.0,0.1))
 
     draw_base(base)
     draw_link0(link0, 0, 0, 0, link0Rot)
     draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
     draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
-    draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,rotation)
+    draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
+    draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
 
 def draw_base(link):
     glLoadIdentity()
@@ -129,6 +125,18 @@ def draw_link3(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation):
     glRotatef(rotation,0.0,1.0,0.0)
     
 #    glRotatef(45.0, 0.0, 0.0, 1.0)
+
+    visualization.draw(link)
+
+def draw_link4(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation,link4Rot):
+    glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
+    glTranslatef(x, y, z)
+    glRotatef(link0Rot, 0.0, 1.0 , 0.0)
+    glRotatef(link1Rot, 1.0, 0.0 , 0.0)
+    glRotatef(link2Rot, 1.0, 0.0, 0.0)
+    glRotatef(rotation,0.0,1.0,0.0)
+    glRotatef(link4Rot,1.0,0.0,0.0)
 
     visualization.draw(link)
 
