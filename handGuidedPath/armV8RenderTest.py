@@ -15,7 +15,7 @@ link1 = Wavefront('l1.obj')
 link2 = Wavefront('l2.obj')
 link3 = Wavefront('l3.obj')
 link4 = Wavefront('l4.obj')
-link0Rot = 45
+link0Rot = 15
 link1Rot = 30
 link2Rot = 80
 link3Rot = 0
@@ -59,9 +59,12 @@ def on_draw():
     glClearColor(1,1,1,0.5) #sets background color
     glViewport(0,0,1280,720)
     glLoadIdentity()
+    glMatrixMode(GL_PROJECTION)
+    glRotatef(rotation*0.0035,0,1,0)
+    glMatrixMode(GL_MODELVIEW)
 
     #glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.3, 0.3, 0.3, 1))
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 0.9))
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightfv(0.0,0.0,0.0,0.1))
 
     draw_base(base)

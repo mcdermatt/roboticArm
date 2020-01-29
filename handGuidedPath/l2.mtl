@@ -85,5 +85,5 @@ d 1.000000
 
 newmtl 197,197,198
 Kd 0.772549 0.772549 0.776471
-map_Kd 14/bape.jpg
+#map_Kd 14/bape.jpg
 

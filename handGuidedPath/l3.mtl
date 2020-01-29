@@ -40,7 +40,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd l3\danger.jpg
+#map_Kd l3\danger.jpg
 
 newmtl 237,206,195.001
 Ns 200.000000
