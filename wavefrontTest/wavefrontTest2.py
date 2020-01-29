@@ -125,7 +125,9 @@ def draw_link3(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation):
 
 def update(dt):
     global rotation
-    rotation += 10.0 * dt
+    #rotation += 10.0 * dt
+    if keys[key.a]:
+        rotation += 10
 
 #    if rotation > 720.0:
 #        rotation = 0.0

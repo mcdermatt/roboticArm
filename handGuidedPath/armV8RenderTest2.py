@@ -3,6 +3,33 @@ from pyglet.gl import *
 from pyglet.window import key
 from pywavefront import visualization, Wavefront
 import numpy
+import time
+
+#file plays back path recorded during handGuidedPath and displays wavefront opengl rendering
+
+# def cartesian_to_spherical(x,y,z):
+#     r = numpy.sqrt((x*x)+(y*y)+(z*z))
+#     phi = numpy.arctan2((numpy.sqrt((x  * x) + (y * y))), z )
+#     theta = numpy.arctan2(y, x)
+#     return (r,phi,theta)
+#     #output in rad
+
+# def get_joint_angles(x,y,z):
+#     l1 = 6.5
+#     l2 = 6.5
+#     l3 = 2.65
+    
+#     #r phi theta in rad
+#     (r,phi,theta) = cartesian_to_spherical(x,y,z)
+    
+#     #elbow
+#     a2 = (180/numpy.pi)*numpy.arccos(((l1*l1)+(l2*l2)-(r*r))/(-2*l1*l2))
+#     #shoulder side to side
+#     a0 = (180/numpy.pi)*theta
+#     #shoulder up down
+#     a1 = (180/numpy.pi)*numpy.pi + phi + numpy.arccos(((l1*l1)-(l2*l2)+(r*r))/(-2*l1*r))
+    
+#     return(a0,a1,a2)
 
 #init openGL stuff
 window = pyglet.window.Window(width=1280, height=720)
@@ -16,24 +43,40 @@ link2 = Wavefront('l2.obj')
 link3 = Wavefront('l3.obj')
 link4 = Wavefront('l4.obj')
 
-link0Rot = 15
-link1Rot = 30
-link2Rot = 80
-link3Rot = 0
-link4Rot = 45
-rotation = 0.0 #count variable for spinning l3
-lightfv = ctypes.c_float * 4
-
 l1 = 6.5
 l2 = 6.5
 l3 = 2.65
+
+i = 0
+pathArr = numpy.genfromtxt('armPath.txt',delimiter=" ")
+
+#goals for end effector
+# x = 5
+# y = 10
+# z = 5
+# link3Rot = 0 # wrist theta
+# link4Rot = 0 #wrist phi
+
+# xIn = x - l3*numpy.cos(link3Rot*(numpy.pi/180))*numpy.sin(link4Rot*(numpy.pi/180))
+# yIn = y - l3*numpy.sin(link3Rot*(numpy.pi/180))*numpy.sin(link4Rot*(numpy.pi/180))
+# zIn = z - l3*numpy.cos(link4Rot*(numpy.pi/180))
+
+# link0Rot,link1Rot,link2Rot = get_joint_angles(xIn,yIn,zIn)
+
+link0Rot = (180/numpy.pi)*pathArr[i,0]
+link1Rot = (180/numpy.pi)*pathArr[i,1]
+link2Rot = (180/numpy.pi)*pathArr[i,2]
+link3Rot = 0
+link4Rot = 45
+
+rotation = 0.0 #count variable for spinning
+lightfv = ctypes.c_float * 4
 
 link2RotEff = link1Rot + link2Rot
 
 xElb = ( l1 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
 yElb = ( l1 * numpy.cos((link1Rot*(numpy.pi/180)))) 
 zElb =  ( l1 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
-
 
 xl3 = xElb + ( l2 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 yl3 = yElb + ( l2 * numpy.cos((link2RotEff*(numpy.pi/180)))) 
@@ -43,7 +86,8 @@ xl4 = xElb + ( (l2+l3) * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEf
 yl4 = yElb + ( (l2+l3) * numpy.cos((link2RotEff*(numpy.pi/180)))) 
 zl4 = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 
-cameraZ = -40
+# cameraZ = -40
+
 
 @window.event
 def on_resize(width, height):
@@ -65,6 +109,28 @@ def on_draw():
     glRotatef(0,0,1,0)
     glRotatef(rotation*0.0035,0,1,0)
     glMatrixMode(GL_MODELVIEW)
+    link0Rot = (180/numpy.pi)*pathArr[i,0]
+    link1Rot = (180/numpy.pi)*pathArr[i,1]
+    link2Rot = (180/numpy.pi)*pathArr[i,2]
+    link3Rot = 0
+    link4Rot = 45
+
+ #   rotation = 0.0 #count variable for spinning
+    lightfv = ctypes.c_float * 4
+
+    link2RotEff = link1Rot + link2Rot
+
+    xElb = ( l1 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
+    yElb = ( l1 * numpy.cos((link1Rot*(numpy.pi/180)))) 
+    zElb =  ( l1 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
+
+    xl3 = xElb + ( l2 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+    yl3 = yElb + ( l2 * numpy.cos((link2RotEff*(numpy.pi/180)))) 
+    zl3 = zElb + ( l2 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+
+    xl4 = xElb + ( (l2+l3) * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+    yl4 = yElb + ( (l2+l3) * numpy.cos((link2RotEff*(numpy.pi/180)))) 
+    zl4 = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 
     #glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 0.9))
@@ -76,6 +142,8 @@ def on_draw():
     draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
     draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
     draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
+
+    time.sleep(0.01)
 
 def draw_base(link):
     glLoadIdentity()
@@ -149,6 +217,7 @@ def draw_link4(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation,link4Rot):
 
 def update(dt):
     global rotation
+    global i
  #  rotation += 10.0 * dt
     if keys[key.A]:
         rotation += 10
@@ -157,6 +226,7 @@ def update(dt):
 
     if keys[key.S]:
         cameraZ -= 5
+    i += 1
 
 #    if rotation > 720.0:
 #        rotation = 0.0
