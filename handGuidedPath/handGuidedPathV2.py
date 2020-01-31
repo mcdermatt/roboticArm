@@ -157,11 +157,11 @@ def on_draw():
 	#manually moving arm through range of motion to be recorded
 	# if recording == 1:
 	# 	#arr = [[theta0, theta1, theta2]]
-	# 	loadedArray = np.genfromtxt('armPath.txt',delimiter=" ")
-	# 	currPos = [[theta0,theta1,theta2]]
-	# 	print(currPos)
-	# 	loadedArray = np.append(loadedArray,currPos,axis=0)
-	# 	np.savetxt('armPath.txt',loadedArray)
+	loadedArray = np.genfromtxt('armPath.txt',delimiter=" ")
+	currPos = [[theta0,theta1,theta2]]
+	print(currPos)
+	loadedArray = np.append(loadedArray,currPos,axis=0)
+	np.savetxt('armPath.txt',loadedArray)
 
 	# if simulating == 1:
 
@@ -224,7 +224,7 @@ def on_draw():
 		#break
 
    #from pyglet script
-	link0Rot = (180/np.pi)*theta0
+	link0Rot = (-180/np.pi)*theta0 #flipped sign to fix display, may require further troubleshooting
 	link1Rot = (180/np.pi)*theta1
 	link2Rot = (180/np.pi)*theta2
 	link3Rot = 0
