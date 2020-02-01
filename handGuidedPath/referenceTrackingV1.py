@@ -16,6 +16,8 @@ import keyboard
 #code is combination of armV8RenderTest2.py (real time opengl simulation) and playbackArmPath.py (odrive communication)
 #displays what arm SHOULD be doing
 
+#MAKE SURE MOTORS ARE SET TO CORRECT DIRECTION - SHOULD CALIBRATE IN ON ITSELF, NOT BENDING BACKWARDS!!! 
+
 #system parameters
 #l0- shoulder side/side
 serial0 = "206A337B304B"
@@ -153,13 +155,13 @@ def on_draw():
     # theta2effActual = theta2Actual + theta1Actual
 
     #convert to position setpoint for j0 j1 and j2
-    j0encoderGoal = (link0Rot * l0cpr * l0reduction) / (np.pi * 2)
+    j0encoderGoal = (link0Rot * l0cpr * l0reduction) / (360)
     od0.axis0.controller.pos_setpoint = j0encoderGoal
 
-    j1encoderGoal = (link1Rot * l1cpr * l1reduction) / (np.pi * 2)
+    j1encoderGoal = (link1Rot * l1cpr * l1reduction) / (360)
     od1.axis0.controller.pos_setpoint = j1encoderGoal
 
-    j2encoderGoal = (link2Rot * l2cpr * l2reduction) / (np.pi * 2)
+    j2encoderGoal = (link2Rot * l2cpr * l2reduction) / (360)
     od2.axis0.controller.pos_setpoint = j2encoderGoal
 
 

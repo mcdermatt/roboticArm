@@ -103,6 +103,20 @@ print("move shoulder to vertical position")
 time.sleep(2)
 j1offset = od1.axis0.encoder.pos_estimate
 
+#clears previous recording, starts off with current arm position
+#get joint angle and velocity
+pos2 = od2.axis0.encoder.pos_estimate - j2offset
+pos1 = od1.axis0.encoder.pos_estimate - j1offset
+pos0 = od0.axis0.encoder.pos_estimate - j0offset
+
+#zero position is straight up
+theta2 = (2 * np.pi * pos2) / (l2cpr * l2reduction)
+theta1 = (2 * np.pi * pos1) / (l1cpr * l1reduction)
+theta0 = (2 * np.pi * pos0) / (l0cpr * l0reduction)
+
+initArr = [[theta0,theta1,theta2],[theta0,theta1,theta2]]
+np.savetxt('armPath.txt',initArr)
+
 print("press q to teach sequence. press w to stop teaching sequence. press f to quit")
 
 
