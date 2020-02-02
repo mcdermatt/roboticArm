@@ -77,6 +77,7 @@ od0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 print("rotate shoulder away from work station")
 time.sleep(1)
 j0offset = od0.axis0.encoder.pos_estimate
+print("j0 offset: ",j0offset)
 
 od2 = odrive.find_any(serial_number=serial2)
 print("calibrating odrive2")
@@ -89,7 +90,7 @@ od2.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 print("move elbow to vertical position")
 time.sleep(2)
 j2offset = od2.axis0.encoder.pos_estimate
-
+print("j2 offset: ",j2offset)
 
 od1 = odrive.find_any(serial_number=serial1)
 print("calibrating odrive1")
@@ -102,6 +103,7 @@ od1.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 print("move shoulder to vertical position")
 time.sleep(2)
 j1offset = od1.axis0.encoder.pos_estimate
+print("j1 offset: ",j1offset)
 
 #clears previous recording, starts off with current arm position
 #get joint angle and velocity
