@@ -44,16 +44,49 @@ l2kv = 100
 beta2 = -0.000005
 serial2 = "205737993548"
 
-print("finding odrive0")
+#calibration
 od0 = odrive.find_any(serial_number=serial0)
-print("finding odrive2")
+print("calibrating j0")
+od0.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
+while od0.axis0.current_state != AXIS_STATE_IDLE:
+	time.sleep(0.1)
+
+od0.axis0.controller.config.control_mode = 1
+od0.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+print("rotate shoulder away from work station")
+time.sleep(1)
+j0offset = od0.axis0.encoder.pos_estimate
+print("j0 offset: ",j0offset)
+
 od2 = odrive.find_any(serial_number=serial2)
-print("finding odrive1")
+print("calibrating odrive2")
+od2.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
+while od2.axis0.current_state != AXIS_STATE_IDLE:
+	time.sleep(0.1)
+
+od2.axis0.controller.config.control_mode = 1
+od2.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+print("move elbow to vertical position")
+time.sleep(2)
+j2offset = od2.axis0.encoder.pos_estimate
+print("j2 offset: ",j2offset)
+
 od1 = odrive.find_any(serial_number=serial1)
+print("calibrating odrive1")
+od1.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
+while od1.axis0.current_state != AXIS_STATE_IDLE:
+	time.sleep(0.1)
+
+od1.axis0.controller.config.control_mode = 1
+od1.axis0.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
+print("move shoulder to vertical position")
+time.sleep(2)
+j1offset = od1.axis0.encoder.pos_estimate
+print("j1 offset: ",j1offset)
 
 #arm moves through pre-recorded sequence
 print("WARNING PROGRAM ASSUMES ARM IS CALIBRATED TO VERTICAL POSITION")
-print("move arm to downward resting position")
+print("move arm to VERTICAL position")
 time.sleep(5)
 print("press q for ESTOP")
 time.sleep(1)
@@ -156,13 +189,13 @@ def on_draw():
 
     #convert to position setpoint for j0 j1 and j2
     j0encoderGoal = (link0Rot * l0cpr * l0reduction) / (360)
-    od0.axis0.controller.pos_setpoint = j0encoderGoal
+    od0.axis0.controller.pos_setpoint = j0encoderGoal - j0offset
 
     j1encoderGoal = (link1Rot * l1cpr * l1reduction) / (360)
-    od1.axis0.controller.pos_setpoint = j1encoderGoal
+    od1.axis0.controller.pos_setpoint = j1encoderGoal - j1offset
 
     j2encoderGoal = (link2Rot * l2cpr * l2reduction) / (360)
-    od2.axis0.controller.pos_setpoint = j2encoderGoal
+    od2.axis0.controller.pos_setpoint = j2encoderGoal - j2offset
 
 
  #   rotation = 0.0 #count variable for spinning
