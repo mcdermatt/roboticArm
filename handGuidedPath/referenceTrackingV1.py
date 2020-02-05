@@ -189,13 +189,13 @@ def on_draw():
 
     #convert to position setpoint for j0 j1 and j2
     j0encoderGoal = (link0Rot * l0cpr * l0reduction) / (360)
-    od0.axis0.controller.pos_setpoint = j0encoderGoal - j0offset
+    od0.axis0.controller.pos_setpoint = j0encoderGoal + j0offset
 
     j1encoderGoal = (link1Rot * l1cpr * l1reduction) / (360)
-    od1.axis0.controller.pos_setpoint = j1encoderGoal - j1offset
+    od1.axis0.controller.pos_setpoint = j1encoderGoal + j1offset
 
     j2encoderGoal = (link2Rot * l2cpr * l2reduction) / (360)
-    od2.axis0.controller.pos_setpoint = j2encoderGoal - j2offset
+    od2.axis0.controller.pos_setpoint = j2encoderGoal + j2offset
 
 
  #   rotation = 0.0 #count variable for spinning
