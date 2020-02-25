@@ -7,18 +7,19 @@ j1pi = 0;
 j2pi = 0;
 j2vi = 0;
 
-sim('threeLinkEEForce.slx')
-
-ans = out.j1vf(end)
-
 count = 0;
-while count < 5
+while count < 10
     
-    j1vi = count * 10
-    j2vi = count * 10 
-    sim('threeLinkEEForce.slx')
-    ans = out.j1vf(end)
+    j1vi = count * 10;
+    j2vi = count * 10; 
     
-    count = count + 1
+    %adjust joint limits as initial conditions change
+    
+    simOut = sim('threeLinkEEForce.slx');
+    j0vf = simOut.j0vf(end)
+    j1vf = simOut.j1vf(end)
+    j2vf = simOut.j2vf(end)
+    
+    count = count + 1;
 
 end
