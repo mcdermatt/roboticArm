@@ -6,15 +6,16 @@ j1vi = 0;
 j1pi = 0;
 j2pi = 0;
 j2vi = 0;
-
-count = 1;
-while count < 100
-    
+for j0res = 1:10
     j0vi = count * 0.1;
     j1vi = count * 0.1;
     j2vi = count * 0.1; 
     
     %adjust joint limits as initial conditions change
+    j1ll = j1pi - 105;
+    j1ul = j1pi + 45;
+    j2ll = j2pi - 20;
+    j2ul = j2pi + 120;
     
     %run simulation again with updated runtime vars
     simOut = sim('threeLinkEEForce.slx');
@@ -30,10 +31,8 @@ while count < 100
     
     simOutput(:,count) = prediction
     
-    count = count + 1;
-
 end
 
-csvwrite(
+csvwrite('predictionTable.txt',simOutput)
 
 return
