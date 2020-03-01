@@ -17,9 +17,9 @@ ax.set_zlabel('y')
 ax.grid(False)
 
 count = 1
-forceArr = np.loadtxt('ellAxis.txt',delimiter=',',usecols=range(308))
-scalingFactor = 0.005
-fidelity = 0.1
+forceArr = np.loadtxt('ellAxis.txt',delimiter=',',usecols=range(308)) #must update range after changing matlab script- set to value "numPts"
+scalingFactor = 0.005 #changes how big ellipsoids are drawn
+fidelity = 0.1 #space between points being considered- inherited from generatedRobotForceEllipse
 xmin = -0.5
 ymin = 0.25
 zmin = 0.2
@@ -27,6 +27,11 @@ xmax = 0.5
 ymax = 0.85
 zmax = 0.5
 ellipsoidDetail = 8
+
+xsteps = len(np.arange(xmin,xmax,fidelity)) + 1
+ysteps = len(np.arange(ymin,ymax,fidelity)) + 1
+zsteps = len(np.arange(zmin,zmax,fidelity)) + 1
+
 
 while count < forceArr.shape[1]:
 
@@ -36,9 +41,9 @@ while count < forceArr.shape[1]:
 	Ay = forceArr[1,count]*scalingFactor
 	Az = forceArr[2,count]*scalingFactor
 
-	x = Ax*np.sin(theta)*np.cos(phi) + np.floor(count/(7*4))%11*fidelity + xmin
-	z = Ay*np.sin(theta)*np.sin(phi) + np.floor(count/4)%7*fidelity + zmin
-	y = Az*np.cos(theta) + count%4*fidelity + ymin
+	x = Ax*np.sin(theta)*np.cos(phi) + np.floor(count/(ysteps*zsteps))%xsteps*fidelity + xmin
+	z = Ay*np.sin(theta)*np.sin(phi) + np.floor(count/zsteps)%ysteps*fidelity + zmin
+	y = Az*np.cos(theta) + count%zsteps*fidelity + ymin
 
 	#color based on xyz
 	#surf = ax.plot_surface(x, y, z, color=[((np.floor(count/(7*4))%4*fidelity + xmin)*0.5+0.5),np.floor(count/4)%7*fidelity + zmin,(count%4*fidelity + ymin)*0.5+0.5])
