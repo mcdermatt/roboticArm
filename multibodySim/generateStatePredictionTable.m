@@ -41,7 +41,7 @@ for j0PosCount = 1:j0PosRes
                         j1ll = j1pi - 105;
                         j1ul = j1pi + 45;
                         j2ll = j2pi - 20;
-                        j2ul = j2pi + 120;
+                        j2ul = j2pi + 120; 
 
                         %run simulation again with updated runtime vars
                         simOut = sim('threeLinkEEForce.slx');
