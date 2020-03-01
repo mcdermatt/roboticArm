@@ -62,6 +62,7 @@ for i = 1:length(theta0)
     fz = [0 0];
     simOut = sim('threeLinkEEForce.slx');
     ax = simOut.ax(end);
+    Ix = fx(2)/ax;
 
     %y
     fx = [0 0];
@@ -69,6 +70,7 @@ for i = 1:length(theta0)
     fz = [0 0];
     simOut = sim('threeLinkEEForce.slx');
     ay = simOut.ay(end);
+    Iy = fy(2)/ay;
     
     %z
     fx = [0 0];
@@ -76,8 +78,9 @@ for i = 1:length(theta0)
     fz = [0 10];
     simOut = sim('threeLinkEEForce.slx');
     az = simOut.az(end);
-    
-    ellAxis(:,i) = [ax, ay, az];
+    Iz = fz(2)/az;
+ 
+    ellAxis(:,i) = [Ix, Iy, Iz];
 
 end
 
