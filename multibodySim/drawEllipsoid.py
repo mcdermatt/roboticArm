@@ -18,7 +18,7 @@ ax.grid(False)
 
 count = 1
 forceArr = np.loadtxt('ellAxis.txt',delimiter=',',usecols=range(308)) #must update range after changing matlab script- set to value "numPts"
-scalingFactor = 0.005 #changes how big ellipsoids are drawn
+scalingFactor = 0.00875 #changes how big ellipsoids are drawn
 fidelity = 0.1 #space between points being considered- inherited from generatedRobotForceEllipse
 xmin = -0.5
 ymin = 0.25
@@ -26,7 +26,7 @@ zmin = 0.2
 xmax = 0.5
 ymax = 0.85
 zmax = 0.5
-ellipsoidDetail = 8
+ellipsoidDetail = 32 #number of vertices
 
 xsteps = len(np.arange(xmin,xmax,fidelity)) + 1
 ysteps = len(np.arange(ymin,ymax,fidelity)) + 1
