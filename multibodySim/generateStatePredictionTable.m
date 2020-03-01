@@ -7,17 +7,17 @@ j1pi = 0;
 j2pi = 0;
 j2vi = 0;
 
-j0PosRes = 8;
-j1PosRes = 8;
-j2PosRes = 8;
+j0PosRes = 2;
+j1PosRes = 2;
+j2PosRes = 2;
 j0PosPoints = linspace(-180,180,j0PosRes);
 %j1 is backwards, I should probably fix this at some point
 j1PosPoints = linspace(-105,45,j1PosRes);
 j2PosPoints = linspace(-20,120,j2PosRes);
 
-j0VelRes = 8;
-j1VelRes = 8;
-j2VelRes = 8;
+j0VelRes = 2;
+j1VelRes = 2;
+j2VelRes = 2;
 j0VelPoints = linspace(-120,120,j0VelRes);
 j1VelPoints = linspace(-120,120,j1VelRes);
 j2VelPoints = linspace(-120,120,j2VelRes);

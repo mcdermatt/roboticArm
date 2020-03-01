@@ -1,0 +1,40 @@
+%generates force ellipses for arm at each point xyz due to fx fy fz
+%assumes zero initial velocity
+
+j0vi = 0;
+j1vi = 0;
+j2vi = 0;
+%lengths of links (m)
+l0 = 0.40;
+l1 = 1;
+l2 = 0.25;
+
+xmin = -0.5;
+xmax = 0.5;
+ymin = 0.25;
+ymax = 0.75;
+zmin = -0.5;
+zmax = 0.5;
+fidelity = 0.1;
+
+numPts = (xmax-xmin)*(ymax-ymin)*(zmax-zmin)/(fidelity^3)
+%theta0 = zeros(1,numPts);
+theta0 = zeros(1,100);
+
+%loop through workspace generating in xyz getting joint angles for each pos
+count = 1;
+for x = xmin:0.1:xmax
+    for y = ymin:0.1:ymax
+        for z = zmin:0.1:zmax
+            r = sqrt((x*x)+(y*y)+(z*z));
+            phi = atan((sqrt((x  * x) + (z * z)))/ y );
+            beta = atan(z/ x);
+            
+            theta0(count) = beta;
+            theta1(count) = phi + acos(((l1^2)-(l2^2)+(r*r))/(-2*l1*r));
+            theta2(count) = acos(((l1*l1)+(l2*l2)-(r*r))/(-2*l1*l2));
+            
+            count = count + 1;
+        end
+    end
+end
