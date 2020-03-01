@@ -9,10 +9,10 @@ l0 = 0.0;
 l1 = 0.40625;
 l2 = 0.59375;
 
-xmin = 0.2;
+xmin = -0.5;
 xmax = 0.5;
 ymin = 0.25;
-ymax = 0.75;
+ymax = 0.85;
 zmin = 0.2;
 zmax = 0.5;
 fidelity = 0.1;
@@ -39,7 +39,7 @@ end
 
 %get rid of imaginary components and convert to deg
 theta0 = rad2deg(real(theta0));
-theta1 = rad2deg(real(theta1));
+theta1 = 180 - rad2deg(real(theta1));
 theta2 = rad2deg(real(theta2));
 
 %loop through xyz points using input angles
