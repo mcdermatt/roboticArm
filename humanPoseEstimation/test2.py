@@ -1,5 +1,7 @@
 import numpy as np
 
+#test to make sure I am indexing my state estimation lookup 
+
 res = 6
 index = 215
 
