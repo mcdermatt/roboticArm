@@ -97,10 +97,16 @@ def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 
 	#make frankenstein state prediction based on weighted averages of upper and lower states
 
+	upperInput = [j0PosPoints[j0pcount],j1PosPoints[j1pcount],j2PosPoints[j2pcount],j0VelPoints[j0vcount],j1VelPoints[j1vcount],j2VelPoints[j2vcount]]
+	lowerInput = [j0PosPoints[j0pcountLower],j1PosPoints[j1pcountLower],j2PosPoints[j2pcountLower],j0VelPoints[j0vcountLower],j1VelPoints[j1vcountLower],j2VelPoints[j2vcountLower]]
 
 
-	print(statesUpper)
-	print(statesLower)
+	print("upperInput = ",upperInput)
+	print("lowerInput = ",lowerInput)
+
+
+	print("statesUpper = ", statesUpper)
+	print("statesLower = ", statesLower)
 
 	states = 0 #debug
 	return(states)
