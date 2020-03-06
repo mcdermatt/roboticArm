@@ -4,17 +4,20 @@ import numpy as np
 def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 	
 	#table = '../multibodySim/predictionTable666666.txt'
-	table = '../multibodySim/predictionTable888888.txt'
+	#table = '../multibodySim/predictionTable888888.txt'
+	# table = '../multibodySim/predictionTable444777.txt'
+	table = '../multibodySim/predictionTable266777.txt'
+
 
 	predictionTable = np.genfromtxt(table, delimiter=',')
 
 	res = int(np.rint((predictionTable.shape[1])**(1/6)))
-	j0PosPoints = np.linspace(-180,180,res);
-	j1PosPoints = np.linspace(-105,45,res);
-	j2PosPoints = np.linspace(-20,120,res);
-	j0VelPoints = np.linspace(-120,120,res);
-	j1VelPoints = np.linspace(-120,120,res);
-	j2VelPoints = np.linspace(-120,120,res);
+	j0PosPoints = np.linspace(-180,180,2);
+	j1PosPoints = np.linspace(-105,45,6);
+	j2PosPoints = np.linspace(-20,120,6);
+	j0VelPoints = np.linspace(-120,120,7);
+	j1VelPoints = np.linspace(-120,120,7);
+	j2VelPoints = np.linspace(-120,120,7);
 
 	j0pcount = 0
 	j1pcount = 0
@@ -81,8 +84,11 @@ def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 	# print(j2vcount)
 
 	#convert initial conditions to address in lookup table
-	addressUpper = (res**5)*(j0pcount-1) + (res**4)*(j1pcount-1) + (res**3)*(j2pcount-1) + (res**2)*(j0vcount-1) + (res)*(j1vcount-1) + (j2vcount-1)
-	addressLower = (res**5)*(j0pcountLower-1) + (res**4)*(j1pcountLower-1) + (res**3)*(j2pcountLower-1) + (res**2)*(j0vcountLower-1) + (res)*(j1vcountLower-1) + (j2vcountLower-1)
+	# addressUpper = (res**5)*(j0pcount-1) + (res**4)*(j1pcount-1) + (res**3)*(j2pcount-1) + (res**2)*(j0vcount-1) + (res)*(j1vcount-1) + (j2vcount-1)
+	# addressLower = (res**5)*(j0pcountLower-1) + (res**4)*(j1pcountLower-1) + (res**3)*(j2pcountLower-1) + (res**2)*(j0vcountLower-1) + (res)*(j1vcountLower-1) + (j2vcountLower-1)
+
+	addressUpper = (49*64)*(j0pcount-1) + (49*16)*(j1pcount-1) + (49*4)*(j2pcount-1) + (49)*(j0vcount-1) + (7)*(j1vcount-1) + (j2vcount-1)
+	addressLower = (49*64)*(j0pcountLower-1) + (49*16)*(j1pcountLower-1) + (49*4)*(j2pcountLower-1) + (49)*(j0vcountLower-1) + (7)*(j1vcountLower-1) + (j2vcountLower-1)
 
 	statesUpper = predictionTable[:,int(addressUpper)]
 	statesLower = predictionTable[:,int(addressLower)]
