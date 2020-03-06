@@ -1,5 +1,9 @@
 %Generates NONLINEAR state prediction table using threeLinkEEForce simulation
 
+fx = [0 0];
+fy = [0 0];
+fz = [0 0];
+
 j0pi = 0;
 j0vi = 0;
 j1vi = 0;
@@ -7,20 +11,28 @@ j1pi = 0;
 j2pi = 0;
 j2vi = 0;
 
-j0PosRes = 4;
-j1PosRes = 4;
-j2PosRes = 4;
+j0PosRes = 2;
+j1PosRes = 6;
+j2PosRes = 6;
 j0PosPoints = linspace(-180,180,j0PosRes);
 %j1 is backwards, I should probably fix this at some point
 j1PosPoints = linspace(-105,45,j1PosRes);
 j2PosPoints = linspace(-20,120,j2PosRes);
 
-j0VelRes = 7;
-j1VelRes = 7;
-j2VelRes = 7;
-j0VelPoints = linspace(-120,120,j0VelRes);
-j1VelPoints = linspace(-120,120,j1VelRes);
-j2VelPoints = linspace(-120,120,j2VelRes);
+% j0VelRes = 7;
+% j1VelRes = 7;
+% j2VelRes = 7;
+% j0VelPoints = linspace(-120,120,j0VelRes);
+% j1VelPoints = linspace(-120,120,j1VelRes);
+% j2VelPoints = linspace(-120,120,j2VelRes);
+
+j0VelPoints = [-100 -20 -10 0 10 20 100];
+j1VelPoints = [-100 -20 -10 0 10 20 100];
+j2VelPoints = [-100 -20 -10 0 10 20 100];
+
+j0VelRes = length(j0VelPoints);
+j1VelRes = length(j1VelPoints);
+j2VelRes = length(j2VelPoints);
 
 count = 1;
 
@@ -65,6 +77,6 @@ for j0PosCount = 1:j0PosRes
     
 end
 
-csvwrite('predictionTable.txt',simOutput)
+csvwrite('predictionTable266777.txt',simOutput)
 
 return
