@@ -87,8 +87,8 @@ def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 	# addressUpper = (res**5)*(j0pcount-1) + (res**4)*(j1pcount-1) + (res**3)*(j2pcount-1) + (res**2)*(j0vcount-1) + (res)*(j1vcount-1) + (j2vcount-1)
 	# addressLower = (res**5)*(j0pcountLower-1) + (res**4)*(j1pcountLower-1) + (res**3)*(j2pcountLower-1) + (res**2)*(j0vcountLower-1) + (res)*(j1vcountLower-1) + (j2vcountLower-1)
 
-	addressUpper = (49*64)*(j0pcount-1) + (49*16)*(j1pcount-1) + (49*4)*(j2pcount-1) + (49)*(j0vcount-1) + (7)*(j1vcount-1) + (j2vcount-1)
-	addressLower = (49*64)*(j0pcountLower-1) + (49*16)*(j1pcountLower-1) + (49*4)*(j2pcountLower-1) + (49)*(j0vcountLower-1) + (7)*(j1vcountLower-1) + (j2vcountLower-1)
+	addressUpper = (49*72)*(j0pcount-1) + (49*36)*(j1pcount-1) + (49*6)*(j2pcount-1) + (49)*(j0vcount-1) + (7)*(j1vcount-1) + (j2vcount-1)
+	addressLower = (49*72)*(j0pcountLower-1) + (49*36)*(j1pcountLower-1) + (49*6)*(j2pcountLower-1) + (49)*(j0vcountLower-1) + (7)*(j1vcountLower-1) + (j2vcountLower-1)
 
 	statesUpper = predictionTable[:,int(addressUpper)]
 	statesLower = predictionTable[:,int(addressLower)]
