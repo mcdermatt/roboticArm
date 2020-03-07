@@ -6,18 +6,23 @@ def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 	#table = '../multibodySim/predictionTable666666.txt'
 	#table = '../multibodySim/predictionTable888888.txt'
 	# table = '../multibodySim/predictionTable444777.txt'
-	table = '../multibodySim/predictionTable266777.txt'
+	# table = '../multibodySim/predictionTable266777.txt'
+	table = '../multibodySim/predictionTable244444.txt'
 
+	try:
+		predictionTable = np.load('predictionTable244444.npy')
+	except:
+		predictionTable = np.genfromtxt(table, delimiter=',')
+		np.save('predictionTable244444.npy', predictionTable)
 
-	predictionTable = np.genfromtxt(table, delimiter=',')
 
 	res = int(np.rint((predictionTable.shape[1])**(1/6)))
 	j0PosPoints = np.linspace(-180,180,2);
-	j1PosPoints = np.linspace(-105,45,6);
-	j2PosPoints = np.linspace(-20,120,6);
-	j0VelPoints = np.linspace(-120,120,7);
-	j1VelPoints = np.linspace(-120,120,7);
-	j2VelPoints = np.linspace(-120,120,7);
+	j1PosPoints = np.linspace(-105,45,4);
+	j2PosPoints = np.linspace(-20,120,4);
+	j0VelPoints = np.linspace(-120,120,4);
+	j1VelPoints = np.linspace(-120,120,4);
+	j2VelPoints = np.linspace(-120,120,4);
 
 	j0pcount = 0
 	j1pcount = 0

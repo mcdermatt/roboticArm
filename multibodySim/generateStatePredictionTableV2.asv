@@ -11,28 +11,28 @@ j1pi = 0;
 j2pi = 0;
 j2vi = 0;
 
-j0PosRes = 3;
-j1PosRes = 7;
-j2PosRes = 7;
+j0PosRes = 2;
+j1PosRes = 6;
+j2PosRes = 6;
 j0PosPoints = linspace(-180,180,j0PosRes);
 %j1 is backwards, I should probably fix this at some point
 j1PosPoints = linspace(-105,45,j1PosRes);
 j2PosPoints = linspace(-20,120,j2PosRes);
 
-% j0VelRes = 4;
-% j1VelRes = 4;
-% j2VelRes = 4;
-% j0VelPoints = linspace(-120,120,j0VelRes);
-% j1VelPoints = linspace(-120,120,j1VelRes);
-% j2VelPoints = linspace(-120,120,j2VelRes);
+j0VelRes = 7;
+j1VelRes = 7;
+j2VelRes = ;
+j0VelPoints = linspace(-120,120,j0VelRes);
+j1VelPoints = linspace(-120,120,j1VelRes);
+j2VelPoints = linspace(-120,120,j2VelRes);
 
-j0VelPoints = [-100 -20 -10 0 10 20 100];
-j1VelPoints = [-100 -20 -10 0 10 20 100];
-j2VelPoints = [-100 -20 -10 0 10 20 100];
-
-j0VelRes = length(j0VelPoints);
-j1VelRes = length(j1VelPoints);
-j2VelRes = length(j2VelPoints);
+% j0VelPoints = [-100 -20 -10 0 10 20 100];
+% j1VelPoints = [-100 -20 -10 0 10 20 100];
+% j2VelPoints = [-100 -20 -10 0 10 20 100];
+% 
+% j0VelRes = length(j0VelPoints);
+% j1VelRes = length(j1VelPoints);
+% j2VelRes = length(j2VelPoints);
 
 count = 1;
 
@@ -64,9 +64,10 @@ for j0PosCount = 1:j0PosRes
 %                         j0pf = simOut.j0pf(end);
 %                         j1pf = simOut.j1pf(end);
 %                         j2pf = simOut.j2pf(end);
-                        j0vf = out.j0vf(end);
+`                       j0vf = out.j0vf(end);
                         j1vf = out.j1vf(end);
                         j2vf = out.j2vf(end);
+
                         j0pf = out.j0pf(end);
                         j1pf = out.j1pf(end);
                         j2pf = out.j2pf(end);
@@ -83,6 +84,6 @@ for j0PosCount = 1:j0PosRes
     
 end
 
-csvwrite('predictionTable377777.txt',simOutput)
+csvwrite('predictionTable266777.txt',simOutput)
 
 return
