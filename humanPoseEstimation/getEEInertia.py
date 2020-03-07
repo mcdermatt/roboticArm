@@ -1,7 +1,7 @@
 import numpy as np
 
 def getEEInertia(x,y,z):
-	"""Get End Effector Inertia at point XYZ assumes ZERO VELOCITY"""
+	"""Get End Effector Inertia of ROBOT at point XYZ assumes ZERO VELOCITY"""
 
 	table = "../multibodySim/ellAxis.txt" #from MatLab SimScape MultiBody
 

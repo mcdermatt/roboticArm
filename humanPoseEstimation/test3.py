@@ -1,3 +1,8 @@
-from getEEInertia import getEEInertia
+from getForcesFromPathData import getForcesFromPathData as getForces
 
-getEEInertia()
+traj = 'armPath.npy'
+
+
+forces = getForces(traj)
+
+print(forces)
