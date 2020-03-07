@@ -2,6 +2,7 @@ import numpy as np
 
 
 def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
+	"""give predicted joint angles for j0 j1 and j2 assumes no gravity"""
 	
 	# table = '../multibodySim/predictionTable666666.txt' #works
 	table = '../multibodySim/predictionTable888888.txt'
