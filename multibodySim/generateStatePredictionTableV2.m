@@ -57,19 +57,19 @@ for j0PosCount = 1:j0PosRes
 
                         %run simulation again with updated runtime vars
                         simOut = sim('threeLinkEEForce.slx');
-%                         j0vf = simOut.j0vf(end);
-%                         j1vf = simOut.j1vf(end);
-%                         j2vf = simOut.j2vf(end);
-% 
-%                         j0pf = simOut.j0pf(end);
-%                         j1pf = simOut.j1pf(end);
-%                         j2pf = simOut.j2pf(end);
-                        j0vf = out.j0vf(end);
-                        j1vf = out.j1vf(end);
-                        j2vf = out.j2vf(end);
-                        j0pf = out.j0pf(end);
-                        j1pf = out.j1pf(end);
-                        j2pf = out.j2pf(end);
+                        j0vf = simOut.j0vf(end);
+                        j1vf = simOut.j1vf(end);
+                        j2vf = simOut.j2vf(end);
+
+                        j0pf = simOut.j0pf(end);
+                        j1pf = simOut.j1pf(end);
+                        j2pf = simOut.j2pf(end);
+%                         j0vf = out.j0vf(end);
+%                         j1vf = out.j1vf(end);
+%                         j2vf = out.j2vf(end);
+%                         j0pf = out.j0pf(end);
+%                         j1pf = out.j1pf(end);
+%                         j2pf = out.j2pf(end);
 
                         prediction = [j0pf, j1pf, j2pf, j0vf, j1vf, j2vf];
 
