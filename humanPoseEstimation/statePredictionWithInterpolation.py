@@ -86,12 +86,12 @@ def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 			break
 		j2vcount += 1
 
-	print(j0pcount)
-	print(j1pcount)
-	print(j2pcount)
-	print(j0vcount)
-	print(j1vcount)
-	print(j2vcount)
+	# print(j0pcount)
+	# print(j1pcount)
+	# print(j2pcount)
+	# print(j0vcount)
+	# print(j1vcount)
+	# print(j2vcount)
 
 	#convert initial conditions to address in lookup table
 	addressUpper = (res**5)*(j0pcount) + (res**4)*(j1pcount) + (res**3)*(j2pcount) + (res**2)*(j0vcount) + (res)*(j1vcount) + (j2vcount)
@@ -117,14 +117,14 @@ def statePrediction(j0pi,j1pi,j2pi,j0vi,j1vi,j2vi):
 	upperInput = [j0PosPoints[j0pcount],j1PosPoints[j1pcount],j2PosPoints[j2pcount],j0VelPoints[j0vcount],j1VelPoints[j1vcount],j2VelPoints[j2vcount]]
 	lowerInput = [j0PosPoints[j0pcountLower],j1PosPoints[j1pcountLower],j2PosPoints[j2pcountLower],j0VelPoints[j0vcountLower],j1VelPoints[j1vcountLower],j2VelPoints[j2vcountLower]]
 
-	print("address Upper = ", addressUpper)
-	print("upperInput = ",upperInput)
-	print("address Lower = ", addressLower)
-	print("lowerInput = ",lowerInput)
+	# print("address Upper = ", addressUpper)
+	# print("upperInput = ",upperInput)
+	# print("address Lower = ", addressLower)
+	# print("lowerInput = ",lowerInput)
 
 
-	print("statesUpper = ", statesUpper)
-	print("statesLower = ", statesLower)
+	# print("statesUpper = ", statesUpper)
+	# print("statesLower = ", statesLower)
 
 	#create weighted average for each state
 	udp0 = abs(statesUpper[0] - j0pi) #distance from nearest upper input to actual j0pi

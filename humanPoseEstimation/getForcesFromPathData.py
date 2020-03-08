@@ -35,10 +35,28 @@ def getForcesFromPathData(traj):
 		theta1PosPredicted = states[1]
 		theta2PosPredicted = states[2]
 
+		#keep track of last states before remeasuring for vel calculations
+		theta0PosRealLast = theta0PosReal
+		theta1PosRealLast = theta1PosReal
+		theta2PosRealLast = theta2PosReal
+
 		#get actual measured current states from trajectory file
 		theta0PosReal = traj[step,0]
 		theta1PosReal = traj[step,1]
 		theta2PosReal = traj[step,2]
+
+		#estimate instantaneous velocity as dp/dt
+		theta0VelReal = (theta0PosReal - theta0PosRealLast)/(trajTStep*stepLCM)
+		theta1VelReal = (theta1PosReal - theta1PosRealLast)/(trajTStep*stepLCM)
+		theta2VelReal = (theta2PosReal - theta2PosRealLast)/(trajTStep*stepLCM)
+		#clip between -119,119 to stay inside current statePredictionTable
+		theta0VelReal = np.clip(theta0VelReal,-119,119)
+		theta1VelReal = np.clip(theta1VelReal,-119,119)
+		theta2VelReal = np.clip(theta2VelReal,-119,119)
+
+		print("theta0VelReal =", theta0VelReal)
+		print("theta1VelReal =", theta1VelReal)
+		print("theta2VelReal =", theta2VelReal)
 
 		#transform both states from joint space to cartesian space
 		predictedXYZ = fkm(theta0PosPredicted,theta1PosPredicted,theta2PosPredicted)
