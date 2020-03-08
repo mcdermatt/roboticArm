@@ -7,7 +7,7 @@ def getEEInertia(x,y,z):
 
 	try:
 		#load in binary file for inertiaTable 
-		#(will not exist if MatLab generates replacement)
+		#(will be deleted if MatLab generates replacement)
 		inertiaTable = np.load('inertiaTable.npy')
 	except:
 		inertiaTable = np.genfromtxt(table,delimiter=',')
@@ -20,7 +20,7 @@ def getEEInertia(x,y,z):
 	zmin = 0.2;
 	zmax = 0.5;
 	fidelity = 0.1;
-
+	
 	xPts = np.arange(xmin,xmax+0.0001,fidelity)
 	yPts = np.arange(ymin,ymax+0.0001,fidelity)
 	zPts = np.arange(zmin,zmax+0.0001,fidelity)

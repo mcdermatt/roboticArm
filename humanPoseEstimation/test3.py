@@ -1,6 +1,7 @@
 from getForcesFromPathData import getForcesFromPathData as getForces
+import numpy as np
 
-traj = 'armPath.npy'
+traj = np.load('armPath.npy')
 
 
 forces = getForces(traj)
