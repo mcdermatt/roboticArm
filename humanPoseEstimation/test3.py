@@ -18,6 +18,7 @@ forces = getForces(traj)
 # forces = np.loadtxt('forces.txt')
 # print(forces)
 #np.savetxt('forces.txt',forces)
+#np.save('forces.npy',forces)
 
 fig = plt.figure()
 ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=True)
