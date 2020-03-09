@@ -117,7 +117,7 @@ theta1 = (2 * np.pi * pos1) / (l1cpr * l1reduction)
 theta0 = (2 * np.pi * pos0) / (l0cpr * l0reduction)
 
 initArr = [[theta0,theta1,theta2],[theta0,theta1,theta2]]
-np.savetxt('armPath.txt',initArr)
+np.savetxt('armPath2.txt',initArr)
 
 print("press q to teach sequence. press w to stop teaching sequence. press f to quit")
 
@@ -173,11 +173,11 @@ def on_draw():
 	#manually moving arm through range of motion to be recorded
 	# if recording == 1:
 	# 	#arr = [[theta0, theta1, theta2]]
-	loadedArray = np.genfromtxt('armPath.txt',delimiter=" ")
+	loadedArray = np.genfromtxt('armPath2.txt',delimiter=" ")
 	currPos = [[theta0,theta1,theta2]]
 	print(currPos)
 	loadedArray = np.append(loadedArray,currPos,axis=0)
-	np.savetxt('armPath.txt',loadedArray)
+	np.savetxt('armPath2.txt',loadedArray)
 
 	# if simulating == 1:
 
