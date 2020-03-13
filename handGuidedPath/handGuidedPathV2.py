@@ -17,6 +17,8 @@ theta2eff = 0
 recording = 0
 simulating = 0
 
+filename = 'armPath3.txt'
+
 #init openGL stuff
 window = pyglet.window.Window(width=1280, height=720)
 keys = key.KeyStateHandler()
@@ -117,7 +119,7 @@ theta1 = (2 * np.pi * pos1) / (l1cpr * l1reduction)
 theta0 = (2 * np.pi * pos0) / (l0cpr * l0reduction)
 
 initArr = [[theta0,theta1,theta2],[theta0,theta1,theta2]]
-np.savetxt('armPath2.txt',initArr)
+np.savetxt(filename,initArr)
 
 print("press q to teach sequence. press w to stop teaching sequence. press f to quit")
 
@@ -173,11 +175,11 @@ def on_draw():
 	#manually moving arm through range of motion to be recorded
 	# if recording == 1:
 	# 	#arr = [[theta0, theta1, theta2]]
-	loadedArray = np.genfromtxt('armPath2.txt',delimiter=" ")
+	loadedArray = np.genfromtxt(filename,delimiter=" ")
 	currPos = [[theta0,theta1,theta2]]
 	print(currPos)
 	loadedArray = np.append(loadedArray,currPos,axis=0)
-	np.savetxt('armPath2.txt',loadedArray)
+	np.savetxt(filename,loadedArray)
 
 	# if simulating == 1:
 

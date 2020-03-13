@@ -50,6 +50,10 @@ def getForcesFromPathData(traj):
 		theta1VelReal = (theta1PosReal - theta1PosRealLast)/(trajTStep*stepLCM)
 		theta2VelReal = (theta2PosReal - theta2PosRealLast)/(trajTStep*stepLCM)
 		#clip between -119,119 to stay inside current statePredictionTable
+		theta0PosReal = np.clip(theta0PosReal,-179,179)
+		theta1PosReal = np.clip(theta1PosReal,-104,44)
+		theta2PosReal = np.clip(theta2PosReal,-19,119)
+
 		theta0VelReal = np.clip(theta0VelReal,-119,119)
 		theta1VelReal = np.clip(theta1VelReal,-119,119)
 		theta2VelReal = np.clip(theta2VelReal,-119,119)
