@@ -38,7 +38,7 @@ rotation = 0.0 #count variable for spinning
 
 
 i = 0
-pathArr = np.genfromtxt('armPath.txt',delimiter=" ")
+#pathArr = np.genfromtxt('armPath.txt',delimiter=" ")
 
 #system parameters
 #l0- shoulder side/side
