@@ -1,6 +1,6 @@
 from __future__ import print_function, division
-from sympy import symbols, simplify
-from sympy.physics.mechanics import dynamicsymbols, ReferenceFrame, Point, inertia, RigidBody
+from sympy import symbols, simplify, trigsimp
+from sympy.physics.mechanics import dynamicsymbols, ReferenceFrame, Point, inertia, RigidBody, KanesMethod
 from sympy.physics.vector import init_vprinting
 from IPython.display import Image
 from sympy.printing.pretty.pretty import pretty_print
@@ -100,3 +100,47 @@ torso = RigidBody('Torso', torso_mass_center, torso_frame,
                   torso_mass, torso_central_inertia)
 
 #Kinetics---------------------------------------------------------------------
+#gravity
+g = symbols('g')
+
+#Forces must be exerted at a point
+lower_leg_grav_force_vector = -lower_leg_mass * g * inertial_frame.y
+lower_leg_grav_force = (lower_leg_mass_center, lower_leg_grav_force_vector)
+upper_leg_grav_force = (upper_leg_mass_center, -upper_leg_mass * g * inertial_frame.y)
+torso_grav_force = (torso_mass_center, -torso_mass * g * inertial_frame.y)
+
+#joint torques
+ankle_torque, knee_torque, hip_torque = dynamicsymbols('T_a, T_k, T_h')
+
+lower_leg_torque_vector = ankle_torque * inertial_frame.z - knee_torque * inertial_frame.z
+lower_leg_torque = (lower_leg_frame, lower_leg_torque_vector)
+
+upper_leg_torque = (upper_leg_frame, knee_torque * inertial_frame.z - hip_torque * inertial_frame.z)
+torso_torque = (torso_frame, hip_torque * inertial_frame.z)
+
+#Equations of Motion------------------------------------------------------------
+#At the bare minimum for unconstrained systems, the KanesMethod class needs to know
+# the generalized coordinates, the generalized speeds, kinematical differential equations,
+# loads, the bodies, and a Newtonian reference frame
+coordinates = [theta1, theta2, theta3]
+speeds = [omega1, omega2, omega3]
+
+kane = KanesMethod(inertial_frame, coordinates, speeds, kinematical_differential_equations)
+loads = [lower_leg_grav_force,
+         upper_leg_grav_force,
+         torso_grav_force, 
+         lower_leg_torque,
+         upper_leg_torque,
+         torso_torque]
+bodies = [lower_leg, upper_leg, torso]
+
+#TODO - figure out significance of fr and frstar
+fr, frstar = kane.kanes_equations(bodies,loads)
+#pretty_print(trigsimp(fr + frstar))
+
+mass_matrix = trigsimp(kane.mass_matrix_full)
+pretty_print(mass_matrix)
+forcing_vector = trigsimp(kane.forcing_full)
+pretty_print(forcing_vector)
+
+#simulation--------------------------------------------------------------------
