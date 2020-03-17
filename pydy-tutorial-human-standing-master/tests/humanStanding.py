@@ -1,10 +1,19 @@
 from __future__ import print_function, division
 from sympy import symbols, simplify, trigsimp
 from sympy.physics.mechanics import dynamicsymbols, ReferenceFrame, Point, inertia, RigidBody, KanesMethod
-from sympy.physics.vector import init_vprinting
+from sympy.physics.vector import init_vprinting, vlatex
 from IPython.display import Image
 from sympy.printing.pretty.pretty import pretty_print
+from numpy import deg2rad, rad2deg, array, zeros, linspace
+from scipy.integrate import odeint
+from pydy.codegen.ode_function_generators import generate_ode_function
+import matplotlib.pyplot as plt
+from pydy.viz.shapes import Cylinder, Sphere
+import pydy.viz
+from pydy.viz.visualization_frame import VisualizationFrame
+from pydy.viz.scene import Scene
 
+#from matplotlib.pyplot import plot, legend, xlabel, ylabel, rcParams
 
 init_vprinting(use_latex='mathjax', pretty_print=True)
 
@@ -139,8 +148,120 @@ fr, frstar = kane.kanes_equations(bodies,loads)
 #pretty_print(trigsimp(fr + frstar))
 
 mass_matrix = trigsimp(kane.mass_matrix_full)
-pretty_print(mass_matrix)
+#pretty_print(mass_matrix)
 forcing_vector = trigsimp(kane.forcing_full)
-pretty_print(forcing_vector)
+#pretty_print(forcing_vector)
 
 #simulation--------------------------------------------------------------------
+constants = [lower_leg_length,
+             lower_leg_com_length,
+             lower_leg_mass,
+             lower_leg_inertia,
+             upper_leg_length,
+             upper_leg_com_length,
+             upper_leg_mass,
+             upper_leg_inertia,
+             torso_com_length,
+             torso_mass,            
+             torso_inertia,
+             g]
+#declare torque magnitude variables
+specified = [ankle_torque, knee_torque, hip_torque]
+
+#generate ODE function that numerically evaluates the RHS of first order diffeq 
+#odeint is ODE integrator
+right_hand_side = generate_ode_function(forcing_vector, coordinates,
+                                        speeds, constants,
+                                        mass_matrix=mass_matrix,
+                                        specifieds=specified)
+#right_hand_side is a FUNCTION
+#initial values for system
+x0 = zeros(6)
+x0[:3] = deg2rad(2.0)
+
+numerical_constants = array([0.611,  # lower_leg_length [m]
+                             0.387,  # lower_leg_com_length [m]
+                             6.769,  # lower_leg_mass [kg]
+                             0.101,  # lower_leg_inertia [kg*m^2]
+                             0.424,  # upper_leg_length [m]
+                             0.193,  # upper_leg_com_length
+                             17.01,  # upper_leg_mass [kg]
+                             0.282,  # upper_leg_inertia [kg*m^2]
+                             0.305,  # torso_com_length [m]
+                             32.44,  # torso_mass [kg]
+                             1.485,  # torso_inertia [kg*m^2]
+                             9.81],  # acceleration due to gravity [m/s^2]
+                            ) 
+#set joint torques to zero for first simulation
+numerical_specified = zeros(3)
+args = {'constants': numerical_constants,
+        'specified': numerical_specified}
+frames_per_sec = 60
+final_time = 10
+t = linspace(0.0, final_time, final_time * frames_per_sec)
+
+#integrate equations of motion
+right_hand_side(x0, 0.0, numerical_specified, numerical_constants)
+
+#create variable to store trajectories of states as func of time
+y = odeint(right_hand_side, x0, t, args=(numerical_specified, numerical_constants))
+
+#plot
+fig = plt.figure(1)
+ax = fig.add_subplot()
+plt.plot(t, rad2deg(y[:, :3])) #generalized positions-first 3 states
+plt.draw()
+plt.pause(1)
+
+#Visualization-------------------------------------------------------------------
+#print(pydy.viz.shapes.__all__)
+
+#draw spheres at each joint
+ankle_shape = Sphere(color='black', radius=0.1)
+knee_shape = Sphere(color='black', radius=0.1)
+hip_shape = Sphere(color='black', radius=0.1)
+head_shape = Sphere(color='black', radius=0.125)
+
+#create VisualizationFrame - attaches a shape to a reference frame and a point
+ankle_viz_frame = VisualizationFrame(inertial_frame, ankle, ankle_shape)
+knee_viz_frame = VisualizationFrame(inertial_frame, knee, knee_shape)
+hip_viz_frame = VisualizationFrame(inertial_frame, hip, hip_shape)
+
+#create "Head"
+head = Point('N')  # N for Noggin
+head.set_pos(hip, 2 * torso_com_length * torso_frame.y)
+head_viz_frame = VisualizationFrame(inertial_frame, head, head_shape)
+
+#make cylindrical links to connect joints
+lower_leg_center = Point('l_c')
+upper_leg_center = Point('u_c')
+torso_center = Point('t_c')
+lower_leg_center.set_pos(ankle, lower_leg_length / 2 * lower_leg_frame.y)
+upper_leg_center.set_pos(knee, upper_leg_length / 2 * upper_leg_frame.y)
+torso_center.set_pos(hip, torso_com_length * torso_frame.y)
+
+constants_dict = dict(zip(constants, numerical_constants))
+
+lower_leg_shape = Cylinder(radius=0.08, length=constants_dict[lower_leg_length], color='blue')
+lower_leg_viz_frame = VisualizationFrame('Lower Leg', lower_leg_frame, lower_leg_center, lower_leg_shape)
+
+upper_leg_shape = Cylinder(radius=0.08, length=constants_dict[upper_leg_length], color='green')
+upper_leg_viz_frame = VisualizationFrame('Upper Leg', upper_leg_frame, upper_leg_center, upper_leg_shape)
+
+torso_shape = Cylinder(radius=0.08, length=2 * constants_dict[torso_com_length], color='red')
+torso_viz_frame = VisualizationFrame('Torso', torso_frame, torso_center, torso_shape)
+
+scene = Scene(inertial_frame, ankle)
+#make list of frames we want in the scene
+scene.visualization_frames = [ankle_viz_frame,
+                              knee_viz_frame,
+                              hip_viz_frame,
+                              head_viz_frame,
+                              lower_leg_viz_frame,
+                              upper_leg_viz_frame,
+                              torso_viz_frame]
+scene.states_symbols = coordinates + speeds
+scene.constants = constants_dict
+scene.states_trajectories = y
+scene.display()
+#scene.display_ipython()
