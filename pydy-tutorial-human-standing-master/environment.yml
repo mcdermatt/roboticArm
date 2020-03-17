@@ -1,0 +1,5 @@
+name: pydy-tutorial-human-standing
+channels:
+  - conda-forge
+dependencies:
+  - pydy-optional
