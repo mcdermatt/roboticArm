@@ -143,7 +143,8 @@ loads = [lower_leg_grav_force,
          torso_torque]
 bodies = [lower_leg, upper_leg, torso]
 
-#TODO - figure out significance of fr and frstar
+#fr + frstar = 0
+#M(q,t)u˙=f(q,q˙,u,t)
 fr, frstar = kane.kanes_equations(bodies,loads)
 #pretty_print(trigsimp(fr + frstar))
 
@@ -206,12 +207,12 @@ right_hand_side(x0, 0.0, numerical_specified, numerical_constants)
 #create variable to store trajectories of states as func of time
 y = odeint(right_hand_side, x0, t, args=(numerical_specified, numerical_constants))
 
-#plot
-fig = plt.figure(1)
-ax = fig.add_subplot()
-plt.plot(t, rad2deg(y[:, :3])) #generalized positions-first 3 states
-plt.draw()
-plt.pause(1)
+#plot trajectory of each joint
+# fig = plt.figure(1)
+# ax = fig.add_subplot()
+# plt.plot(t, rad2deg(y[:, :3])) #generalized positions-first 3 states
+# plt.draw()
+# plt.pause(1)
 
 #Visualization-------------------------------------------------------------------
 #print(pydy.viz.shapes.__all__)
