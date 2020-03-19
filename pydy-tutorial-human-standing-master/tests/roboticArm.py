@@ -57,7 +57,7 @@ kinematical_differential_equations = [omega0 - theta0.diff(),
                                     omega2 - theta2.diff()]
 #pretty_print(kinematic_differential_equations)
 
-j0_frame.set_ang_vel(inertial_frame,omega0*inertial_frame.z)
+j0_frame.set_ang_vel(inertial_frame,omega0*inertial_frame.y)
 j1_frame.set_ang_vel(j0_frame,omega1*inertial_frame.z)
 j2_frame.set_ang_vel(j1_frame,omega2*inertial_frame.z)
 
@@ -102,6 +102,7 @@ g = symbols('g')
 
 #exert forces at a point
 j0_grav_force = (j0_mass_center, -j0_mass * g * inertial_frame.y)
+#j0_grav_force = (j0_mass_center, 0*inertial_frame.y)
 j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y)
 j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y)
 
@@ -172,7 +173,8 @@ print("generated right_hand_side")
 x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
-x0[1] = deg2rad(150)
+x0[1] = deg2rad(10)
+x0[3] = deg2rad(45)
 
 numerical_constants = array([0.05,  # j0_length [m]
                              0.01,  # j0_com_length [m]
@@ -192,7 +194,7 @@ numerical_constants = array([0.05,  # j0_length [m]
 numerical_specified = zeros(3)
 args = {'constants': numerical_constants,
         'specified': numerical_specified}
-frames_per_sec = 60
+frames_per_sec = 120
 final_time = 10
 t = linspace(0.0, final_time, final_time * frames_per_sec)
 
