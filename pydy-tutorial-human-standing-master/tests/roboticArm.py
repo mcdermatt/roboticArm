@@ -13,6 +13,9 @@ import pydy.viz
 from pydy.viz.visualization_frame import VisualizationFrame
 from pydy.viz.scene import Scene
 
+import os
+import inspect
+
 init_vprinting(use_latex='mathjax', pretty_print=True)
 
 #Kinematics ------------------------------
@@ -35,10 +38,10 @@ j2_frame.orient(j1_frame,'Axis',(theta2, j1_frame.z))
 joint0 = Point('j0')
 j0_length = symbols('l_j0')
 joint1 = Point('j1')
-joint1.set_pos(joint0, j0_length*j0_frame.y) #not sure if correct coordinate direction
+joint1.set_pos(joint0, j0_length*j0_frame.y)
 j1_length = symbols('l_j1')
 joint2 = Point('j2')
-joint2.set_pos(joint1,j1_length*j1_frame.y) #also not sure if .y is correct
+joint2.set_pos(joint1,j1_length*j1_frame.y)
 
 #COM locations
 j0_com_length, j1_com_length, j2_com_length = symbols('d_j0, d_j1, d_j2')
@@ -101,14 +104,16 @@ print("finished Inertia")
 g = symbols('g')
 
 #exert forces at a point
-j0_grav_force = (j0_mass_center, -j0_mass * g * inertial_frame.y)
-#j0_grav_force = (j0_mass_center, 0*inertial_frame.y)
+#j0_grav_force = (j0_mass_center, -j0_mass * g * inertial_frame.y)
+j0_grav_force = (j0_mass_center, 0*inertial_frame.y) #perp to dir of grav
 j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y)
+#j1_grav_force = (j1_mass_center, 0*inertial_frame.y)
 j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y)
 
 #joint torques
 j0_torque, j1_torque, j2_torque = dynamicsymbols('T_j0, T_j1, T_j2')
-l0_torque = (j0_frame, j0_torque * inertial_frame.z - j1_torque * inertial_frame.y)
+#l0_torque = (j0_frame, j0_torque * inertial_frame.y - j1_torque * inertial_frame.y)
+l0_torque = (j0_frame, j0_torque * inertial_frame.y*0) #debug
 l1_torque = (j1_frame, j1_torque * inertial_frame.z - j2_torque * inertial_frame.z)
 l2_torque = (j2_frame, j2_torque * inertial_frame.z)
 
@@ -167,13 +172,17 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
                                         mass_matrix=mass_matrix,
                                         specifieds=specified)
 print("generated right_hand_side")
+print(right_hand_side)
+
+print(os.path.abspath(inspect.getfile(right_hand_side)))
 
 #right_hand_side is a FUNCTION
 #initial values for system
 x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
-x0[1] = deg2rad(10)
+x0[1] = deg2rad(45)
+x0[2] = deg2rad(45)
 x0[3] = deg2rad(45)
 
 numerical_constants = array([0.05,  # j0_length [m]
@@ -194,8 +203,8 @@ numerical_constants = array([0.05,  # j0_length [m]
 numerical_specified = zeros(3)
 args = {'constants': numerical_constants,
         'specified': numerical_specified}
-frames_per_sec = 120
-final_time = 10
+frames_per_sec = 60
+final_time = 3
 t = linspace(0.0, final_time, final_time * frames_per_sec)
 
 #integrate equations of motion
