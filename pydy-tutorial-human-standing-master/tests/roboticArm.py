@@ -60,9 +60,9 @@ kinematical_differential_equations = [omega0 - theta0.diff(),
                                     omega2 - theta2.diff()]
 #pretty_print(kinematic_differential_equations)
 
-j0_frame.set_ang_vel(inertial_frame,omega0*inertial_frame.y)
-j1_frame.set_ang_vel(j0_frame,omega1*inertial_frame.z)
-j2_frame.set_ang_vel(j1_frame,omega2*inertial_frame.z)
+j0_frame.set_ang_vel(inertial_frame,omega0*j0_frame.y)
+j1_frame.set_ang_vel(j0_frame,omega1*j0_frame.z)
+j2_frame.set_ang_vel(j1_frame,omega2*j0_frame.z)
 
 #set base link fixed to ground plane
 joint0.set_vel(inertial_frame,0)
@@ -112,10 +112,14 @@ j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y)
 
 #joint torques
 j0_torque, j1_torque, j2_torque = dynamicsymbols('T_j0, T_j1, T_j2')
-#l0_torque = (j0_frame, j0_torque * inertial_frame.y - j1_torque * inertial_frame.y)
-l0_torque = (j0_frame, j0_torque * inertial_frame.y*0) #debug
+# l0_torque = (j0_frame, j0_torque * inertial_frame.y + j1_torque * inertial_frame.y)
+l0_torque = (j0_frame, j0_torque * j0_frame.y + j1_torque * j0_frame.y) #debug
 l1_torque = (j1_frame, j1_torque * inertial_frame.z - j2_torque * inertial_frame.z)
 l2_torque = (j2_frame, j2_torque * inertial_frame.z)
+
+# l0_torque = (j0_frame, j0_torque * inertial_frame.y + j1_torque * inertial_frame.y)
+# l1_torque = (j1_frame, j1_torque * j1_frame.z - j2_torque * j2_frame.z)
+# l2_torque = (j2_frame, j2_torque * j2_frame.z)
 
 print("finished Kinetics")
 
@@ -143,9 +147,9 @@ print("finished KanesMethod")
 mass_matrix = kane.mass_matrix_full
 print("finished mass_matrix")
 #pretty_print(mass_matrix)
-# forcing_vector = trigsimp(kane.forcing_full)
+#forcing_vector = trigsimp(kane.forcing_full)
 forcing_vector = kane.forcing_full
-#pretty_print(forcing_vector)
+pretty_print(forcing_vector)
 print("finished forcing_vector")
 
 print("finished Equations of Motion")
@@ -181,9 +185,12 @@ print(os.path.abspath(inspect.getfile(right_hand_side)))
 x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
-x0[1] = deg2rad(45)
-x0[2] = deg2rad(45)
-x0[3] = deg2rad(45)
+x0[0] = deg2rad(30)
+x0[1] = deg2rad(120)
+x0[2] = deg2rad(5)
+#initial vel
+x0[3] = deg2rad(180)
+#x0[5] = 0
 
 numerical_constants = array([0.05,  # j0_length [m]
                              0.01,  # j0_com_length [m]
