@@ -187,7 +187,7 @@ x0 = zeros(6)
 #start with pendulum upside down
 x0[0] = deg2rad(30)
 x0[1] = deg2rad(120)
-x0[2] = deg2rad(5)
+x0[2] = deg2rad(0)
 #initial vel
 x0[3] = deg2rad(180)
 #x0[5] = 0
