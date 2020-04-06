@@ -10,6 +10,9 @@ def returnFunction(self,a=0):
 
 
 def test2(self, b=0):
-	b = b-1
+	import numpy as np
+	def subfunc(b):
+		b = np.array([[b,b]])
+		print(b)
 
-	return b
+	return subfunc

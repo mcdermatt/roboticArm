@@ -12,7 +12,9 @@ from pydy.viz.shapes import Cylinder, Sphere
 import pydy.viz
 from pydy.viz.visualization_frame import VisualizationFrame
 from pydy.viz.scene import Scene
-
+# import dill
+# import pickle
+import cloudpickle
 import os
 import inspect
 
@@ -145,11 +147,14 @@ print("finished KanesMethod")
 
 #mass_matrix = trigsimp(kane.mass_matrix_full)
 mass_matrix = kane.mass_matrix_full
+# mass_matrix_file = "massMatrix.txt"
+# dill.dump(mass_matrix,open(mass_matrix_file, 'wb'))
+
 print("finished mass_matrix")
 #pretty_print(mass_matrix)
 #forcing_vector = trigsimp(kane.forcing_full)
 forcing_vector = kane.forcing_full
-pretty_print(forcing_vector)
+# pretty_print(forcing_vector)
 print("finished forcing_vector")
 
 print("finished Equations of Motion")
@@ -175,6 +180,18 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
                                         speeds, constants,
                                         mass_matrix=mass_matrix,
                                         specifieds=specified)
+
+#store right_hand_side to dill file so we don't have to go through solving every time
+EOM_file = "full_EOM_func.txt"
+# dill.dump(right_hand_side, open(EOM_file, 'wb'))
+# rhsString = dill.dumps(right_hand_side)
+# print(rhsString)
+
+# cloudPickleString = cloudpickle.dumps(right_hand_side)
+# print(cloudPickleString)
+
+cloudpickle.dump(right_hand_side,open(EOM_file, 'wb'))
+
 print("generated right_hand_side")
 print(right_hand_side)
 
