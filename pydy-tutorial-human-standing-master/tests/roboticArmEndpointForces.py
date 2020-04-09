@@ -49,7 +49,7 @@ joint2 = Point('j2')
 joint2.set_pos(joint1,j1_length*j1_frame.y)
 #create End Effector
 EE = Point('E')
-EE.set_pos(joint2, j2_com_length*j2_frame.y)
+
 
 #COM locations
 j0_com_length, j1_com_length, j2_com_length = symbols('d_j0, d_j1, d_j2')
@@ -59,7 +59,7 @@ j1_mass_center = Point('j1_o')
 j1_mass_center.set_pos(joint1, j1_com_length * j1_frame.y)
 j2_mass_center = Point('j2_o')
 j2_mass_center.set_pos(joint2, j2_com_length * j2_frame.y)
-
+EE.set_pos(joint2, j2_com_length*j2_frame.y)
 #kinematic differential equations
 #init var for generalized speeds (aka angular velocities)
 omega0, omega1, omega2 = dynamicsymbols('omega0, omega1, omega2')
@@ -80,6 +80,7 @@ joint1.v2pt_theory(joint0, inertial_frame, j0_frame)
 j1_mass_center.v2pt_theory(joint1, inertial_frame, j1_frame)
 joint2.v2pt_theory(joint1, inertial_frame, j1_frame)
 j2_mass_center.v2pt_theory(joint2, inertial_frame, j2_frame)
+EE.v2pt_theory(joint2,inertial_frame,j2_frame)
 
 print("finished Kinematics")
 
@@ -115,11 +116,12 @@ g = symbols('g')
 #exert forces at a point
 #j0_grav_force = (j0_mass_center, -j0_mass * g * inertial_frame.y)
 j0_grav_force = (j0_mass_center, 0*inertial_frame.y) #perp to dir of grav
-j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y * 0)
+j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y)
 #j1_grav_force = (j1_mass_center, 0*inertial_frame.y)
-j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y * 0)
+j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y)
 
-EE_force_x, EE_force_y, EE_force_z = symbols(Fx,Fy,Fz)
+EE_force_x, EE_force_y, EE_force_z = symbols('Fx,Fy,Fz')
+EE_force = (EE,EE_force_x*inertial_frame.x + EE_force_y*inertial_frame.y + EE_force_z*inertial_frame.z)
 
 #joint torques
 j0_torque, j1_torque, j2_torque = dynamicsymbols('T_j0, T_j1, T_j2')
@@ -140,9 +142,10 @@ speeds = [omega0, omega1, omega2]
 
 kane = KanesMethod(inertial_frame, coordinates, speeds, kinematical_differential_equations)
 
-loads = [j0_grav_force, 
-		 j1_grav_force, 
-		 j2_grav_force,
+loads = [#j0_grav_force, 
+		 #j1_grav_force, 
+		 #j2_grav_force,
+		 EE_force,
 		 l0_torque,
 		 l1_torque,
 		 l2_torque]
@@ -180,7 +183,10 @@ constants = [j0_length,
 			 j2_com_length,
 			 j2_mass,
 			 j2_inertia,
-			 g]
+			 g,
+			 EE_force_x,
+			 EE_force_y,
+			 EE_force_z]
 specified = [j0_torque, j1_torque, j2_torque]
 
 #generate ODE function that numerically evaluates the RHS of first order diffeq 
@@ -211,12 +217,12 @@ print(os.path.abspath(inspect.getfile(right_hand_side)))
 x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
-x0[0] = deg2rad(30)
-x0[1] = deg2rad(120)
+# x0[0] = deg2rad(45)
+x0[1] = deg2rad(170)
 x0[2] = deg2rad(0)
 #initial vel
-x0[3] = deg2rad(180)
-x0[4] = deg2rad(-90)
+#x0[3] = deg2rad(180)
+#x0[4] = deg2rad(-90)
 #x0[5] = 0
 
 numerical_constants = array([0.05,  # j0_length [m]
@@ -230,7 +236,10 @@ numerical_constants = array([0.05,  # j0_length [m]
                              0.158,  # j2_com_length [m]
                              2.72,  # j2_mass [kg]
                              0.001,  # NOT USED j2_inertia [kg*m^2]
-                             9.81],  # acceleration due to gravity [m/s^2]
+                             9.81, #gravity [m/s^2]
+                             1, #Fx
+                             0, #Fy
+                             0,],  #Fz 
                             ) 
 
 #set joint torques to zero for first simulation
