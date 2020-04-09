@@ -18,9 +18,8 @@ import cloudpickle
 import os
 import inspect
 
-#this file is used to generate a serialized function that can be used to estimate
-# next states given current states
-#CURRENTLY INCLUDES EFFECT OF GRAVITY
+#this file is used to generate serialized function to predict end effector inertia
+# ellipse as function of current state
 
 init_vprinting(use_latex='mathjax', pretty_print=True)
 
@@ -48,6 +47,9 @@ joint1.set_pos(joint0, j0_length*j0_frame.y)
 j1_length = symbols('l_j1')
 joint2 = Point('j2')
 joint2.set_pos(joint1,j1_length*j1_frame.y)
+#create End Effector
+EE = Point('E')
+EE.set_pos(joint2, j2_com_length*j2_frame.y)
 
 #COM locations
 j0_com_length, j1_com_length, j2_com_length = symbols('d_j0, d_j1, d_j2')
@@ -109,12 +111,15 @@ print("finished Inertia")
 #Kinetics---------------------------------------------------------------
 g = symbols('g')
 
+#ASSUMES GRAVITY BEING COMPENSATED BY ROBOT
 #exert forces at a point
 #j0_grav_force = (j0_mass_center, -j0_mass * g * inertial_frame.y)
 j0_grav_force = (j0_mass_center, 0*inertial_frame.y) #perp to dir of grav
-j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y)
+j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y * 0)
 #j1_grav_force = (j1_mass_center, 0*inertial_frame.y)
-j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y)
+j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y * 0)
+
+EE_force_x, EE_force_y, EE_force_z = symbols(Fx,Fy,Fz)
 
 #joint torques
 j0_torque, j1_torque, j2_torque = dynamicsymbols('T_j0, T_j1, T_j2')
@@ -186,7 +191,7 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
                                         specifieds=specified)
 
 #store right_hand_side to dill file so we don't have to go through solving every time
-EOM_file = "full_EOM_func.txt"
+EOM_file = "robot_inertia_func.txt"
 # dill.dump(right_hand_side, open(EOM_file, 'wb'))
 # rhsString = dill.dumps(right_hand_side)
 # print(rhsString)
@@ -262,10 +267,6 @@ EE_shape = Sphere(color='red',radius = 0.025)
 j0_viz_frame = VisualizationFrame(inertial_frame, joint0, j0_shape)
 j1_viz_frame = VisualizationFrame(inertial_frame, joint1, j1_shape)
 j2_viz_frame = VisualizationFrame(inertial_frame, joint2, j2_shape)
-
-#create End Effector
-EE = Point('E')
-EE.set_pos(joint2, j2_com_length*j2_frame.y)
 EE_viz_frame = VisualizationFrame(inertial_frame, EE, EE_shape)
 
 #make cylindrical links to connect joints

@@ -20,7 +20,7 @@ import inspect
 
 #this file is used to generate a serialized function that can be used to estimate
 # next states given current states
-#CURRENTLY INCLUDES EFFECT OF GRAVITY
+#ASSUMES GRAVITY SUFFICIENTLY COMPENSATED BY ROBOT
 
 init_vprinting(use_latex='mathjax', pretty_print=True)
 
@@ -112,9 +112,9 @@ g = symbols('g')
 #exert forces at a point
 #j0_grav_force = (j0_mass_center, -j0_mass * g * inertial_frame.y)
 j0_grav_force = (j0_mass_center, 0*inertial_frame.y) #perp to dir of grav
-j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y)
+j1_grav_force = (j1_mass_center, -j1_mass * g * inertial_frame.y * 0)
 #j1_grav_force = (j1_mass_center, 0*inertial_frame.y)
-j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y)
+j2_grav_force = (j2_mass_center, -j2_mass * g * inertial_frame.y * 0)
 
 #joint torques
 j0_torque, j1_torque, j2_torque = dynamicsymbols('T_j0, T_j1, T_j2')
@@ -186,7 +186,7 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
                                         specifieds=specified)
 
 #store right_hand_side to dill file so we don't have to go through solving every time
-EOM_file = "full_EOM_func.txt"
+EOM_file = "full_EOM_func_NO_GRAVITY.txt"
 # dill.dump(right_hand_side, open(EOM_file, 'wb'))
 # rhsString = dill.dumps(right_hand_side)
 # print(rhsString)
@@ -207,10 +207,10 @@ x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
 x0[0] = deg2rad(30)
-x0[1] = deg2rad(120)
-x0[2] = deg2rad(0)
+x0[1] = deg2rad(45)
+x0[2] = deg2rad(90)
 #initial vel
-x0[3] = deg2rad(180)
+#x0[3] = deg2rad(180)
 x0[4] = deg2rad(-90)
 #x0[5] = 0
 
@@ -233,7 +233,7 @@ numerical_specified = zeros(3)
 args = {'constants': numerical_constants,
         'specified': numerical_specified}
 frames_per_sec = 60
-final_time = 3
+final_time = 5
 t = linspace(0.0, final_time, final_time * frames_per_sec)
 
 #integrate equations of motion
