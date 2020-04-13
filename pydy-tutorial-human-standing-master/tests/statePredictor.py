@@ -6,7 +6,7 @@ import time
 class statePredictor:
 
 	#using EOM_func with gravity
-	rhs = cloudpickle.load(open("full_EOM_func.txt", 'rb'))
+	rhs = cloudpickle.load(open("full_EOM_func_NO_GRAVITY.txt", 'rb'))
 
 	numerical_constants = array([0.05,  # j0_length [m]
 	                             0.01,  # j0_com_length [m]

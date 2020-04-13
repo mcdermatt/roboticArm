@@ -100,8 +100,11 @@ class inertiaEstimator:
 			print("initial = ", initial)
 			diff[i] = abs(abs(fin[i]) - abs(initial[i]))
 			print("diff = ", diff)
+			#dy = v0t + (1/2)at^2
+			#diff = (1/2)(a)(1^2)
+			#diff = a/2
 			#F = Ia
-			#0.1 = I*(diff)
-		inertias = 0.1/diff
+			#0.1 = I*(2*diff)
+		inertias = 0.1/(2*diff)
 
 		return(inertias)
