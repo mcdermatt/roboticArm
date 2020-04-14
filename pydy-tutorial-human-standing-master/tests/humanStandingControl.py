@@ -13,6 +13,8 @@ from pydy.viz.shapes import Cylinder, Sphere
 import pydy.viz
 from pydy.viz.visualization_frame import VisualizationFrame
 from pydy.viz.scene import Scene
+from utils import controllable
+from scipy.linalg import solve_continuous_are
 
 #from matplotlib.pyplot import plot, legend, xlabel, ylabel, rcParams
 
@@ -149,6 +151,7 @@ bodies = [lower_leg, upper_leg, torso]
 fr, frstar = kane.kanes_equations(bodies,loads)
 #pretty_print(trigsimp(fr + frstar))
 
+#TODO may need to NOT simplify MM and FV for performance
 mass_matrix = trigsimp(kane.mass_matrix_full)
 #pretty_print(mass_matrix)
 forcing_vector = trigsimp(kane.forcing_full)
@@ -195,9 +198,60 @@ numerical_constants = array([0.611,  # lower_leg_length [m]
                              9.81],  # acceleration due to gravity [m/s^2]
                             ) 
 #set joint torques to zero for first simulation
-numerical_specified = zeros(3)
+#numerical_specified = zeros(3)
+
+#set equilibrium point as straight up at zero velocity
+equilibrium_point = zeros(len(coordinates + speeds))
+
+#create dict containing numerical values of equilibrium point
+equilibrium_dict = dict(zip(coordinates + speeds, equilibrium_point))
+
+#maps symbolic constants to numerical constants
+parameter_dict = dict(zip(constants, numerical_constants))
+
+#create object to hold generalized form of EOM to be used to linearize the system
+linearizer = kane.to_linearizer()
+#linearizer defaults to alphabetical sorting- don't use that
+linearizer.r = Matrix(specified)
+
+#use linearizer object to create symbolic linearization of system
+#BE CAREFUL: arg <A_and_B=True> is VERY computationally expensive
+A, B = linearizer.linearize(op_point=[equilibrium_dict, parameter_dict], A_and_B=True)
+
+#convert to numpy
+A = matrix2numpy(A, dtype=float)
+B = matrix2numpy(B, dtype=float)
+# pretty_print(A)
+# pretty_print(B)
+
+#true if system is controllable 
+#print(controllable(A,B))
+
+#setup cost function that minimizes deviation from desired state
+#should also minimize joint torques
+#cost func J = 0.5*integral_of((x^T)Qx + (u^T)Ru)dt from t=0 to t=infinity
+
+#There exists a matrix K that calculates optimal inputs u(t) as func of given states x
+# u(t) = -K*x(t)
+# K can be calculated from the RICCATI EQUATION as follows:
+# K = (R^-1)(B^T)S 
+
+#Generate weighting matrices Q and R that allow how much solution should be weighted towards
+# minimizing error in states vs effort in the inputs u
+#(Usually a good idea to start out with identity matrices)
+Q = eye(6)
+R = eye(3)
+
+#compute K
+S = solve_continuous_are(A, B, Q, R)
+K = dot(dot(inv(R), B.T),  S)
+#pretty_print(K)
+
+#STOPPING HERE FOR THE DAY
+
 args = {'constants': numerical_constants,
         'specified': numerical_specified}
+
 frames_per_sec = 60
 final_time = 10
 t = linspace(0.0, final_time, final_time * frames_per_sec)
