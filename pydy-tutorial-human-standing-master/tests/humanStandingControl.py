@@ -4,7 +4,7 @@ from sympy.physics.mechanics import dynamicsymbols, ReferenceFrame, Point, inert
 from sympy.physics.vector import init_vprinting, vlatex
 from IPython.display import Image
 from sympy.printing.pretty.pretty import pretty_print
-from numpy import deg2rad, rad2deg, array, zeros, linspace, eye, dot, asarray
+from numpy import deg2rad, rad2deg, array, zeros, linspace, eye, dot, asarray, pi
 from numpy.linalg import inv
 from scipy.integrate import odeint
 from pydy.codegen.ode_function_generators import generate_ode_function
@@ -138,9 +138,9 @@ coordinates = [theta1, theta2, theta3]
 speeds = [omega1, omega2, omega3]
 
 kane = KanesMethod(inertial_frame, coordinates, speeds, kinematical_differential_equations)
-loads = [lower_leg_grav_force,
-         upper_leg_grav_force,
-         torso_grav_force, 
+loads = [#lower_leg_grav_force,
+         #upper_leg_grav_force,
+         #torso_grav_force, 
          lower_leg_torque,
          upper_leg_torque,
          torso_torque]
@@ -182,7 +182,13 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
 #right_hand_side is a FUNCTION
 #initial values for system
 x0 = zeros(6)
-x0[:3] = deg2rad(2.0)
+# x0[:3] = deg2rad(2.0)
+x0[0] = deg2rad(45)
+x0[1] = deg2rad(45)
+x0[2] = deg2rad(45)
+x0[3] = deg2rad(45)
+# x0[4] = deg2rad(-180)
+# x0[5] = deg2rad(180)
 
 numerical_constants = array([0.611,  # lower_leg_length [m]
                              0.387,  # lower_leg_com_length [m]
@@ -202,6 +208,10 @@ numerical_constants = array([0.611,  # lower_leg_length [m]
 
 #set equilibrium point as straight up at zero velocity
 equilibrium_point = zeros(len(coordinates + speeds))
+# equilibrium_point[0] = pi/3 #does not work
+# equilibrium_point[1] = pi/3
+# equilibrium_point[2] = pi/3
+#equilibrium_point[3] = deg2rad(45) #should not work and does not work
 
 #create dict containing numerical values of equilibrium point
 equilibrium_dict = dict(zip(coordinates + speeds, equilibrium_point))
@@ -239,7 +249,10 @@ B = matrix2numpy(B, dtype=float)
 #Generate weighting matrices Q and R that allow how much solution should be weighted towards
 # minimizing error in states vs effort in the inputs u
 #(Usually a good idea to start out with identity matrices)
-Q = eye(6)
+Q = eye(6) #*1000 # if you make everything big, velocity still wants to be zero
+Q[0,0] = 10000000
+Q[1,1] = 10000000
+Q[2,2] = 10000000
 R = eye(3)
 
 #compute K
@@ -247,20 +260,26 @@ S = solve_continuous_are(A, B, Q, R)
 K = dot(dot(inv(R), B.T),  S)
 #pretty_print(K)
 
-#STOPPING HERE FOR THE DAY
+def controller(x, t):
+    """Returns the output of the controller, i.e. the joint torques, given
+    the current state."""
+    return -dot(K, x)
 
-args = {'constants': numerical_constants,
-        'specified': numerical_specified}
+# args = {'constants': numerical_constants,
+#         'specified': numerical_specified}
 
 frames_per_sec = 60
 final_time = 10
 t = linspace(0.0, final_time, final_time * frames_per_sec)
 
 #integrate equations of motion
-right_hand_side(x0, 0.0, numerical_specified, numerical_constants)
+right_hand_side(x0, 0.0, controller(x0,t), numerical_constants)
 
 #create variable to store trajectories of states as func of time
-y = odeint(right_hand_side, x0, t, args=(numerical_specified, numerical_constants))
+#NO CONTROL 
+#y = odeint(right_hand_side, x0, t, args=(numerical_specified, numerical_constants))
+#Control
+y = odeint(right_hand_side,x0,t,args=(controller, numerical_constants))
 
 #plot trajectory of each joint
 # fig = plt.figure(1)
