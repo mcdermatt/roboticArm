@@ -1,11 +1,7 @@
 from __future__ import print_function, division
-from sympy import symbols, simplify, trigsimp, Matrix, matrix2numpy
-from sympy.physics.mechanics import dynamicsymbols, ReferenceFrame, Point, inertia, RigidBody, KanesMethod
-from sympy.physics.vector import init_vprinting, vlatex
 from IPython.display import Image
 from sympy.printing.pretty.pretty import pretty_print
-from numpy import deg2rad, rad2deg, array, zeros, linspace, eye, dot, asarray, pi
-from numpy.linalg import inv
+import numpy as np
 from scipy.integrate import odeint
 from pydy.codegen.ode_function_generators import generate_ode_function
 import matplotlib.pyplot as plt
@@ -15,7 +11,11 @@ from pydy.viz.visualization_frame import VisualizationFrame
 from pydy.viz.scene import Scene
 from utils import controllable
 from scipy.linalg import solve_continuous_are
-
+import control
+import sympy
+from sympy import symbols, simplify, trigsimp
+from sympy.physics.mechanics import dynamicsymbols, ReferenceFrame, Point, inertia, RigidBody, KanesMethod
+from sympy.physics.vector import init_vprinting, vlatex
 #from matplotlib.pyplot import plot, legend, xlabel, ylabel, rcParams
 
 init_vprinting(use_latex='mathjax', pretty_print=True)
@@ -181,16 +181,16 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
                                         specifieds=specified)
 #right_hand_side is a FUNCTION
 #initial values for system
-x0 = zeros(6)
+x0 = np.zeros(6)
 # x0[:3] = deg2rad(2.0)
-x0[0] = deg2rad(45)
-x0[1] = deg2rad(45)
-x0[2] = deg2rad(45)
-x0[3] = deg2rad(45)
+x0[0] = np.deg2rad(45)
+x0[1] = np.deg2rad(45)
+x0[2] = np.deg2rad(45)
+x0[3] = np.deg2rad(45)
 # x0[4] = deg2rad(-180)
 # x0[5] = deg2rad(180)
 
-numerical_constants = array([0.611,  # lower_leg_length [m]
+numerical_constants = np.array([0.611,  # lower_leg_length [m]
                              0.387,  # lower_leg_com_length [m]
                              6.769,  # lower_leg_mass [kg]
                              0.101,  # lower_leg_inertia [kg*m^2]
@@ -207,14 +207,15 @@ numerical_constants = array([0.611,  # lower_leg_length [m]
 #numerical_specified = zeros(3)
 
 #set equilibrium point as straight up at zero velocity
-equilibrium_point = zeros(len(coordinates + speeds))
-# equilibrium_point[0] = pi/3 #does not work
-# equilibrium_point[1] = pi/3
+equilibrium_point = np.zeros(len(coordinates + speeds))
+# equilibrium_point[0] = 1 #does not work
+# equilibrium_point[1] = np.pi/3
 # equilibrium_point[2] = pi/3
 #equilibrium_point[3] = deg2rad(45) #should not work and does not work
 
 #create dict containing numerical values of equilibrium point
 equilibrium_dict = dict(zip(coordinates + speeds, equilibrium_point))
+pretty_print(equilibrium_dict)
 
 #maps symbolic constants to numerical constants
 parameter_dict = dict(zip(constants, numerical_constants))
@@ -222,17 +223,34 @@ parameter_dict = dict(zip(constants, numerical_constants))
 #create object to hold generalized form of EOM to be used to linearize the system
 linearizer = kane.to_linearizer()
 #linearizer defaults to alphabetical sorting- don't use that
-linearizer.r = Matrix(specified)
+linearizer.r = sympy.Matrix(specified)
 
 #use linearizer object to create symbolic linearization of system
 #BE CAREFUL: arg <A_and_B=True> is VERY computationally expensive
+#old strategy, works with zero operating points and nothing else
 A, B = linearizer.linearize(op_point=[equilibrium_dict, parameter_dict], A_and_B=True)
 
+# op_point = {theta1: 0, theta2: 0, theta3:0,omega1: 0, omega2: 0, omega3: 0}
+#new attempt- not working
+#A, B = linearizer.linearize(A_and_B=True, op_point=op_point)
+
+# A, B, inp_vec = kane.linearize(A_and_B=True, op_point=op_point, new_method = True)
+
 #convert to numpy
-A = matrix2numpy(A, dtype=float)
-B = matrix2numpy(B, dtype=float)
+A = sympy.matrix2numpy(A, dtype=float)
+B = sympy.matrix2numpy(B, dtype=float)
 # pretty_print(A)
 # pretty_print(B)
+
+#C gets positon states for output y
+C = np.zeros((6,6))
+C[0,0] = 1
+C[1,1] = 1
+C[2,2] = 1
+D = np.zeros((6,3))
+
+SS = control.StateSpace(A,B,C,D)
+print(SS)
 
 #true if system is controllable 
 #print(controllable(A,B))
@@ -249,28 +267,34 @@ B = matrix2numpy(B, dtype=float)
 #Generate weighting matrices Q and R that allow how much solution should be weighted towards
 # minimizing error in states vs effort in the inputs u
 #(Usually a good idea to start out with identity matrices)
-Q = eye(6) #*1000 # if you make everything big, velocity still wants to be zero
+Q = np.eye(6) #*1000 # if you make everything big, velocity still wants to be zero
 Q[0,0] = 10000000
 Q[1,1] = 10000000
 Q[2,2] = 10000000
-R = eye(3)
 
-#compute K
+R = np.eye(3)
+
+#compute K using python-control library
+# Kstar = control.care(A,B,Q,R) #needs slycot lib
+# print("Kstar = ", Kstar)
+
+#compute K using method from pydy tutorial
 S = solve_continuous_are(A, B, Q, R)
-K = dot(dot(inv(R), B.T),  S)
-#pretty_print(K)
+K = np.dot(np.dot(np.linalg.inv(R), B.T),  S)
+pretty_print(K)
+# K[1,1] = 0 #kill joint 1 by setting this to zero
 
 def controller(x, t):
     """Returns the output of the controller, i.e. the joint torques, given
     the current state."""
-    return -dot(K, x)
+    return -np.dot(K, x)
 
 # args = {'constants': numerical_constants,
 #         'specified': numerical_specified}
 
 frames_per_sec = 60
 final_time = 10
-t = linspace(0.0, final_time, final_time * frames_per_sec)
+t = np.linspace(0.0, final_time, final_time * frames_per_sec)
 
 #integrate equations of motion
 right_hand_side(x0, 0.0, controller(x0,t), numerical_constants)

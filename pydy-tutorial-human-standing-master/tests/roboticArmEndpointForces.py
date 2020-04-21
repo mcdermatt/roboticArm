@@ -140,6 +140,7 @@ print("finished Kinetics")
 coordinates = [theta0, theta1, theta2]
 speeds = [omega0, omega1, omega2]
 
+#kane is object
 kane = KanesMethod(inertial_frame, coordinates, speeds, kinematical_differential_equations)
 
 loads = [#j0_grav_force, 
@@ -159,15 +160,17 @@ print("finished KanesMethod")
 
 #mass_matrix = trigsimp(kane.mass_matrix_full)
 mass_matrix = kane.mass_matrix_full
+
 # mass_matrix_file = "massMatrix.txt"
 # dill.dump(mass_matrix,open(mass_matrix_file, 'wb'))
 
 print("finished mass_matrix")
-#pretty_print(mass_matrix)
+# pretty_print(mass_matrix)
 #forcing_vector = trigsimp(kane.forcing_full)
 forcing_vector = kane.forcing_full
-# pretty_print(forcing_vector)
+
 print("finished forcing_vector")
+# pretty_print(forcing_vector)
 
 print("finished Equations of Motion")
 
@@ -244,6 +247,7 @@ numerical_constants = array([0.05,  # j0_length [m]
 
 #set joint torques to zero for first simulation
 numerical_specified = zeros(3)
+# numerical_specified[0] = 0.1 #changing this value will add constant torque to joint
 args = {'constants': numerical_constants,
         'specified': numerical_specified}
 frames_per_sec = 60

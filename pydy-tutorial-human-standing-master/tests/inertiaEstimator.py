@@ -86,6 +86,25 @@ class inertiaEstimator:
 
 		return(cart)
 
+	def cartesian2Joint(self, x, y, z):
+		joint = zeros(3)
+
+		l1 = numerical_constants[4] # upper arm
+		l2 = numerical_constants[4] # lower arm
+		
+		r = np.sqrt((x*x)+(y*y)+(z*z))
+		phi = np.arctan2((np.sqrt((x  * x) + (y * y))), z )
+		theta = np.arctan2(y, x)
+
+		#elbow
+		joint[2] = np.arccos(((l1*l1)+(l2*l2)-(r*r))/(-2*l1*l2))
+		#shoulder side to side
+		joint[0] = theta
+		#shoulder up down
+		joint[1] = np.pi + phi + np.arccos(((l1*l1)-(l2*l2)+(r*r))/(-2*l1*r))
+
+		return(joint)
+
 	def getInertia(self):
 		states = self.predict()
 		diff = zeros(3)
@@ -108,3 +127,54 @@ class inertiaEstimator:
 		inertias = 0.1/(2*diff)
 
 		return(inertias)
+
+	def getForces(self, traj):
+		"""gets forces required to move manipulator to next state
+			tarj = x y z cords of last two states"""
+		#traj = np.zeros([3,2])
+
+		#basically this function looks at the difference in cartesian space between 
+		#   the last two states and tries to figure out the torques required to 
+		#   make the next state continue the pattern
+
+		#this is used to make the arm act as if the end effector is a heavy object 
+		#   floating in zero gravity that has its own virtual inertia in
+		#   the world frame. The torque output of this function is to be added 
+		#   to existing gravity and friction cancellation torques.
+
+		#convert input trajectory from world space to joint space
+		lastJointPos = cartesian2Joint(traj[:,0])
+		currJointPos = cartesian2Joint(traj[:,1])
+		#figure out what angles joints must be at to continue movement in world space
+		# nextJointPos = 
+
+		#get current velocities of each joint for later use in inertia calculation
+		dTheta = currJointPos - lastJointPos
+
+		#init external forces on end effector to zero
+		self.numerical_constants[12] = 0
+		self.numerical_constants[13] = 0
+		self.numerical_constants[14] = 0
+
+		#loop through different torques applied at each joint until a satisfactory
+		#   solution is obtained 
+		
+		#starting with end effector, get torque values that will produce desired result
+		#   using binary search tree for n iterations.
+		#   It is importatnt to note that this value is NOT the final solution because
+		#   it does not take into account acceleration from j0 and j1.
+		#   Using obtained j2 torque as a stand in, torque of j0 and j1 is calculated and
+		#   values are then refined m times by repeating this process
+
+		forces = zeros(3) #debug
+
+		#speed test
+		count = 0
+		while count <= 5:
+			self.numerical_specified[0] = count*0.1
+			states = self.predict()
+			print(states)
+			count +=1
+
+		return(forces)
+
