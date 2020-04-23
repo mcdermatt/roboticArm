@@ -1,5 +1,5 @@
 import cloudpickle
-from numpy import zeros, array, linspace, deg2rad
+from numpy import zeros, array, linspace, deg2rad, sin, cos, pi
 import numpy as np
 from scipy.integrate import odeint
 
@@ -90,7 +90,7 @@ class inertiaEstimator:
 		joint = zeros(3)
 
 		l1 = numerical_constants[4] # upper arm
-		l2 = numerical_constants[4] # lower arm
+		l2 = 0.2374 # lower arm
 		
 		r = np.sqrt((x*x)+(y*y)+(z*z))
 		phi = np.arctan2((np.sqrt((x  * x) + (y * y))), z )
@@ -143,19 +143,54 @@ class inertiaEstimator:
 		#   to existing gravity and friction cancellation torques.
 
 		#convert input trajectory from world space to joint space
-		lastJointPos = cartesian2Joint(traj[:,0])
-		currJointPos = cartesian2Joint(traj[:,1])
+		#lastJointPos = self.cartesian2Joint(traj[:,0])
+		#cjp = self.cartesian2Joint(traj[:,1]) #current joint pos
+		cjp = np.zeros(3)
 		#figure out what angles joints must be at to continue movement in world space
 		# nextJointPos = 
 
 		#get current velocities of each joint for later use in inertia calculation
-		dTheta = currJointPos - lastJointPos
+		# dTheta = cjp - lastJointPos
 
-		#init external forces on end effector to zero
-		self.numerical_constants[12] = 0
-		self.numerical_constants[13] = 0
-		self.numerical_constants[14] = 0
+		#manipulator jacobian allows conversion between joint torques and EE forces
+		#   because we know the inertia of the end effector at any point xyz
+		#   (because of getInertia() func.) we can just use that to figure out how much
+		#   force is required to cancel inertia. 
+		#   Internal robot dynamics are already accounted for in getInertia()
 
+		#init joint lengths
+		l0 = 0
+		l1 = self.numerical_constants[4]
+		l2 = 0.2374
+
+		#need derivative of this
+		# J = np.array([[l2*(-np.sin(cjp[0])*np.cos(cjp[1])*np.cos(cjp[2]) + np.sin(cjp[0])*np.sin(cjp[1])*np.sin(cjp[2])) - l1*np.sin(cjp[0])*np.cos(cjp[1])],
+		# 			  [l2*(np.cos(cjp[0])*np.cos(cjp[1])*np.cos(cjp[2]) - np.cos(cjp[0])*np.sin(cjp[1])*np.sin(cjp[2])) + l1*np.cos(cjp[0])*np.cos(cjp[1])],
+		# 			  [l2*(np.sin(cjp[1])*np.cos(cjp[2]) + np.cos(cjp[1])*np.sin(cjp[2])) + l1*np.sin(cjp[1]) + l0]])
+
+		J = zeros([3,3])
+
+		#dx/dq0
+		J[0,0] = l2*(-cos(cjp[0])*cos(cjp[1] + pi/2)*cos(cjp[2]) + cos(cjp[0])*sin(cjp[1] + pi/2)*sin(cjp[2])) - l1*cos(cjp[0])*cos(cjp[1] + pi/2)
+		#dx/dq1
+		J[0,1] = l2*(sin(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]) + sin(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2])) + l1*sin(cjp[0])*sin(cjp[1] + pi/2)
+		#dx/dq2
+		J[0,2] = l2*(sin(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2]) + sin(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2])) 
+		#dy/dq0
+		J[1,0] = l2*(-sin(cjp[0])*cos(cjp[1] + pi/2)*cos(cjp[2]) + sin(cjp[0])*sin(cjp[1] + pi/2)*sin(cjp[2])) - l1*sin(cjp[0])*cos(cjp[1] + pi/2)
+		#dy/dq1
+		J[1,1] = l2*(-cos(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]) - cos(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2])) - l1*cos(cjp[0])*sin(cjp[1] + pi/2)
+		#dy/dq2
+		J[1,2] = l2*(-cos(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2]) - cos(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]))
+		#dz/dq0
+		J[2,0] = 0 #this makes sense becasue there is no way j0 can affect z
+		#dz/dq1
+		J[2,1] = l2*(cos(cjp[1] + pi/2)*cos(cjp[2]) - sin(cjp[1] + pi/2)*sin(cjp[2])) + l1*cos(cjp[1])
+		#dz/dq2
+		J[2,2] = l2*(-sin(cjp[1] + pi/2)*sin(cjp[2]) + cos(cjp[1] + pi/2)*cos(cjp[2]))
+
+
+		#this might not be necessary----------------------------------------
 		#loop through different torques applied at each joint until a satisfactory
 		#   solution is obtained 
 		
@@ -166,15 +201,15 @@ class inertiaEstimator:
 		#   Using obtained j2 torque as a stand in, torque of j0 and j1 is calculated and
 		#   values are then refined m times by repeating this process
 
-		forces = zeros(3) #debug
+		#forces = zeros(3) #debug
 
 		#speed test
-		count = 0
-		while count <= 5:
-			self.numerical_specified[0] = count*0.1
-			states = self.predict()
-			print(states)
-			count +=1
+		# count = 0
+		# while count <= 5:
+		# 	self.numerical_specified[0] = count*0.1
+		# 	states = self.predict()
+		# 	print(states)
+		# 	count +=1
 
-		return(forces)
+		return(J)
 

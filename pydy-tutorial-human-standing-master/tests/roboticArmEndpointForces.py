@@ -66,7 +66,7 @@ omega0, omega1, omega2 = dynamicsymbols('omega0, omega1, omega2')
 kinematical_differential_equations = [omega0 - theta0.diff(),
                                     omega1 - theta1.diff(),
                                     omega2 - theta2.diff()]
-#pretty_print(kinematic_differential_equations)
+pretty_print(kinematical_differential_equations)
 
 j0_frame.set_ang_vel(inertial_frame,omega0*j0_frame.y)
 j1_frame.set_ang_vel(j0_frame,omega1*j0_frame.z)
