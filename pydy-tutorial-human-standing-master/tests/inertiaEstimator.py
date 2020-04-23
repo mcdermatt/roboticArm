@@ -2,6 +2,7 @@ import cloudpickle
 from numpy import zeros, array, linspace, deg2rad, sin, cos, pi
 import numpy as np
 from scipy.integrate import odeint
+from statePredictor import statePredictor
 
 class inertiaEstimator:
 
@@ -36,6 +37,8 @@ class inertiaEstimator:
 	x0[0] = deg2rad(90)
 	x0[1] = deg2rad(45)
 	x0[2] = deg2rad(45)
+
+	sp = statePredictor()
 
 	def predictx(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#stateVec = zeros([3,6])
@@ -114,11 +117,11 @@ class inertiaEstimator:
 		for i in range(0,3):
 		#convert to cartesian space
 			fin = self.joint2Cartesian(states[i,0],states[i,1],states[i,2])
-			print("fin = ",fin)
+		
 			initial = self.joint2Cartesian(self.x0[0],self.x0[1],self.x0[2])
-			print("initial = ", initial)
+			
 			diff[i] = abs(abs(fin[i]) - abs(initial[i]))
-			print("diff = ", diff)
+			
 			#dy = v0t + (1/2)at^2
 			#diff = (1/2)(a)(1^2)
 			#diff = a/2
@@ -128,9 +131,11 @@ class inertiaEstimator:
 
 		return(inertias)
 
-	def getForces(self, traj):
+	def getForces(self, cjp, ljp, dt):
 		"""gets forces required to move manipulator to next state
-			tarj = x y z cords of last two states"""
+			cjp = current joint positions
+			ljp = last joint positions
+			dt = time elapsed between measurements"""
 		#traj = np.zeros([3,2])
 
 		#basically this function looks at the difference in cartesian space between 
@@ -142,34 +147,45 @@ class inertiaEstimator:
 		#   the world frame. The torque output of this function is to be added 
 		#   to existing gravity and friction cancellation torques.
 
-		#convert input trajectory from world space to joint space
-		#lastJointPos = self.cartesian2Joint(traj[:,0])
-		#cjp = self.cartesian2Joint(traj[:,1]) #current joint pos
-		cjp = np.zeros(3)
-		#figure out what angles joints must be at to continue movement in world space
-		# nextJointPos = 
+		#update initial values x0 for use in getInertia()
+		self.x0[:3] = cjp
+		self.x0[3:] = (cjp-ljp)/dt
 
-		#get current velocities of each joint for later use in inertia calculation
-		# dTheta = cjp - lastJointPos
+		#get inertia of arm at cjp 
+		inertias = self.getInertia() 
 
-		#manipulator jacobian allows conversion between joint torques and EE forces
-		#   because we know the inertia of the end effector at any point xyz
-		#   (because of getInertia() func.) we can just use that to figure out how much
-		#   force is required to cancel inertia. 
-		#   Internal robot dynamics are already accounted for in getInertia()
+		#get change in xyz position
+		newCart = self.joint2Cartesian(cjp[0],cjp[1],cjp[2])
+		oldCart = self.joint2Cartesian(ljp[0],ljp[1],ljp[2])
+		delCart = newCart - oldCart
+
+		#we want to continue moving the same distance next timestep
+		goalCart = newCart + delCart 
+
+		#if we stop powering the joints right now this will happen
+		#TODO get timesteps to match between this function and statePredictor-----------------------------------------------
+		predictionJoint = self.sp.predict(x0 = self.x0)[-1]
+		predictionCart = self.joint2Cartesian(predictionJoint[0],predictionJoint[1],predictionJoint[2])
+
+		#so we need to give the joints just enough power to move from the prediction to the goal pos such that EE reaches goal at timestep
+		requiredForcesCart = zeros(3)
+		#F = Ma
+		#x = vi*t + (1/2)at^2
+		#F = 2*x*m/(t^2)
+		requiredForcesCart = 2*delCart*inertias/(dt**2)
 
 		#init joint lengths
 		l0 = 0
 		l1 = self.numerical_constants[4]
 		l2 = 0.2374
 
-		#need derivative of this
-		# J = np.array([[l2*(-np.sin(cjp[0])*np.cos(cjp[1])*np.cos(cjp[2]) + np.sin(cjp[0])*np.sin(cjp[1])*np.sin(cjp[2])) - l1*np.sin(cjp[0])*np.cos(cjp[1])],
-		# 			  [l2*(np.cos(cjp[0])*np.cos(cjp[1])*np.cos(cjp[2]) - np.cos(cjp[0])*np.sin(cjp[1])*np.sin(cjp[2])) + l1*np.cos(cjp[0])*np.cos(cjp[1])],
-		# 			  [l2*(np.sin(cjp[1])*np.cos(cjp[2]) + np.cos(cjp[1])*np.sin(cjp[2])) + l1*np.sin(cjp[1]) + l0]])
 
+		#manipulator jacobian allows conversion between joint torques and EE forces
+		#   because we know the inertia of the end effector at any point xyz
+		#   (because of getInertia() func.) we can just use that to figure out how much
+		#   force is required to cancel inertia. 
+		#   Internal robot dynamics are already accounted for in getInertia()
 		J = zeros([3,3])
-
 		#dx/dq0
 		J[0,0] = l2*(-cos(cjp[0])*cos(cjp[1] + pi/2)*cos(cjp[2]) + cos(cjp[0])*sin(cjp[1] + pi/2)*sin(cjp[2])) - l1*cos(cjp[0])*cos(cjp[1] + pi/2)
 		#dx/dq1
@@ -189,27 +205,8 @@ class inertiaEstimator:
 		#dz/dq2
 		J[2,2] = l2*(-sin(cjp[1] + pi/2)*sin(cjp[2]) + cos(cjp[1] + pi/2)*cos(cjp[2]))
 
+		#use geometric jacobian to convert cartesian forces to joint torques
+		jointTorques = np.linalg.inv(J).dot(requiredForcesCart)
 
-		#this might not be necessary----------------------------------------
-		#loop through different torques applied at each joint until a satisfactory
-		#   solution is obtained 
-		
-		#starting with end effector, get torque values that will produce desired result
-		#   using binary search tree for n iterations.
-		#   It is importatnt to note that this value is NOT the final solution because
-		#   it does not take into account acceleration from j0 and j1.
-		#   Using obtained j2 torque as a stand in, torque of j0 and j1 is calculated and
-		#   values are then refined m times by repeating this process
-
-		#forces = zeros(3) #debug
-
-		#speed test
-		# count = 0
-		# while count <= 5:
-		# 	self.numerical_specified[0] = count*0.1
-		# 	states = self.predict()
-		# 	print(states)
-		# 	count +=1
-
-		return(J)
+		return(jointTorques)
 
