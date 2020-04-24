@@ -12,7 +12,9 @@ from pywavefront import visualization, Wavefront
 from inertiaEstimator import inertiaEstimator
 
 #Hand Guided Path with inertia cancellation
-
+ljp = np.zeros(3)
+cjp = np.zeros(3)
+dynamicTorquesScalingFactor = 0.03 #for the love of god please DO NOT EVER MAKE THIS > 1
 IE = inertiaEstimator()
 
 theta2 = 0
@@ -130,8 +132,6 @@ np.savetxt(filename,initArr)
 
 print("press q to teach sequence. press w to stop teaching sequence. press f to quit")
 
-ljp = np.zeros(3)
-dynamicTorquesScalingFactor = 0.3 #for the love of god please DO NOT EVER MAKE THIS > 1
 
 @window.event
 def on_resize(width, height):
@@ -145,6 +145,8 @@ def on_resize(width, height):
 
 @window.event
 def on_draw():
+	global cjp
+	global ljp
 	window.clear()
 	glClearColor(1,1,1,0.5) #sets background color
 	glViewport(0,0,1280,720)
@@ -172,7 +174,7 @@ def on_draw():
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
 	dt = 0.1 #gonna try and run this at 10 Hz, I expect this is gonna present a problem at some point but YOLO
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
-	dynamicTorques = dynamicTorques*dynamicTorquesScalingFactor #gonna play it "safe" here and only cancel out a little bit at first
+	dynamicTorques = dynamicTorques*0.03 #gonna play it "safe" here and only cancel out a little bit at first
 	#add artificial actuator saturation
 	dynamicTorques[dynamicTorques > 10] = 10
 	dynamicTorques[dynamicTorques < -10] = -10 
