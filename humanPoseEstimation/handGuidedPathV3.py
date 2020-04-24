@@ -45,6 +45,8 @@ i = 0
 serial0 = "206A337B304B"
 l0cpr = 90
 l0reduction = 6
+beta0 = -0.0075
+l0kv = 16
 
 #l1- shoulder up/down
 l1m = 1.81 #kg was 3.07
@@ -54,12 +56,12 @@ l1cpr = 90
 l1reduction = 6 #was 9, switched to og opentorque for less friction
 l1kv = 16
 #beta1 = 0
-beta1 = -0.025 #to do- make beta a function of motor velocity to cancel out inertia? was -0.025 with 9:1
+beta1 = -0.01 #to do- make beta a function of motor velocity to cancel out inertia? was -0.025 with 9:1
 serial1 = "2084377D3548"
 
 #l2- elbow
-l2m = 2.259 #kg was 1.85, moved up to compensate for wrist? was 2.6 before end effector
-l2com = 0.158 #m was 0.1893 moved up to compensate for wrist and end effector
+l2m = 1.85 #2.259 #kg was 1.85, moved up to compensate for wrist? was 2.6 before end effector
+l2com = 0.12 # was 0.158 #m was 0.1893 moved up to compensate for wrist and end effector
 l2cpr = 8192 
 l2reduction = 6
 l2kv = 100
@@ -172,6 +174,11 @@ def on_draw():
 	error1 = od1.axis0.error
 	#print("Theta2eff: ",theta2eff,"   Theta1: ", theta1," CSJ2: ", currentSetpoint2, " CSJ1: ", currentSetpoint1, " CMJ1: ", measuredCurrent1, error1)
 	
+	force0 = beta0*vel0
+	currentSetpoint0 = (-1*force0*l0kv)/(8.27*l0reduction)
+	od0.axis0.controller.current_setpoint = currentSetpoint0
+	error0 = od0.axis0.error
+
 	#manually moving arm through range of motion to be recorded
 	# if recording == 1:
 	# 	#arr = [[theta0, theta1, theta2]]
