@@ -173,6 +173,9 @@ def on_draw():
 	dt = 0.1 #gonna try and run this at 10 Hz, I expect this is gonna present a problem at some point but YOLO
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
 	dynamicTorques = dynamicTorques*dynamicTorquesScalingFactor #gonna play it "safe" here and only cancel out a little bit at first
+	#add artificial actuator saturation
+	dynamicTorques[dynamicTorques > 10] = 10
+	dynamicTorques[dynamicTorques < -10] = -10 
 	ljp = cjp
 
 	force2 = (l2m*9.81*l2com*np.sin(theta2eff) / l2reduction) + beta2*vel2 + dynamicTorques[2]
