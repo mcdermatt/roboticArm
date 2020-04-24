@@ -29,9 +29,10 @@ class inertiaEstimator:
 	numerical_specified = zeros(3) #applied torques to each joint 
 	args = {'constants': numerical_constants,
 	        'specified': numerical_specified}
-	frames_per_sec = 100
-	final_time = 1
-	t = linspace(0.0, final_time, final_time * frames_per_sec)
+	# frames_per_sec = 10
+	# final_time = 0.1
+	# t = linspace(0.0, final_time, final_time * frames_per_sec)
+	t = linspace(0.0,0.1,10)
 
 	x0 = zeros(6)
 	x0[0] = deg2rad(90)

@@ -27,9 +27,9 @@ window.push_handlers(keys)
 base = Wavefront('base.obj')
 link0 = Wavefront('l0.obj')
 link1 = Wavefront('l1.obj')
-link2 = Wavefront('l2.obj')
-link3 = Wavefront('l3.obj')
-link4 = Wavefront('l4.obj')
+link2 = Wavefront('l2andl3Dummy.obj')
+# link3 = Wavefront('l3.obj')
+# link4 = Wavefront('l4.obj')
 
 l1sim = 6.5
 l2sim = 6.5
@@ -280,8 +280,8 @@ def on_draw():
 	draw_link0(link0, 0, 0, 0, link0Rot)
 	draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
 	draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
-	draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
-	draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
+	# draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
+	# draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
 	time.sleep(0.01)
 
 def draw_base(link):
