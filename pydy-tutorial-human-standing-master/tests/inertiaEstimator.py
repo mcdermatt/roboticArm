@@ -82,17 +82,26 @@ class inertiaEstimator:
 	def joint2Cartesian(self, theta0, theta1, theta2):
 
 		cart = zeros(3)
-
-		cart[0] = (self.numerical_constants[4]*np.sin(theta1) + 0.2374*np.sin(theta1+theta2)) * np.cos(-1* theta0) #x l2=0.2374
+		l1 = 0.164
+		l2 = 0.2374
+		cart[0] = (self.numerical_constants[4]*np.sin(theta1) + 0.2374*np.sin(theta1+theta2)) * np.sin(-1* theta0) #x l2=0.2374
 		cart[1] = self.numerical_constants[4]*np.cos(theta1) + 0.2374*np.cos(theta1+theta2) #y
-		cart[2] = (self.numerical_constants[4]*np.sin(theta1) + 0.2374*np.sin(theta1+theta2)) * np.sin(-1*theta0) #z
+		cart[2] = (self.numerical_constants[4]*np.sin(theta1) + 0.2374*np.sin(theta1+theta2)) * np.cos(-1*theta0) #z
+
+		# #x
+		# cart[0] = l2*(-sin(theta0)*cos(theta1 - pi/2)*cos(theta2) + sin(theta0)*sin(theta1-pi/2)*sin(theta2)) - l1*sin(theta0)*sin(theta1 - pi/2)
+		# #y
+		# cart[2] = l2*(cos(theta0)*cos(theta1 - pi/2)*cos(theta2) - cos(theta0)*sin(theta1-pi/2)*sin(theta2)) + l1*cos(theta0)*cos(theta1 - pi/2)
+		# #z
+		# cart[1] = l2*(sin(theta1 - pi/2)*cos(theta2) + cos(theta1-pi/2)*sin(theta2)) + l1*sin(theta1 - pi/2)
 
 		return(cart)
 
 	def cartesian2Joint(self, x, y, z):
+		#incorrect rn
 		joint = zeros(3)
 
-		l1 = numerical_constants[4] # upper arm
+		l1 = self.numerical_constants[4] # upper arm
 		l2 = 0.2374 # lower arm
 		
 		r = np.sqrt((x*x)+(y*y)+(z*z))
@@ -153,11 +162,16 @@ class inertiaEstimator:
 
 		#get inertia of arm at cjp 
 		inertias = self.getInertia() 
+		print("inertias = ", inertias)
 
 		#get change in xyz position
+		#TODO -FIX JOINT TO CARTESIAN INCONSISTANCY -Y and Z axis flipped?????
 		newCart = self.joint2Cartesian(cjp[0],cjp[1],cjp[2])
+		print("newCart = ",newCart)
 		oldCart = self.joint2Cartesian(ljp[0],ljp[1],ljp[2])
+		print("oldCart = ", oldCart )
 		delCart = newCart - oldCart
+		print("delCart = ", delCart)
 
 		#we want to continue moving the same distance next timestep
 		goalCart = newCart + delCart 
@@ -193,17 +207,17 @@ class inertiaEstimator:
 		#dx/dq2
 		J[0,2] = l2*(sin(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2]) + sin(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2])) 
 		#dy/dq0
-		J[1,0] = l2*(-sin(cjp[0])*cos(cjp[1] + pi/2)*cos(cjp[2]) + sin(cjp[0])*sin(cjp[1] + pi/2)*sin(cjp[2])) - l1*sin(cjp[0])*cos(cjp[1] + pi/2)
+		J[2,0] = l2*(-sin(cjp[0])*cos(cjp[1] + pi/2)*cos(cjp[2]) + sin(cjp[0])*sin(cjp[1] + pi/2)*sin(cjp[2])) - l1*sin(cjp[0])*cos(cjp[1] + pi/2)
 		#dy/dq1
-		J[1,1] = l2*(-cos(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]) - cos(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2])) - l1*cos(cjp[0])*sin(cjp[1] + pi/2)
+		J[2,1] = l2*(-cos(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]) - cos(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2])) - l1*cos(cjp[0])*sin(cjp[1] + pi/2)
 		#dy/dq2
-		J[1,2] = l2*(-cos(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2]) - cos(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]))
+		J[2,2] = l2*(-cos(cjp[0])*cos(cjp[1] + pi/2)*sin(cjp[2]) - cos(cjp[0])*sin(cjp[1] + pi/2)*cos(cjp[2]))
 		#dz/dq0
-		J[2,0] = 0 #this makes sense becasue there is no way j0 can affect z
+		J[1,0] = 0 #this makes sense becasue there is no way j0 can affect z
 		#dz/dq1
-		J[2,1] = l2*(cos(cjp[1] + pi/2)*cos(cjp[2]) - sin(cjp[1] + pi/2)*sin(cjp[2])) + l1*cos(cjp[1])
+		J[1,1] = l2*(cos(cjp[1] + pi/2)*cos(cjp[2]) - sin(cjp[1] + pi/2)*sin(cjp[2])) + l1*cos(cjp[1])
 		#dz/dq2
-		J[2,2] = l2*(-sin(cjp[1] + pi/2)*sin(cjp[2]) + cos(cjp[1] + pi/2)*cos(cjp[2]))
+		J[1,2] = l2*(-sin(cjp[1] + pi/2)*sin(cjp[2]) + cos(cjp[1] + pi/2)*cos(cjp[2]))
 
 		#use geometric jacobian to convert cartesian forces to joint torques
 		jointTorques = np.linalg.inv(J).dot(requiredForcesCart)
