@@ -88,7 +88,7 @@ d 1.000000
 
 newmtl 197,197,198
 Kd 0.772549 0.772549 0.776471
-map_Kd l2andl3Dummy/aluminum.jpg
+#map_Kd l2andl3Dummy/aluminum.jpg
 
 newmtl BE4656D06D213691B706C80BD5B48130AE647861
 Ka 0.000000 0.000000 0.000000

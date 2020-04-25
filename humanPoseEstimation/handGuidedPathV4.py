@@ -207,46 +207,6 @@ def on_draw():
 	loadedArray = np.append(loadedArray,currPos,axis=0)
 	np.savetxt(filename,loadedArray)
 
-	# if simulating == 1:
-
-	# 	#calculate x y and z elbow and wrist
-	# 	#l1sim = 0.40625*25.4 # upper arm
-	# 	#l2sim = 0.59375*25.4 # lower arm l1+l2=1, easiest if upper and lower arm are same length
-	# 	#l3sim = 0.375*25.4 #wrist to end effector
-	# 	xElbow = ( l1sim * np.sin(theta0)*np.sin(theta1))
-	# 	yElbow = ( l1sim * np.cos(theta0)*np.sin(theta1))
-	# 	zElbow = ( l1sim * np.cos(theta1))
-
-	# 	xWrist = xElbow + l2sim*np.cos(np.pi/2-(theta1+theta2))*np.sin(theta0)
-	# 	yWrist = yElbow + l2sim*np.cos(np.pi/2-(theta1+theta2))*np.cos(theta0)
-	# 	zWrist = zElbow + l2sim*np.sin(np.pi/2-(theta1+theta2))
-
-	#keyboard interrupt to record position 
-	# try:
-	# 	if keyboard.is_pressed('q'):
-	# 		print("recording path sequence press w to stop")
-	# 		recording = 1
-	# 		arr = [[theta0,theta1,theta2],[theta0,theta1,theta2]]
-	# 		np.savetxt('armPath.txt',arr)
-	# except:
-	# 	pass
-
-	# try:
-	# 	if keyboard.is_pressed('w'):
-	# 		recording = 0
-	# 		print("stopping recording press q to start again")
-	# 		print("Press q to teach sequence. Press s to simulate. Press f to quit")
-	# except:
-	# 	pass
-	# #	break
-
-	# try: 
-	# 	if keyboard.is_pressed('s'):
-	# 		simulating = 1
-	# 		print("starting simulation")
-	# except:
-	# 	pass
-
 
 	#alternate keyboard interrupt to end hand guided sequence
 	try:
