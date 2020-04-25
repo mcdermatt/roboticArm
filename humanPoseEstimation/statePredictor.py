@@ -25,15 +25,16 @@ class statePredictor:
 	numerical_specified = zeros(3)
 	args = {'constants': numerical_constants,
 	        'specified': numerical_specified}
-	frames_per_sec = 100
-	final_time = 1
-	t = linspace(0.0, final_time, final_time * frames_per_sec)
-
+	
 	x0 = zeros(6)
 
-	def predict(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
+	def predict(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, dt=1):
+		# frames_per_sec = 100
+		# final_time = 1
+		# t = linspace(0.0, final_time, final_time * frames_per_sec)
+		t = linspace(0.0,dt,10)
 
+		#predicted trajectroy given no external forces
 		y = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
-		#print(y)
 
 		return(y)

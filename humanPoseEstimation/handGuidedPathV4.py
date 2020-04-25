@@ -14,7 +14,7 @@ from inertiaEstimator import inertiaEstimator
 #Hand Guided Path with inertia cancellation
 ljp = np.zeros(3)
 cjp = np.zeros(3)
-dynamicTorquesScalingFactor = 0.03 #for the love of god please DO NOT EVER MAKE THIS > 1
+dynamicTorquesScalingFactor = 0.03 #for the love of god DO NOT MAKE > 1
 IE = inertiaEstimator()
 
 theta2 = 0
@@ -103,6 +103,8 @@ time.sleep(2)
 j2offset = od2.axis0.encoder.pos_estimate
 print("j2 offset: ",j2offset)
 
+tstart = time.time()
+
 od1 = odrive.find_any(serial_number=serial1)
 print("calibrating odrive1")
 od1.axis0.requested_state = AXIS_STATE_FULL_CALIBRATION_SEQUENCE
@@ -115,6 +117,8 @@ print("move shoulder to vertical position")
 time.sleep(2)
 j1offset = od1.axis0.encoder.pos_estimate
 print("j1 offset: ",j1offset)
+
+tend = time.time() #temporarily putting this here so we dont start out with crazy forces
 
 #clears previous recording, starts off with current arm position
 #get joint angle and velocity
@@ -130,7 +134,7 @@ theta0 = (2 * np.pi * pos0) / (l0cpr * l0reduction)
 initArr = [[theta0,theta1,theta2],[theta0,theta1,theta2]]
 np.savetxt(filename,initArr)
 
-print("press q to teach sequence. press w to stop teaching sequence. press f to quit")
+print("press f to quit")
 
 
 @window.event
@@ -145,8 +149,16 @@ def on_resize(width, height):
 
 @window.event
 def on_draw():
+	#TODO get rid of global variables
 	global cjp
 	global ljp
+	global tstart
+	global tend
+	global dt
+
+	dt = tend - tstart
+	tstart = time.time()
+
 	window.clear()
 	glClearColor(1,1,1,0.5) #sets background color
 	glViewport(0,0,1280,720)
@@ -171,8 +183,11 @@ def on_draw():
 	theta2eff = theta2 + theta1
 
 	#use inertiaEstimator to calculate ineternal dynamic forces on arm and torques required to counteract them
+
+	#dt = 0.1 #gonna try and run this at 10 Hz, I expect this is gonna present a problem at some point but YOLO
+	#UPDATE- as predicted running getForces at fixed timestep was a very bad idea- using time.time() to get actual time difference seems much safer
+	
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
-	dt = 0.1 #gonna try and run this at 10 Hz, I expect this is gonna present a problem at some point but YOLO
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
 	dynamicTorques = dynamicTorques*0.03 #gonna play it "safe" here and only cancel out a little bit at first
 	#add artificial actuator saturation
@@ -199,11 +214,9 @@ def on_draw():
 	error0 = od0.axis0.error
 
 	#manually moving arm through range of motion to be recorded
-	# if recording == 1:
-	# 	#arr = [[theta0, theta1, theta2]]
 	loadedArray = np.genfromtxt(filename,delimiter=" ")
 	currPos = [[theta0,theta1,theta2]]
-	print(currPos)
+	#print(currPos)
 	loadedArray = np.append(loadedArray,currPos,axis=0)
 	np.savetxt(filename,loadedArray)
 
@@ -214,18 +227,20 @@ def on_draw():
 			print("powering down")
 			#slowly power down each joint
 			while currentSetpoint1 > 3:
+				currentSetpoint0 = 0.99 * currentSetpoint0
 				currentSetpoint1 = 0.99 * currentSetpoint1
 				currentSetpoint2 = 0.99 * currentSetpoint2
-				time.sleep(0.1)
-			currentSetpoint1 = 0
-			currentSetpoint2 = 0
+				od0.axis0.controller.current_setpoint = currentSetpoint0
+				od1.axis0.controller.current_setpoint = currentSetpoint1
+				od2.axis0.controller.current_setpoint = currentSetpoint2
+				time.sleep(0.01)
+
 			od0.axis0.requested_state = AXIS_STATE_IDLE
 			od1.axis0.requested_state = AXIS_STATE_IDLE
 			od2.axis0.requested_state = AXIS_STATE_IDLE
-			#break
+			
 	except:
 		pass
-		#break
 
    #from pyglet script
 	link0Rot = (-180/np.pi)*theta0 #flipped sign to fix display, may require further troubleshooting
@@ -262,6 +277,7 @@ def on_draw():
 	# draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
 	# draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
 	time.sleep(0.01)
+	tend = time.time()
 
 def draw_base(link):
 	glLoadIdentity()

@@ -3,6 +3,7 @@ from numpy import zeros, array, linspace, deg2rad, sin, cos, pi
 import numpy as np
 from scipy.integrate import odeint
 from statePredictor import statePredictor
+from time import time
 
 class inertiaEstimator:
 
@@ -133,11 +134,11 @@ class inertiaEstimator:
 			diff[i] = abs(abs(fin[i]) - abs(initial[i]))
 			
 			#dy = v0t + (1/2)at^2
-			#diff = (1/2)(a)(1^2)
-			#diff = a/2
+			#diff = (1/2)(a)(0.1^2) #Remember to update this if you change how long to run predictx,y,z for
+			#diff = 0.005*a
 			#F = Ia
-			#0.1 = I*(2*diff)
-		inertias = 0.1/(2*diff)
+			#0.1 = I*(200*diff)
+		inertias = 0.1/(200*diff)
 
 		return(inertias)
 
@@ -156,6 +157,9 @@ class inertiaEstimator:
 		#   floating in zero gravity that has its own virtual inertia in
 		#   the world frame. The torque output of this function is to be added 
 		#   to existing gravity and friction cancellation torques.
+		
+		#get start time so we can know how long this function takes
+		#tstart = time() 
 
 		#update initial values x0 for use in getInertia()
 		self.x0[:3] = cjp
@@ -168,18 +172,18 @@ class inertiaEstimator:
 		#get change in xyz position
 		#TODO -FIX JOINT TO CARTESIAN INCONSISTANCY -Y and Z axis flipped?????
 		newCart = self.joint2Cartesian(cjp[0],cjp[1],cjp[2])
-		print("newCart = ",newCart)
+		#print("newCart = ",newCart)
 		oldCart = self.joint2Cartesian(ljp[0],ljp[1],ljp[2])
-		print("oldCart = ", oldCart )
+		#print("oldCart = ", oldCart )
 		delCart = newCart - oldCart
-		print("delCart = ", delCart)
+		#print("delCart = ", delCart)
 
 		#we want to continue moving the same distance next timestep
 		goalCart = newCart + delCart 
 
 		#if we stop powering the joints right now this will happen
 		#TODO get timesteps to match between this function and statePredictor-----------------------------------------------
-		predictionJoint = self.sp.predict(x0 = self.x0)[-1]
+		predictionJoint = self.sp.predict(x0 = self.x0, dt = dt)[-1]
 		predictionCart = self.joint2Cartesian(predictionJoint[0],predictionJoint[1],predictionJoint[2])
 
 		#so we need to give the joints just enough power to move from the prediction to the goal pos such that EE reaches goal at timestep
@@ -222,6 +226,11 @@ class inertiaEstimator:
 
 		#use geometric jacobian to convert cartesian forces to joint torques
 		jointTorques = np.linalg.inv(J).dot(requiredForcesCart)
+
+		#tend = time()
+		#elapsed = tend - tstart
+		#print("time elapsed = ", elapsed)
+		print("inertia cancellation torques: ",jointTorques)
 
 		return(jointTorques)
 
