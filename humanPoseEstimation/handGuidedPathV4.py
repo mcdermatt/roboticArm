@@ -189,10 +189,10 @@ def on_draw():
 	
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
-	dynamicTorques = dynamicTorques*0.03 #gonna play it "safe" here and only cancel out a little bit at first
+	dynamicTorques = dynamicTorques*0.3 #gonna play it "safe" here and only cancel out a little bit at first
 	#add artificial actuator saturation
-	dynamicTorques[dynamicTorques > 10] = 10
-	dynamicTorques[dynamicTorques < -10] = -10 
+	dynamicTorques[dynamicTorques > 5] = 5
+	dynamicTorques[dynamicTorques < -5] = -5 
 	ljp = cjp
 
 	force2 = (l2m*9.81*l2com*np.sin(theta2eff) / l2reduction) + beta2*vel2 + dynamicTorques[2]
