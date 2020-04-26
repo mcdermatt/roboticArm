@@ -32,7 +32,8 @@ import time
 #     return(a0,a1,a2)
 
 #init openGL stuff
-window = pyglet.window.Window(width=1280, height=720)
+config = pyglet.gl.Config(sample_buffers=1, samples=4)
+window = pyglet.window.Window(width=1280, height=720, config = config)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
@@ -133,8 +134,11 @@ def on_draw():
     zl4 = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 
     #glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
+    # glLightfv(GL_LIGHT0, GL_AMBIENT, lightfv(0.5,0.5,0.5,0.1))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 0.9))
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightfv(0.0,0.0,0.0,0.1))
+
+    glEnable(GL_DEPTH_TEST)
 
     draw_base(base)
     draw_link0(link0, 0, 0, 0, link0Rot)
@@ -143,13 +147,38 @@ def on_draw():
     draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
     draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
 
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
+    draw_cube()
+
     time.sleep(0.01)
 
 def draw_base(link):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
+    glRotatef(45,0,1,0)
     glTranslatef(0,-3.4,0)
     visualization.draw(link)
+
+def draw_cube():
+    glLoadIdentity()
+    # glDisable(GL_POLYGON_SMOOTH)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    glColor3f(1.0, 0.0, 0.0)
+    glLineWidth(3)
+    glBegin(GL_QUADS)
+    glVertex3f( -5, -5,  5 )
+    glVertex3f( -5,  5,  5 )
+    glVertex3f( -5,  5, -5 )
+    glVertex3f( -5, -5, -5 )
+    glEnd()
+    #returns polygon mode to smooth
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
+    # glEnable(GL_BLEND)
+    glEnable(GL_MULTISAMPLE)
+    # glfwWindowHint(GLFW_SAMPLES, 4)
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
+    # glDisable(GL_DEPTH_TEST)
 
 def draw_link0(link, x, y, z, link0Rot):
     glLoadIdentity()
