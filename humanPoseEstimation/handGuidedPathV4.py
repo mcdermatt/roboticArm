@@ -27,7 +27,8 @@ simulating = 0
 filename = 'armPath3.txt'
 
 #init openGL stuff
-window = pyglet.window.Window(width=1280, height=720)
+config = pyglet.gl.Config(sample_buffers=1, samples=9) #samples = number of points used for AA
+window = pyglet.window.Window(width=1280, height=720, config = config)
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
