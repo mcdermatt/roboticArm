@@ -51,6 +51,7 @@ l1sim = 6.5
 l2sim = 6.5
 l3sim = 2.65
 rotation = 0.0 #count variable for spinning
+cameraZ = 0.0
 
 
 i = 0
@@ -174,11 +175,11 @@ def on_draw():
 	glLoadIdentity()
 	glMatrixMode(GL_PROJECTION)
 	glRotatef(0,0,1,0)
-	glTranslatef(cameraZ*numpy.sin(numpy.deg2rad(rotation)),0,cameraZ*numpy.cos(numpy.deg2rad(rotation)))
+	glTranslatef(cameraZ*np.sin(np.deg2rad(rotation)),0,cameraZ*np.cos(np.deg2rad(rotation)))
 	glRotatef(rotation*0.0035,0,1,0)
 	glMatrixMode(GL_MODELVIEW)
 
-   	#get joint angle and velocity
+	#get joint angle and velocity
 	pos2 = od2.axis0.encoder.pos_estimate - j2offset
 	vel2 = od2.axis0.encoder.vel_estimate
 	pos1 = od1.axis0.encoder.pos_estimate - j1offset
@@ -224,14 +225,14 @@ def on_draw():
 	ljp = cjp
 
 	#check if EE is inside workspace
-    if (xl3 > -8) and (xl3 < 8) and (yl3 < 10) and (yl3 > -5) and (zl3 > 3) and (zl3 < 13):
-        #draw green check
-        gc.draw()
-    #DANGER ZONE: EE is outside workspace DO NOT CANCEL INERTIA
-    else:
-    	#draw red x
-        rx.draw()
-        dynamicTorques[:] = 0
+	if (xl3 > -8) and (xl3 < 8) and (yl3 < 10) and (yl3 > -5) and (zl3 > 3) and (zl3 < 13):
+		#draw green check
+		gc.draw()
+	#DANGER ZONE: EE is outside workspace DO NOT CANCEL INERTIA
+	else:
+		#draw red x
+		rx.draw()
+		dynamicTorques[:] = 0
 
 	force2 = (l2m*9.81*l2com*np.sin(theta2eff) / l2reduction) + beta2*vel2 + dynamicTorques[2]
 	currentSetpoint2 = (-1 * force2 * l2kv) / 8.27
@@ -280,8 +281,6 @@ def on_draw():
 	except:
 		pass
 
-   
-
 	#glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*np.sin(rotation*0.1), 1.0, 0.0))
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 0.9))
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightfv(0.0,0.0,0.0,0.1))
@@ -293,55 +292,55 @@ def on_draw():
 	draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
 	draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
-    draw_cube()
+	draw_cube()
 	time.sleep(0.01)
 	tend = time.time()
 
 def draw_cube():
-    glLoadIdentity()
-    # glDisable(GL_POLYGON_SMOOTH)
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-    glLineStipple(10, 0xAAAA)
-    glEnable(GL_LINE_STIPPLE)
-    glColor3f(0.8, 0.0, 0.1)
-    glLineWidth(1)
-    #robot right
-    glBegin(GL_QUADS)
-    glVertex3f( -8, -5,  13 )
-    glVertex3f( -8,  10,  13 )
-    glVertex3f( -8,  10,  3 )
-    glVertex3f( -8, -5,  3 )
-    glEnd()
-    #robot left
-    glBegin(GL_QUADS)
-    glVertex3f( 8, -5,  13 )
-    glVertex3f( 8,  10,  13 )
-    glVertex3f( 8,  10,  3 )
-    glVertex3f( 8, -5,  3 )
-    glEnd()
-    #robot top
-    glBegin(GL_QUADS)
-    glVertex3f( -8,  10,  13 )
-    glVertex3f( -8,  10,  3 )
-    glVertex3f( 8,  10,  3 )
-    glVertex3f( 8,  10,  13 )
-    glEnd()
-    #robot bottom
-    glBegin(GL_QUADS)
-    glVertex3f( -8,  -5,  13 )
-    glVertex3f( -8,  -5,  3 )
-    glVertex3f( 8,  -5,  3 )
-    glVertex3f( 8,  -5,  13 )
-    glEnd()
+	glLoadIdentity()
+	# glDisable(GL_POLYGON_SMOOTH)
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+	glLineStipple(10, 0xAAAA)
+	glEnable(GL_LINE_STIPPLE)
+	glColor3f(0.8, 0.0, 0.1)
+	glLineWidth(1)
+	#robot right
+	glBegin(GL_QUADS)
+	glVertex3f( -8, -5,  13 )
+	glVertex3f( -8,  10,  13 )
+	glVertex3f( -8,  10,  3 )
+	glVertex3f( -8, -5,  3 )
+	glEnd()
+	#robot left
+	glBegin(GL_QUADS)
+	glVertex3f( 8, -5,  13 )
+	glVertex3f( 8,  10,  13 )
+	glVertex3f( 8,  10,  3 )
+	glVertex3f( 8, -5,  3 )
+	glEnd()
+	#robot top
+	glBegin(GL_QUADS)
+	glVertex3f( -8,  10,  13 )
+	glVertex3f( -8,  10,  3 )
+	glVertex3f( 8,  10,  3 )
+	glVertex3f( 8,  10,  13 )
+	glEnd()
+	#robot bottom
+	glBegin(GL_QUADS)
+	glVertex3f( -8,  -5,  13 )
+	glVertex3f( -8,  -5,  3 )
+	glVertex3f( 8,  -5,  3 )
+	glVertex3f( 8,  -5,  13 )
+	glEnd()
 
-    #returns polygon mode to smooth
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
-    # glEnable(GL_BLEND)
-    glEnable(GL_MULTISAMPLE)
-    # glfwWindowHint(GLFW_SAMPLES, 4)
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
-    # glDisable(GL_DEPTH_TEST)
+	#returns polygon mode to smooth
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
+	# glEnable(GL_BLEND)
+	glEnable(GL_MULTISAMPLE)
+	# glfwWindowHint(GLFW_SAMPLES, 4)
+	glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
+	# glDisable(GL_DEPTH_TEST)
 
 def draw_base(link):
 	glLoadIdentity()
@@ -354,8 +353,6 @@ def draw_link0(link, x, y, z, link0Rot):
 	glMatrixMode(GL_MODELVIEW)
 	glRotatef(link0Rot, 0.0, 1.0 , 0.0)
 	glTranslatef(x, y, z)
-#    glRotatef(-25.0, 1.0, 0.0, 0.0)
-#    glRotatef(45.0, 0.0, 0.0, 1.0)
 
 	visualization.draw(link)
 
@@ -365,9 +362,7 @@ def draw_link1(link, x, y, z,link0Rot, link1Rot):
 	#glRotatef(180,0,1,0) #flips l1 around so it isnt bending backwards
 	glRotatef(link0Rot, 0.0, 1.0 , 0.0)
 	glRotatef(link1Rot, 1.0, 0.0 , 0.0)
-	#glTranslated(x, y, z) # link 1 does not translate about workspace, only pivots on shoulder base
-#   glRotatef(-25.0, 1.0, 0.0, 0.0)
-#   glRotatef(45.0, 0.0, 0.0, 1.0)
+
 
 	visualization.draw(link)
 	
@@ -375,15 +370,9 @@ def draw_link2(link, x, y, z, link0Rot, link1Rot, link2Rot):
 	glLoadIdentity()
 	glMatrixMode(GL_MODELVIEW)
 	glTranslatef(x, y, z)
-	#print("link0Rot: ", link0Rot, " Link1Rot: ", link1Rot, " Link2Rot: ", link2Rot)
 	glRotatef(link0Rot, 0.0, 1.0 , 0.0)
 	glRotatef(link1Rot, 1.0, 0.0 , 0.0)
 	glRotatef(link2Rot, 1.0, 0.0, 0.0)
-	#glRotatef(180,0,1,0) #flipped around to match l1
-
-   #glTranslatef(-x, -y, -z)
-   
-#   glRotatef(45.0, 0.0, 0.0, 1.0)
 
 	visualization.draw(link)
 
@@ -393,17 +382,15 @@ def update(dt):
 	global cameraZ
  #  rotation += 10.0 * dt
 	if keys[key.A]:
-	   rotation += 10
+		rotation += 10
 	if keys[key.D]:
 		rotation -= 10
 	if keys[key.S]:
-        cameraZ -= 0.1
-    if keys[key.W]:
-        cameraZ += 0.1
-    i += 1
+		cameraZ -= 0.1
+	if keys[key.W]:
+		cameraZ += 0.1
+	i += 1
 
-#   if rotation > 720.0:
-#	 rotation = 0.0
 
 
 pyglet.clock.schedule(update)
