@@ -32,8 +32,13 @@ import time
 #     return(a0,a1,a2)
 
 #init openGL stuff
-config = pyglet.gl.Config(sample_buffers=1, samples=9) #samples = number of points used for AA
-window = pyglet.window.Window(width=1280, height=720, config = config)
+#uncomment these two lines if using computer with graphics card
+# config = pyglet.gl.Config(sample_buffers=1, samples=9) #samples = number of points used for AA
+# window = pyglet.window.Window(width=1280, height=720, config = config)
+
+#use this window setting if using laptop
+window = pyglet.window.Window(width=1280,height=720)
+
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 

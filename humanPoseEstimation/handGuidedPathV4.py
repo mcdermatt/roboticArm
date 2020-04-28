@@ -27,8 +27,15 @@ simulating = 0
 filename = 'armPath3.txt'
 
 #init openGL stuff
-config = pyglet.gl.Config(sample_buffers=1, samples=9) #samples = number of points used for AA
-window = pyglet.window.Window(width=1280, height=720, config = config)
+
+#for desktop with graphics card
+# config = pyglet.gl.Config(sample_buffers=1, samples=9) #samples = number of points used for AA
+# window = pyglet.window.Window(width=1280, height=720, config = config)
+
+#for laptop
+window = pyglet.window.Window(width=1280,height=720)
+
+
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
@@ -218,7 +225,7 @@ def on_draw():
 	#UPDATE- as predicted running getForces at fixed timestep was a very bad idea- using time.time() to get actual time difference seems much safer
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
-	dynamicTorques = dynamicTorques*0.3 #gonna play it "safe" here and only cancel out a little bit at first
+	dynamicTorques = dynamicTorques*(-0.3) #gonna play it "safe" here and only cancel out a little bit at first
 	#add artificial actuator saturation
 	dynamicTorques[dynamicTorques > 5] = 5
 	dynamicTorques[dynamicTorques < -5] = -5 
