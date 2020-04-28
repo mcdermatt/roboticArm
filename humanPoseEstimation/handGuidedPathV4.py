@@ -36,8 +36,16 @@ base = Wavefront('base.obj')
 link0 = Wavefront('l0.obj')
 link1 = Wavefront('l1.obj')
 link2 = Wavefront('l2andl3Dummy.obj')
-# link3 = Wavefront('l3.obj')
-# link4 = Wavefront('l4.obj')
+greenCheck = pyglet.image.load('greenCheck.png')
+gc = pyglet.sprite.Sprite(img=greenCheck)
+gc.scale = 0.01
+gc.x = -10
+gc.y = 12
+redX = pyglet.image.load('redX.png')
+rx = pyglet.sprite.Sprite(img=redX)
+rx.scale = 0.005
+rx.x = -10
+rx.y = 12
 
 l1sim = 6.5
 l2sim = 6.5
@@ -166,6 +174,7 @@ def on_draw():
 	glLoadIdentity()
 	glMatrixMode(GL_PROJECTION)
 	glRotatef(0,0,1,0)
+	glTranslatef(cameraZ*numpy.sin(numpy.deg2rad(rotation)),0,cameraZ*numpy.cos(numpy.deg2rad(rotation)))
 	glRotatef(rotation*0.0035,0,1,0)
 	glMatrixMode(GL_MODELVIEW)
 
@@ -183,11 +192,29 @@ def on_draw():
 	theta0 = (2 * np.pi * pos0) / (l0cpr * l0reduction)
 	theta2eff = theta2 + theta1
 
+	#from pyglet script
+	link0Rot = (-180/np.pi)*theta0 #flipped sign to fix display, may require further troubleshooting
+	link1Rot = (180/np.pi)*theta1
+	link2Rot = (180/np.pi)*theta2
+	link3Rot = 0
+	link4Rot = 45
+
+	lightfv = ctypes.c_float * 4
+
+	link2RotEff = link1Rot + link2Rot
+
+	xElb = ( l1sim * np.sin(link0Rot*(np.pi/180))*np.sin(link1Rot*(np.pi/180)))
+	yElb = ( l1sim * np.cos((link1Rot*(np.pi/180)))) 
+	zElb =  ( l1sim * np.cos(link0Rot*(np.pi/180))*np.sin(link1Rot*(np.pi/180)))
+
+	xl3 = xElb + ( l2sim * np.sin(link0Rot*(np.pi/180))*np.sin(link2RotEff*(np.pi/180)))
+	yl3 = yElb + ( l2sim * np.cos((link2RotEff*(np.pi/180)))) 
+	zl3 = zElb + ( l2sim * np.cos(link0Rot*(np.pi/180))*np.sin(link2RotEff*(np.pi/180)))
+
 	#use inertiaEstimator to calculate ineternal dynamic forces on arm and torques required to counteract them
 
 	#dt = 0.1 #gonna try and run this at 10 Hz, I expect this is gonna present a problem at some point but YOLO
 	#UPDATE- as predicted running getForces at fixed timestep was a very bad idea- using time.time() to get actual time difference seems much safer
-	
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
 	dynamicTorques = dynamicTorques*0.3 #gonna play it "safe" here and only cancel out a little bit at first
@@ -195,6 +222,16 @@ def on_draw():
 	dynamicTorques[dynamicTorques > 5] = 5
 	dynamicTorques[dynamicTorques < -5] = -5 
 	ljp = cjp
+
+	#check if EE is inside workspace
+    if (xl3 > -8) and (xl3 < 8) and (yl3 < 10) and (yl3 > -5) and (zl3 > 3) and (zl3 < 13):
+        #draw green check
+        gc.draw()
+    #DANGER ZONE: EE is outside workspace DO NOT CANCEL INERTIA
+    else:
+    	#draw red x
+        rx.draw()
+        dynamicTorques[:] = 0
 
 	force2 = (l2m*9.81*l2com*np.sin(theta2eff) / l2reduction) + beta2*vel2 + dynamicTorques[2]
 	currentSetpoint2 = (-1 * force2 * l2kv) / 8.27
@@ -234,7 +271,7 @@ def on_draw():
 				od0.axis0.controller.current_setpoint = currentSetpoint0
 				od1.axis0.controller.current_setpoint = currentSetpoint1
 				od2.axis0.controller.current_setpoint = currentSetpoint2
-				time.sleep(0.01)
+				time.sleep(0.05)
 
 			od0.axis0.requested_state = AXIS_STATE_IDLE
 			od1.axis0.requested_state = AXIS_STATE_IDLE
@@ -243,42 +280,68 @@ def on_draw():
 	except:
 		pass
 
-   #from pyglet script
-	link0Rot = (-180/np.pi)*theta0 #flipped sign to fix display, may require further troubleshooting
-	link1Rot = (180/np.pi)*theta1
-	link2Rot = (180/np.pi)*theta2
-	link3Rot = 0
-	link4Rot = 45
-
- #  rotation = 0.0 #count variable for spinning
-	lightfv = ctypes.c_float * 4
-
-	link2RotEff = link1Rot + link2Rot
-
-	xElb = ( l1sim * np.sin(link0Rot*(np.pi/180))*np.sin(link1Rot*(np.pi/180)))
-	yElb = ( l1sim * np.cos((link1Rot*(np.pi/180)))) 
-	zElb =  ( l1sim * np.cos(link0Rot*(np.pi/180))*np.sin(link1Rot*(np.pi/180)))
-
-	xl3 = xElb + ( l2sim * np.sin(link0Rot*(np.pi/180))*np.sin(link2RotEff*(np.pi/180)))
-	yl3 = yElb + ( l2sim * np.cos((link2RotEff*(np.pi/180)))) 
-	zl3 = zElb + ( l2sim * np.cos(link0Rot*(np.pi/180))*np.sin(link2RotEff*(np.pi/180)))
-
-	xl4 = xElb + ( (l2sim+l3sim) * np.sin(link0Rot*(np.pi/180))*np.sin(link2RotEff*(np.pi/180)))
-	yl4 = yElb + ( (l2sim+l3sim) * np.cos((link2RotEff*(np.pi/180)))) 
-	zl4 = zElb + ( (l2sim+l3sim) * np.cos(link0Rot*(np.pi/180))*np.sin(link2RotEff*(np.pi/180)))
+   
 
 	#glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*np.sin(rotation*0.1), 1.0, 0.0))
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 0.9))
 	glLightfv(GL_LIGHT0, GL_SPECULAR, lightfv(0.0,0.0,0.0,0.1))
 
+	glEnable(GL_DEPTH_TEST)
+
 	draw_base(base)
 	draw_link0(link0, 0, 0, 0, link0Rot)
 	draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
 	draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
-	# draw_link3(link3, xl3, yl3, zl3, link0Rot, link1Rot, link2Rot,link3Rot)
-	# draw_link4(link4, xl4, yl4, zl4, link0Rot, link1Rot, link2Rot,link3Rot,link4Rot)
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
+    draw_cube()
 	time.sleep(0.01)
 	tend = time.time()
+
+def draw_cube():
+    glLoadIdentity()
+    # glDisable(GL_POLYGON_SMOOTH)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+    glLineStipple(10, 0xAAAA)
+    glEnable(GL_LINE_STIPPLE)
+    glColor3f(0.8, 0.0, 0.1)
+    glLineWidth(1)
+    #robot right
+    glBegin(GL_QUADS)
+    glVertex3f( -8, -5,  13 )
+    glVertex3f( -8,  10,  13 )
+    glVertex3f( -8,  10,  3 )
+    glVertex3f( -8, -5,  3 )
+    glEnd()
+    #robot left
+    glBegin(GL_QUADS)
+    glVertex3f( 8, -5,  13 )
+    glVertex3f( 8,  10,  13 )
+    glVertex3f( 8,  10,  3 )
+    glVertex3f( 8, -5,  3 )
+    glEnd()
+    #robot top
+    glBegin(GL_QUADS)
+    glVertex3f( -8,  10,  13 )
+    glVertex3f( -8,  10,  3 )
+    glVertex3f( 8,  10,  3 )
+    glVertex3f( 8,  10,  13 )
+    glEnd()
+    #robot bottom
+    glBegin(GL_QUADS)
+    glVertex3f( -8,  -5,  13 )
+    glVertex3f( -8,  -5,  3 )
+    glVertex3f( 8,  -5,  3 )
+    glVertex3f( 8,  -5,  13 )
+    glEnd()
+
+    #returns polygon mode to smooth
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
+    # glEnable(GL_BLEND)
+    glEnable(GL_MULTISAMPLE)
+    # glfwWindowHint(GLFW_SAMPLES, 4)
+    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
+    # glDisable(GL_DEPTH_TEST)
 
 def draw_base(link):
 	glLoadIdentity()
@@ -323,42 +386,21 @@ def draw_link2(link, x, y, z, link0Rot, link1Rot, link2Rot):
 #   glRotatef(45.0, 0.0, 0.0, 1.0)
 
 	visualization.draw(link)
-   
-def draw_link3(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation):
-	glLoadIdentity()
-	glMatrixMode(GL_MODELVIEW)
-	glTranslatef(x, y, z)
-	glRotatef(link0Rot, 0.0, 1.0 , 0.0)
-	glRotatef(link1Rot, 1.0, 0.0 , 0.0)
-	glRotatef(link2Rot, 1.0, 0.0, 0.0)
-	glRotatef(rotation,0.0,1.0,0.0)
-	 
-#   glRotatef(45.0, 0.0, 0.0, 1.0)
-
-	visualization.draw(link)
-
-def draw_link4(link, x, y, z, link0Rot, link1Rot, link2Rot,rotation,link4Rot):
-	glLoadIdentity()
-	glMatrixMode(GL_MODELVIEW)
-	glTranslatef(x, y, z)
-	glRotatef(link0Rot, 0.0, 1.0 , 0.0)
-	glRotatef(link1Rot, 1.0, 0.0 , 0.0)
-	glRotatef(link2Rot, 1.0, 0.0, 0.0)
-	glRotatef(rotation,0.0,1.0,0.0)
-	glRotatef(link4Rot,1.0,0.0,0.0)
-	visualization.draw(link)
 
 def update(dt):
 	global rotation
 	global i
+	global cameraZ
  #  rotation += 10.0 * dt
 	if keys[key.A]:
 	   rotation += 10
 	if keys[key.D]:
 		rotation -= 10
 	if keys[key.S]:
-		cameraZ -= 5
-	i += 1
+        cameraZ -= 0.1
+    if keys[key.W]:
+        cameraZ += 0.1
+    i += 1
 
 #   if rotation > 720.0:
 #	 rotation = 0.0
