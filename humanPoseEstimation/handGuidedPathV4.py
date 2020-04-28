@@ -225,7 +225,8 @@ def on_draw():
 	#UPDATE- as predicted running getForces at fixed timestep was a very bad idea- using time.time() to get actual time difference seems much safer
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
-	dynamicTorques = dynamicTorques*(-0.3) #gonna play it "safe" here and only cancel out a little bit at first
+	dynamicTorques = dynamicTorques*(-0.01) #gonna play it "safe" here and only cancel out a little bit at first
+	dynamicTorques[2] = dynamicTorques[2]*(-1) #flip sign on elbow because nothing is ever easy
 	#add artificial actuator saturation
 	dynamicTorques[dynamicTorques > 5] = 5
 	dynamicTorques[dynamicTorques < -5] = -5 
