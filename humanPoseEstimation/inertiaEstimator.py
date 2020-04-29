@@ -225,7 +225,11 @@ class inertiaEstimator:
 		J[1,2] = l2*(-sin(cjp[1] + pi/2)*sin(cjp[2]) + cos(cjp[1] + pi/2)*cos(cjp[2]))
 
 		#use geometric jacobian to convert cartesian forces to joint torques
-		jointTorques = np.linalg.inv(J).dot(requiredForcesCart)
+		#I think this might not be correct
+		# jointTorques = np.linalg.inv(J).dot(requiredForcesCart)
+
+		#coutesy of http://bionics.seas.ucla.edu/education/MAE_263D/MAE_263D_C08_V01.pdf p44
+		jointTorques = J.T.dot(requiredForcesCart)
 
 		#tend = time()
 		#elapsed = tend - tstart
