@@ -24,7 +24,7 @@ theta2eff = 0
 recording = 0
 simulating = 0
 
-filename = 'armPath3.txt'
+filename = 'armPath4.txt'
 
 #init openGL stuff
 
@@ -69,7 +69,7 @@ i = 0
 serial0 = "206A337B304B"
 l0cpr = 90
 l0reduction = 6
-beta0 = -0.0075
+beta0 = -0.005
 l0kv = 16
 
 #l1- shoulder up/down
@@ -225,7 +225,7 @@ def on_draw():
 	#UPDATE- as predicted running getForces at fixed timestep was a very bad idea- using time.time() to get actual time difference seems much safer
 	cjp = np.array([theta0,theta1,theta2]) #Current Joint Positions
 	dynamicTorques = IE.getForces(cjp,ljp,dt)
-	dynamicTorques = dynamicTorques*(1.1) #gonna play it "safe" here and only cancel out a little bit at first
+	dynamicTorques = dynamicTorques*(1.3) #gonna play it "safe" here and only cancel out a little bit at first
 	# dynamicTorques[2] = dynamicTorques[2]*(-1) #flip sign on elbow because nothing is ever easy
 	#add artificial actuator saturation
 	dynamicTorques[dynamicTorques > 5] = 5
