@@ -67,7 +67,8 @@ l2 = 6.5
 l3 = 2.65
 
 i = 0
-pathArr = numpy.genfromtxt('armPath2.txt',delimiter=" ")
+path = 'armPath3.txt'
+pathArr = numpy.genfromtxt(path,delimiter=" ")
 
 #goals for end effector
 # x = 5

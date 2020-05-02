@@ -8,9 +8,9 @@ from mpl_toolkits.mplot3d import Axes3D
 #XYZ = RGB
 
 #Loads traj file from handGuidedPath and converts to deg
-traj = np.loadtxt('../handGuidedPath/armPath3.txt')
+traj = np.loadtxt('armPath4.txt')
 traj = traj  * 180 / np.pi
-np.save('armPath3.npy',traj)
+np.save('armPath4.npy',traj)
 
 #get forces
 #traj = np.load('armPath.npy')
@@ -18,7 +18,7 @@ forces = getForces(traj)
 # forces = np.loadtxt('forces.txt')
 # print(forces)
 #np.savetxt('forces.txt',forces)
-np.save('forces3.npy',forces)
+np.save('forces4.npy',forces)
 
 fig = plt.figure()
 ax = fig.add_subplot(111, xlim=(-1,1), ylim=(-1,1), zlim=(0,1), projection='3d', autoscale_on=True)

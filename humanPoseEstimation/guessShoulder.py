@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D
 
 #forces = np.loadtxt('forces.txt')
-forces = np.load('forces2.npy')
+forces = np.load('forces4.npy')
 
 #draw X/Z pos-force relationship
 fig1 = plt.figure(1)
