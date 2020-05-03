@@ -26,6 +26,7 @@ torso = Wavefront('./human/torso.obj')
 upperArm = Wavefront('./human/upperArm.obj')
 lowerArm = Wavefront('./human/lowerArm.obj')
 hand = Wavefront('./human/hand.obj')
+head = Wavefront('./human/head.obj')
 greenCheck = pyglet.image.load('greenCheck.png')
 gc = pyglet.sprite.Sprite(img=greenCheck)
 gc.scale = 0.01
@@ -43,11 +44,11 @@ lowerArmLength = 10
 shoulderX = 0.17 * 39.37
 shoulderY = 0.2 * 39.37
 # shoulderZ = 0.3 * 39.37 + 20
-shoulderZ = 0.3*39.7 + 10
+shoulderZ = 0.3*39.7 + 20
 elbowX = shoulderX
 elbowZ = shoulderZ
 elbowY = shoulderY - upperArmLength
-bodyRot = 225
+bodyRot = 0
 bodyTilt = 0
 
 l1 = 6.5
@@ -154,9 +155,14 @@ def on_draw():
     elbowY = shoulderY - upperArmLength*numpy.cos(numpy.deg2rad(thetaArm1))
     elbowZ = shoulderZ - (upperArmLength*numpy.sin(numpy.deg2rad(thetaArm1)))*numpy.cos(numpy.deg2rad(thetaArm0))
 
+    headX = shoulderX - 7.8#*numpy.cos(numpy.deg2rad(bodyRot))
+    headY = shoulderY + 7.6#*numpy.cos(numpy.deg2rad(bodyTilt))
+    headZ = shoulderZ - 1.3#*numpy.sin(numpy.deg2rad(bodyRot))
+
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1, 1.0, 0.0))
+    glLightfv(GL_LIGHT0, GL_POSITION, lightfv(1.0, 20, 10, 0.0))
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
-    # glLightfv(GL_LIGHT0, GL_AMBIENT, lightfv(0.5,0.5,0.5,0.1))
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightfv(0.1,0.1,0.1,1))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightfv(0.5, 0.5, 0.5, 0.9))
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightfv(0.0,0.0,0.0,0.1))
 
@@ -171,7 +177,8 @@ def on_draw():
     draw_torso(torso,shoulderX, shoulderY, shoulderZ, bodyRot, bodyTilt)
     draw_upperArm(upperArm,shoulderX,shoulderY,shoulderZ,thetaArm0,thetaArm1)
     draw_lowerArm(lowerArm,elbowX,elbowY,elbowZ,thetaArm0,thetaArm1,thetaArm2)
-    draw_hand(hand,xl4,yl4,zl4,thetaArm0,phi)
+    draw_hand(hand,xWrist,yWrist,zWrist,thetaArm0,phi)
+    draw_head(head,headX,headY,headZ,180+thetaArm0*0.5, phi*0.5)
 
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
@@ -245,8 +252,18 @@ def draw_torso(link,x,y,z,bodyRot, bodyTilt):
     glMatrixMode(GL_MODELVIEW)
     glScalef(0.8,0.8,0.8)
     glTranslatef(x,y,z)
-    glRotatef(bodyRot,0,1,0)
+    glRotatef(bodyRot+180,0,1,0)
     glRotatef(bodyTilt,1,0,0)
+
+    visualization.draw(link)
+
+def draw_head(link,x,y,z,thetaHead,phiHead):
+    glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
+    glScalef(0.8,0.8,0.8)
+    glTranslatef(x,y,z)
+    glRotatef(thetaHead,0,1,0)
+    glRotatef(phiHead,1,0,0)
 
     visualization.draw(link)
 
@@ -278,7 +295,7 @@ def draw_hand(link,x,y,z,thetaHand,phiHand):
     glMatrixMode(GL_MODELVIEW)
     glScalef(0.8,0.8,0.8)
     glTranslatef(x,y,z)
-    glRotatef(270+0.01*phiHand,1,0,0)
+    glRotatef(270+0.25*phiHand,1,0,0)
     glRotatef(180,0,0,1)
     glRotatef(thetaHand,0,1,0)
     
@@ -362,7 +379,9 @@ def update(dt):
         cameraZ -= 0.1
     if keys[key.W]:
         cameraZ += 0.1
+    #NOTE - its easy to control human position from here
     i += 1
+
 
 #    if rotation > 720.0:
 #        rotation = 0.0
