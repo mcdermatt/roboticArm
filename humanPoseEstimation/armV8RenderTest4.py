@@ -37,10 +37,17 @@ rx.scale = 0.005
 rx.x = -10
 rx.y = 12
 
+upperArmLength = 10
+lowerArmLength = 10
+
 shoulderX = 0.17 * 39.37
 shoulderY = 0.2 * 39.37
-shoulderZ = 0.3 * 39.37 + 20
-bodyRot = 180
+# shoulderZ = 0.3 * 39.37 + 20
+shoulderZ = 0.3*39.7 + 10
+elbowX = shoulderX
+elbowZ = shoulderZ
+elbowY = shoulderY - upperArmLength
+bodyRot = 225
 bodyTilt = 0
 
 l1 = 6.5
@@ -78,7 +85,6 @@ zl4 = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEf
 
 # cameraZ = -40
 
-
 @window.event
 def on_resize(width, height):
     glMatrixMode(GL_PROJECTION)
@@ -99,8 +105,8 @@ def on_draw():
     glRotatef(0,0,1,0)
     # gluLookAt(5,cameraZ,cameraZ,0,0,0,0,1,0)
     glRotatef(rotation*0.0035,0,1,0)
-    glTranslatef(0,0,cameraZ)
-    # glTranslatef(-cameraZ*numpy.sin(numpy.deg2rad(rotation)),0,-cameraZ*numpy.cos(numpy.deg2rad(rotation)))
+    # glTranslatef(0,0,cameraZ)
+    glTranslatef(-cameraZ*numpy.sin(numpy.deg2rad(rotation)),0,-cameraZ*numpy.cos(numpy.deg2rad(rotation)))
     glMatrixMode(GL_MODELVIEW)
     link0Rot = (180/numpy.pi)*pathArr[i,0]
     link1Rot = (180/numpy.pi)*pathArr[i,1]
@@ -112,7 +118,7 @@ def on_draw():
     lightfv = ctypes.c_float * 4
 
     link2RotEff = link1Rot + link2Rot
-
+    #elbow of arm
     xElb = ( l1 * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
     yElb = ( l1 * numpy.cos((link1Rot*(numpy.pi/180)))) 
     zElb =  ( l1 * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link1Rot*(numpy.pi/180)))
@@ -125,6 +131,28 @@ def on_draw():
     yl4 = yElb + ( (l2+l3) * numpy.cos((link2RotEff*(numpy.pi/180)))) 
     zl4 = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
 
+    xWrist = xElb + ( (l2+l3) * numpy.sin(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180)))
+    yWrist = yElb + ( (l2+l3) * numpy.cos((link2RotEff*(numpy.pi/180)))) #+ 0.5
+    zWrist = zElb + ( (l2+l3) * numpy.cos(link0Rot*(numpy.pi/180))*numpy.sin(link2RotEff*(numpy.pi/180))) + 6.5
+
+    # print("zl4 =", zl4)
+
+    #EE relative to shoulder
+    EEsR = numpy.sqrt((shoulderX-xWrist)**2 + (shoulderY-yWrist)**2 + (shoulderZ-zWrist)**2) #radius of line between shoulder and end effector
+    print("EEsR = ", EEsR)
+    phi = -numpy.rad2deg(numpy.arcsin((shoulderY-yWrist)/(EEsR))) + 90
+    print("phi = ", phi)
+
+    thetaArm0 = numpy.rad2deg(numpy.arctan((shoulderX-xWrist)/(shoulderZ-zWrist)))
+
+    thetaArm1 = phi - numpy.rad2deg(numpy.arccos(EEsR/(2*upperArmLength)))
+
+    # thetaArm2 = phi - numpy.rad2deg(numpy.cos(EEsR/2*upperArmLength))
+    thetaArm2 = 2*numpy.rad2deg(numpy.arccos(EEsR/(2*upperArmLength)))
+    #elbow of human
+    elbowX = shoulderX - (upperArmLength*numpy.sin(numpy.deg2rad(thetaArm1)))*numpy.sin(numpy.deg2rad(thetaArm0))
+    elbowY = shoulderY - upperArmLength*numpy.cos(numpy.deg2rad(thetaArm1))
+    elbowZ = shoulderZ - (upperArmLength*numpy.sin(numpy.deg2rad(thetaArm1)))*numpy.cos(numpy.deg2rad(thetaArm0))
 
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1, 1.0, 0.0))
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0*numpy.sin(rotation*0.1), 1.0, 0.0))
@@ -141,9 +169,9 @@ def on_draw():
     draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
     #draw human
     draw_torso(torso,shoulderX, shoulderY, shoulderZ, bodyRot, bodyTilt)
-    draw_upperArm(upperArm,-5,0,0,0)
-    draw_lowerArm(lowerArm,-10,0,0,0,0)
-    draw_hand(hand,xl4,yl4,zl4,270)
+    draw_upperArm(upperArm,shoulderX,shoulderY,shoulderZ,thetaArm0,thetaArm1)
+    draw_lowerArm(lowerArm,elbowX,elbowY,elbowZ,thetaArm0,thetaArm1,thetaArm2)
+    draw_hand(hand,xl4,yl4,zl4,thetaArm0,phi)
 
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
@@ -222,30 +250,38 @@ def draw_torso(link,x,y,z,bodyRot, bodyTilt):
 
     visualization.draw(link)
 
-def draw_upperArm(link,x,y,z,thetaArm0):
+def draw_upperArm(link,x,y,z,thetaArm0,thetaArm1):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
     glScalef(0.8,0.8,0.8)
-    glRotatef(thetaArm0,0,1,0)
     glTranslatef(x,y,z)
+    glRotatef(180,0,1,0)
+    glRotatef(thetaArm0,0,1,0)
+    glRotatef(thetaArm1,-1,0,0)
     visualization.draw(link)
 
-def draw_lowerArm(link,x,y,z,thetaArm0,thetaArm1):
+def draw_lowerArm(link,elbowX,elbowY,elbowZ,thetaArm0,thetaArm1,thetaArm2):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
     glScalef(0.8,0.8,0.8)
+    glScalef(1.0,0.96,1.0) #make arm segments same length for simplicity
+    glTranslatef(elbowX,elbowY,elbowZ)
+    # glTranslatef(1,0,0.5) #sets offset from slanted upper arm
+    glRotatef(180,0,1,0)
     glRotatef(thetaArm0,0,1,0)
-    glRotatef(thetaArm1,0,1,0)
-    glTranslatef(x,y,z)
+    glRotatef(thetaArm1,-1,0,0)
+    glRotatef(thetaArm2,-1,0,0)
     visualization.draw(link)
 
-def draw_hand(link,x,y,z,thetaHand):
+def draw_hand(link,x,y,z,thetaHand,phiHand):
     glLoadIdentity()
     glMatrixMode(GL_MODELVIEW)
+    glScalef(0.8,0.8,0.8)
     glTranslatef(x,y,z)
-    glRotatef(thetaHand,1,0,0)
+    glRotatef(270+0.01*phiHand,1,0,0)
     glRotatef(180,0,0,1)
-    glScalef(0.8,0.8,0.8)
+    glRotatef(thetaHand,0,1,0)
+    
     
     visualization.draw(link)
 
