@@ -44,11 +44,11 @@ lowerArmLength = 10
 shoulderX = 0.17 * 39.37
 shoulderY = 0.2 * 39.37
 # shoulderZ = 0.3 * 39.37 + 20
-shoulderZ = 0.3*39.7 + 20
+shoulderZ = 0.3*39.7 + 15
 elbowX = shoulderX
 elbowZ = shoulderZ
 elbowY = shoulderY - upperArmLength
-bodyRot = 0
+bodyRot = 35
 bodyTilt = 0
 
 l1 = 6.5
@@ -155,9 +155,15 @@ def on_draw():
     elbowY = shoulderY - upperArmLength*numpy.cos(numpy.deg2rad(thetaArm1))
     elbowZ = shoulderZ - (upperArmLength*numpy.sin(numpy.deg2rad(thetaArm1)))*numpy.cos(numpy.deg2rad(thetaArm0))
 
-    headX = shoulderX - 7.8#*numpy.cos(numpy.deg2rad(bodyRot))
-    headY = shoulderY + 7.6#*numpy.cos(numpy.deg2rad(bodyTilt))
-    headZ = shoulderZ - 1.3#*numpy.sin(numpy.deg2rad(bodyRot))
+    bodyRotRad = numpy.deg2rad(bodyRot)
+    R = numpy.array([[numpy.cos(bodyRotRad), -numpy.sin(bodyRotRad)],
+                  [numpy.sin(bodyRotRad),  numpy.cos(bodyRotRad)]])
+    p = numpy.array([7.8,1.3])
+    heads = p.dot(R)
+
+    headX = shoulderX - heads[0]#*numpy.cos(numpy.deg2rad(bodyRot))
+    headY = shoulderY + 8.6#*numpy.cos(numpy.deg2rad(bodyTilt))
+    headZ = shoulderZ - heads[1]#*numpy.sin(numpy.deg2rad(bodyRot))
 
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1, 1.0, 0.0))
     glLightfv(GL_LIGHT0, GL_POSITION, lightfv(1.0, 20, 10, 0.0))
@@ -174,11 +180,11 @@ def on_draw():
     draw_link1(link1, 0, 0, 0,link0Rot, link1Rot)
     draw_link2(link2, xElb, yElb, zElb, link0Rot, link1Rot, link2Rot)
     #draw human
-    draw_torso(torso,shoulderX, shoulderY, shoulderZ, bodyRot, bodyTilt)
+    draw_torso(torso,shoulderX, shoulderY, shoulderZ, bodyRot+thetaArm0*0.025, bodyTilt)
     draw_upperArm(upperArm,shoulderX,shoulderY,shoulderZ,thetaArm0,thetaArm1)
     draw_lowerArm(lowerArm,elbowX,elbowY,elbowZ,thetaArm0,thetaArm1,thetaArm2)
     draw_hand(hand,xWrist,yWrist,zWrist,thetaArm0,phi)
-    draw_head(head,headX,headY,headZ,180+thetaArm0*0.5, phi*0.5)
+    draw_head(head,headX,headY,headZ,180+thetaArm0*0.5, -phi*0.5 +45)
 
 
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
