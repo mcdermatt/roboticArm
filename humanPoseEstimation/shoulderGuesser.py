@@ -37,10 +37,7 @@ class shoulderGuesser:
 		while j < (np.shape(velCart)[0]):
 			cartForces[j] = (velCart[j] - velCart[j-1])
 			cartForces[cartForces == 0] = 0.0001
-			cartForces[j] = (abs(cartForces[j]))**0.25
-			# cartForces[j,0] = cartForces[j,0]**0.5
-			# cartForces[j,1] = cartForces[j,1]**0.5
-			# cartForces[j,2] = cartForces[j,2]**0.5
+			cartForces[j] = (abs(cartForces[j]))**0.25 # +/- direction of cart. components not important
 			j += 1
 		return(cartForces)
 
@@ -69,8 +66,15 @@ if __name__ == "__main__":
 	print(bestFitX)
 	pX = np.poly1d(bestFitX)
 	xpX= np.linspace(-1,1,100)
-
 	axX.plot(xpX,pX(xpX),'--')
+
+	critX = pX.deriv().r
+	r_critX = critX[critX.imag==0].real
+	testX = pX.deriv(2)(r_critX)
+	x_maxX = r_critX[testX<0]
+	y_min = pX(x_maxX)
+
+	print("shoulder x is = ", max(x_maxX, key=abs))
 
 	#Y vs Force
 	figY = plt.figure(3)
