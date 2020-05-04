@@ -14,7 +14,7 @@ def movingAverage(values,window):
 
 sg = shoulderGuesser()
 
-path = np.loadtxt('armPath3.txt')
+path = np.loadtxt('armPath4.txt')
 pathCart = sg.getCartPath(path)
 forces = sg.getCartForces(pathCart)
 # print(forces)
@@ -35,7 +35,7 @@ zForces = forces[:,1]
 
 plt.figure()
 #Moving Average Filter - looks like this one's the winner
-window_size = 100
+window_size = 10
 
 xForcesMA = movingAverage(xForces,window_size)
 yForcesMA = movingAverage(yForces,window_size)
@@ -45,8 +45,7 @@ plt.plot(t[len(t)-len(xForcesMA):],xForcesMA,label="Moving Average Fx")
 # plt.plot(t[len(t)-len(yForcesMA):],yForcesMA,label="Moving Average Fy")
 # plt.plot(t[len(t)-len(zForcesMA):],zForcesMA,label="Moving Average Fz")
 
-
-print("shape = ",np.shape(xForcesMA))
+# print("shape = ",np.shape(xForcesMA))
 
 #Cubic Interpolation of moving average data
 f2 = interp1d(t[len(t)-len(xForcesMA):],xForcesMA,kind='cubic')
@@ -70,6 +69,32 @@ bestFitX = np.polyfit(pathCart[window_size-1:,0],xForcesMA/zForcesMA,polyOrder)
 pX = np.poly1d(bestFitX)
 xpX= np.linspace(-1,1,100)
 plt.plot(xpX,pX(xpX),'--')
+
+#put forces into bins
+numBins = 31
+xzvt = np.array([pathCart[window_size-1:,0],xForcesMA/zForcesMA])
+print(xzvt)
+bins = np.linspace(-0.5,0.5,numBins)
+xzvt[0,:] = np.digitize(xzvt[0,:],bins)
+print(xzvt)
+
+binSum = np.zeros(len(bins))
+i = 0
+while i < len(bins):
+	currentBin = np.argwhere(xzvt[0,:]==i)
+	binSum[i] = np.sum(xzvt[1,currentBin])/(np.count_nonzero(xzvt[0,:]==i))#total number of times the bin is used
+	i += 1
+
+#TODO- normalize and integrate into func
+
+print(binSum)
+
+plt.figure()
+plt.plot(bins,binSum,'b.')
+# plt.axis([-0.5,0.5,0,2])
+
+xAnswer = bins[np.argwhere(binSum[:] == np.nanmax(binSum))]
+print(xAnswer)
 
 #OLD POLYFIT STRATEGY
 # polyOrder = 30
