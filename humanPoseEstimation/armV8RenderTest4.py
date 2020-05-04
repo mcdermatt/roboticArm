@@ -27,6 +27,11 @@ upperArm = Wavefront('./human/upperArm.obj')
 lowerArm = Wavefront('./human/lowerArm.obj')
 hand = Wavefront('./human/hand.obj')
 head = Wavefront('./human/head.obj')
+testPlot = pyglet.image.load('test.png')
+tp = pyglet.sprite.Sprite(img=testPlot)
+tp.scale = 0.03
+tp.x = 0
+tp.y = 12
 greenCheck = pyglet.image.load('greenCheck.png')
 gc = pyglet.sprite.Sprite(img=greenCheck)
 gc.scale = 0.01
@@ -190,6 +195,7 @@ def on_draw():
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE)
     draw_cube()
     
+    tp.draw()
     #draw green check if EE is inside the workspace
     if (xl3 > -8) and (xl3 < 8) and (yl3 < 10) and (yl3 > -5) and (zl3 > 3) and (zl3 < 13):
         gc.draw()

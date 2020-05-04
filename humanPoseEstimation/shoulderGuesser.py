@@ -1,5 +1,6 @@
 import numpy as np 
 from inertiaEstimator import inertiaEstimator
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.preprocessing import minmax_scale #unused 
@@ -8,7 +9,7 @@ class shoulderGuesser:
 
 	ie = inertiaEstimator()
 	# path = np.zeros(3)
-	path = np.loadtxt('armPath4.txt')
+	path = np.loadtxt('armPath3.txt')
 
 	def getCartPath(self,path=path):
 		"""converts trajectory from joint space to cartesian space"""
@@ -41,74 +42,184 @@ class shoulderGuesser:
 			j += 1
 		return(cartForces)
 
+	def estimateFromForces(self,pathCart):
+		#TODO take speed into account - weigh less heavily when moving quickly		
+		forcesCart = self.getCartForces(pathCart)
+		xForces = forcesCart[forcesCart[:,0].argsort()]
+		polyOrder = 4 #start with 2nd order, try again and again until there is a negative coeffieienct on largest term
+		bestFitX = np.polyfit(pathCart[:,0],forcesCart[:,0],polyOrder)
+		print(bestFitX)
+		pX = np.poly1d(bestFitX)
+		xpX= np.linspace(-1,1,100)
+		critX = pX.deriv().r
+		r_critX = critX[critX.imag==0].real
+		testX = pX.deriv(2)(r_critX)
+		x_maxX = r_critX[testX<0]
+		y_min = pX(x_maxX)
+		print("shoulder x is = ", max(x_maxX, key=abs))
+
+		yForces = forcesCart[forcesCart[:,2].argsort()]
+		polyOrder = 2
+		bestFitY = np.polyfit(pathCart[:,2],forcesCart[:,2],polyOrder)
+		print(bestFitY)
+		pY = np.poly1d(bestFitY)
+		xpY = np.linspace(-1,1,100)
+		critY = pY.deriv().r
+		r_critY = critY[critY.imag==0].real
+		testY = pY.deriv(2)(r_critY)
+		x_maxY = r_critY[testY<0]
+		y_min = pY(x_maxY)
+		print("shoulder y is = ", max(x_maxY, key=abs))
+
+		zForces = forcesCart[forcesCart[:,1].argsort()]
+		polyOrder = 2
+		bestFitZ = np.polyfit(pathCart[:,1],forcesCart[:,1],polyOrder)
+		print(bestFitZ)
+		pZ = np.poly1d(bestFitZ)
+		xpZ = np.linspace(-1,1,100)
+		critZ = pZ.deriv().r
+		r_critZ = critZ[critZ.imag==0].real
+		testZ = pZ.deriv(2)(r_critZ)
+		x_maxZ = r_critZ[testZ<0]
+		y_min = pY(x_maxZ)
+		print("shoulder Z is = ", max(x_maxZ, key=abs))
+
+		bestEst = np.array([[x_maxX,x_maxY,x_maxZ]])
+		#TODO look into returning weight here
+		return(bestEst)
+
+	def estimateFromKinematics(self,pathCart):
+		#TODO return weight
+		pass
+
 if __name__ == "__main__":
 	print("oooweee")
 	
 	sg = shoulderGuesser()
 	pathCart = sg.getCartPath()
 	# print(pathCart)
-	forcesCart = sg.getCartForces(pathCart)
+
+	#estimate of shoulder position from force model
+	fromForce = sg.estimateFromForces(pathCart) #not a normal data structure becasue one of the solutions had multiple local maxima
+	print(fromForce[0])
+	# print(fromForce[0][0][1])
+	forceEst = np.zeros(3)
+	forceEst[0] = fromForce[0][0][1]
+	forceEst[1] = fromForce[0][1]
+	forceEst[2] = fromForce[0][2]
+
+	fig = plt.figure()
+	ax = fig.add_subplot(111,xlim=(-1,1), ylim=(-1,1), zlim=(-1,1), projection='3d', autoscale_on=False)
+	ax.set_xlabel('x')
+	ax.set_ylabel('z')
+	ax.set_zlabel('y')
+
+	#init points
+	numPts = 100
+	p = np.zeros([4,numPts])
+	p[:3,:] = np.random.rand(3,numPts) #give each point a random starting value for x y and z
+	p[:3,:] = np.interp(p[:3,:],[0,1],[-1,1]) #map to size of workspace -1 to 1 in x y z
+	
+	count = 0
+	while count < 100:
+		dist = np.zeros(numPts)
+		k = 0
+		while k < numPts:
+			dist[k] = np.linalg.norm(p[:3,k]-forceEst)
+			k += 1
+
+		dist = np.interp(dist,[0,2],[0,1])
+		colors = np.zeros([3,numPts])
+		colors[:,:] = dist
+		#set cost p[3] to distance from force est
+		p[3,:] = dist**2
+		avg = np.average(p[3,:])
+		
+		#color based on force Fitness kina inefficient though
+		# m = 0
+		# while m < numPts:
+		# 	pts, = plt.plot([p[0,m]],[p[1,m]],[p[2,m]],'.',color=colors[:,m])
+		# 	m += 1
+		pts, = plt.plot(p[0,:],p[1,:],p[2,:],'b.')
+
+
+		#get rid of the least fit particles and resample closer to particles of higher fitness
+		unfit = np.argwhere(p[3,:]>(0.5*avg))
+		n = 0
+		while n < np.shape(unfit)[0]:
+			p[:3,unfit[n]] = np.random.rand(3,1)*2 - 1
+			print(p[:3,unfit[n]])
+			n = n+1
+
+		# p[:3,:] = np.interp(p[:3,:],[0,1],[-1,1])
+		plt.draw()
+		plt.pause(0.01)
+		pts.remove()
+		count += 1
+
+	# forcesCart = sg.getCartForces(pathCart)
 	# forcesCart[:,0] = np.power(forcesCart[:,0],0.1)
 	# print(forcesCart)
-	forcesColor = minmax_scale(forcesCart[:,:],feature_range=(0,1),axis=0)
+	# forcesColor = minmax_scale(forcesCart[:,:],feature_range=(0,1),axis=0)
 
-	#force vs X
-	figX = plt.figure(1)
-	axX = figX.add_subplot()
-	plt.axis([-0.5,0.5,0,1])
-	axX.set_xlabel('x')
-	axX.set_ylabel('force magnitude in x direction')
+	# #force vs X
+	# figX = plt.figure(1)
+	# axX = figX.add_subplot()
+	# plt.axis([-0.5,0.5,0,1])
+	# axX.set_xlabel('x')
+	# axX.set_ylabel('force magnitude in x direction')
 
-	xForces = forcesCart[forcesCart[:,0].argsort()]
-	axX.plot(pathCart[:,0],forcesCart[:,0],'b.')
-	polyOrder = 4 #start with 2nd order, try again and again until there is a negative coeffieienct on largest term
-	bestFitX = np.polyfit(pathCart[:,0],forcesCart[:,0],polyOrder)
-	print(bestFitX)
-	pX = np.poly1d(bestFitX)
-	xpX= np.linspace(-1,1,100)
-	axX.plot(xpX,pX(xpX),'--')
+	# xForces = forcesCart[forcesCart[:,0].argsort()]
+	# axX.plot(pathCart[:,0],forcesCart[:,0],'b.')
+	# polyOrder = 4 #start with 2nd order, try again and again until there is a negative coeffieienct on largest term
+	# bestFitX = np.polyfit(pathCart[:,0],forcesCart[:,0],polyOrder)
+	# print(bestFitX)
+	# pX = np.poly1d(bestFitX)
+	# xpX= np.linspace(-1,1,100)
+	# axX.plot(xpX,pX(xpX),'--')
 
-	critX = pX.deriv().r
-	r_critX = critX[critX.imag==0].real
-	testX = pX.deriv(2)(r_critX)
-	x_maxX = r_critX[testX<0]
-	y_min = pX(x_maxX)
+	# critX = pX.deriv().r
+	# r_critX = critX[critX.imag==0].real
+	# testX = pX.deriv(2)(r_critX)
+	# x_maxX = r_critX[testX<0]
+	# y_min = pX(x_maxX)
 
-	print("shoulder x is = ", max(x_maxX, key=abs))
+	# print("shoulder x is = ", max(x_maxX, key=abs))
 
-	#Y vs Force
-	figY = plt.figure(3)
-	axY = figY.add_subplot()
-	plt.axis([-0.5,0.5,0,1])
-	axY.set_xlabel('Y')
-	axY.set_ylabel('force magnitude in Y direction')
+	# #Y vs Force
+	# figY = plt.figure(3)
+	# axY = figY.add_subplot()
+	# plt.axis([-0.5,0.5,0,1])
+	# axY.set_xlabel('Y')
+	# axY.set_ylabel('force magnitude in Y direction')
 
-	yForces = forcesCart[forcesCart[:,2].argsort()]
-	axY.plot(pathCart[:,2],forcesCart[:,2],'b.')
-	polyOrder = 2
-	bestFitY = np.polyfit(pathCart[:,2],forcesCart[:,2],polyOrder)
-	print(bestFitY)
-	pY = np.poly1d(bestFitY)
-	xpY = np.linspace(-1,1,100)
+	# yForces = forcesCart[forcesCart[:,2].argsort()]
+	# axY.plot(pathCart[:,2],forcesCart[:,2],'b.')
+	# polyOrder = 2
+	# bestFitY = np.polyfit(pathCart[:,2],forcesCart[:,2],polyOrder)
+	# print(bestFitY)
+	# pY = np.poly1d(bestFitY)
+	# xpY = np.linspace(-1,1,100)
 
-	axY.plot(xpY,pY(xpY),'--')
+	# axY.plot(xpY,pY(xpY),'--')
+	# plt.savefig('test.png')
 
-	#Z vs Force
-	figZ = plt.figure(2)
-	axZ = figZ.add_subplot()
-	plt.axis([-0.5,0.5,0,1])
-	axZ.set_xlabel('z')
-	axZ.set_ylabel('force magnitude in z direction')
+	# #Z vs Force
+	# figZ = plt.figure(2)
+	# axZ = figZ.add_subplot()
+	# plt.axis([-0.5,0.5,0,1])
+	# axZ.set_xlabel('z')
+	# axZ.set_ylabel('force magnitude in z direction')
 
-	zForces = forcesCart[forcesCart[:,1].argsort()]
-	axZ.plot(pathCart[:,1],forcesCart[:,1],'b.')
-	polyOrder = 2
-	bestFitZ = np.polyfit(pathCart[:,1],forcesCart[:,1],polyOrder)
-	print(bestFitZ)
-	pZ = np.poly1d(bestFitZ)
-	xpZ = np.linspace(-1,1,100)
+	# zForces = forcesCart[forcesCart[:,1].argsort()]
+	# axZ.plot(pathCart[:,1],forcesCart[:,1],'b.')
+	# polyOrder = 2
+	# bestFitZ = np.polyfit(pathCart[:,1],forcesCart[:,1],polyOrder)
+	# print(bestFitZ)
+	# pZ = np.poly1d(bestFitZ)
+	# xpZ = np.linspace(-1,1,100)
 
-	axZ.plot(xpZ,pZ(xpZ),'--')
+	# axZ.plot(xpZ,pZ(xpZ),'--')
 
 
 
@@ -136,5 +247,4 @@ if __name__ == "__main__":
 
 
 
-	plt.draw()
-	plt.pause(15)
+	
