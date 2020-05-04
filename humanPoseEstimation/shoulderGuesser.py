@@ -36,7 +36,7 @@ class shoulderGuesser:
 		# cartForces = cartForces
 		j = 1
 		while j < (np.shape(velCart)[0]):
-			cartForces[j] = (velCart[j] - velCart[j-1])
+			cartForces[j] = (velCart[j] - velCart[j-1])#**2
 			cartForces[cartForces == 0] = 0.0001
 			cartForces[j] = (abs(cartForces[j]))**0.25 # +/- direction of cart. components not important
 			j += 1
@@ -116,6 +116,11 @@ class shoulderGuesser:
 if __name__ == "__main__":
 	print("oooweee")
 	
+	mostFitThresh = 1
+	leastFitThresh = 1
+	forceWeight = 0.5
+	kinematicsWeight = 1
+
 	sg = shoulderGuesser()
 	pathCart = sg.getCartPath()
 	# print(pathCart)
@@ -163,7 +168,7 @@ if __name__ == "__main__":
 		colors = np.zeros([3,numPts])
 		colors[:,:] = distF
 		#set cost p[3] to sum of the two cost metrics
-		p[3,:] = distF**2 + fromKinematics
+		p[3,:] = distF**forceWeight + fromKinematics**kinematicsWeight
 		avg = np.average(p[3,:])
 		
 		#color based on force Fitness kina inefficient though
@@ -174,8 +179,8 @@ if __name__ == "__main__":
 		pts, = plt.plot(p[0,:],p[2,:],p[1,:],'b.')
 
 		#get rid of the least fit particles
-		unfit = np.argwhere(p[3,:]>(1.5*avg))
-		mostFit = np.argwhere(p[3,:]<0.25*avg) #take note of most fit
+		unfit = np.argwhere(p[3,:]>(leastFitThresh*avg))
+		mostFit = np.argwhere(p[3,:]<mostFitThresh*avg) #take note of most fit
 		worstOfTheBest = np.max(p[3,mostFit])
 		invFit = worstOfTheBest	- p[3,:] #temporarily rank fitness as higher being better so I can do roulette wheel random selection
 		n = 0
