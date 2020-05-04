@@ -24,7 +24,7 @@ theta2eff = 0
 recording = 0
 simulating = 0
 
-filename = 'armPath4.txt'
+filename = 'armPath6.txt'
 
 #init openGL stuff
 
