@@ -48,7 +48,7 @@ class shoulderGuesser:
 		xForces = forcesCart[forcesCart[:,0].argsort()]
 		polyOrder = 4 #start with 2nd order, try again and again until there is a negative coeffieienct on largest term
 		bestFitX = np.polyfit(pathCart[:,0],forcesCart[:,0],polyOrder)
-		print(bestFitX)
+		# print(bestFitX)
 		pX = np.poly1d(bestFitX)
 		xpX= np.linspace(-1,1,100)
 		critX = pX.deriv().r
@@ -61,7 +61,7 @@ class shoulderGuesser:
 		yForces = forcesCart[forcesCart[:,2].argsort()]
 		polyOrder = 2
 		bestFitY = np.polyfit(pathCart[:,2],forcesCart[:,2],polyOrder)
-		print(bestFitY)
+		# print(bestFitY)
 		pY = np.poly1d(bestFitY)
 		xpY = np.linspace(-1,1,100)
 		critY = pY.deriv().r
@@ -74,7 +74,7 @@ class shoulderGuesser:
 		zForces = forcesCart[forcesCart[:,1].argsort()]
 		polyOrder = 2
 		bestFitZ = np.polyfit(pathCart[:,1],forcesCart[:,1],polyOrder)
-		print(bestFitZ)
+		# print(bestFitZ)
 		pZ = np.poly1d(bestFitZ)
 		xpZ = np.linspace(-1,1,100)
 		critZ = pZ.deriv().r
@@ -88,9 +88,30 @@ class shoulderGuesser:
 		#TODO look into returning weight here
 		return(bestEst)
 
-	def estimateFromKinematics(self,pathCart):
+	def estimateFromKinematics(self,pathCart,points):
+		"""The goal here is to lower the overall fitness of a point guess 
+		   if the end effector frequently gets out of reach"""
+
+		punsiher = 0.9
+		fitness = np.ones(np.shape(points)[1])
+
+		step = 0
+		point = 0
+		larm = 0.635 #length of human arm
+		# larm = 0.3
+		while step < np.shape(pathCart)[0]:
+			while point < np.shape(points)[1]:
+				d = np.linalg.norm(points[:,point]-pathCart[step,:])
+				# print(d)
+				if d > larm:
+					fitness[point] = fitness[point] * punsiher
+				point += int(np.floor(20*np.random.rand()))
+			step += 10
+			point = 0
+
 		#TODO return weight
-		pass
+		fitness = 1-fitness
+		return(fitness)
 
 if __name__ == "__main__":
 	print("oooweee")
@@ -99,14 +120,18 @@ if __name__ == "__main__":
 	pathCart = sg.getCartPath()
 	# print(pathCart)
 
-	#estimate of shoulder position from force model
+	#estimate of shoulder position from FORCE MODEL
+	#force model gives a slow big picture estimate of where it thinks the human could be while KM quickly rules out some solutions
 	fromForce = sg.estimateFromForces(pathCart) #not a normal data structure becasue one of the solutions had multiple local maxima
+	# print(fromForce[0])
 	print(fromForce[0])
-	# print(fromForce[0][0][1])
 	forceEst = np.zeros(3)
-	forceEst[0] = fromForce[0][0][1]
+	# forceEst[0] = np.argmax(abs(fromForce[0][0][1]))
+	forceEst[0] = fromForce[0][0][0]
+	# print(forceEst[0])
 	forceEst[1] = fromForce[0][1]
 	forceEst[2] = fromForce[0][2]
+
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111,xlim=(-1,1), ylim=(-1,1), zlim=(-1,1), projection='3d', autoscale_on=False)
@@ -122,17 +147,23 @@ if __name__ == "__main__":
 	
 	count = 0
 	while count < 100:
-		dist = np.zeros(numPts)
+
+		#estimate of shoulder from kinematic model
+		fromKinematics = sg.estimateFromKinematics(pathCart,p[:3,:])
+
+		# print(fromKinematics)
+
+		distF = np.zeros(numPts)
 		k = 0
 		while k < numPts:
-			dist[k] = np.linalg.norm(p[:3,k]-forceEst)
+			distF[k] = np.linalg.norm(p[:3,k]-forceEst)
 			k += 1
 
-		dist = np.interp(dist,[0,2],[0,1])
+		distF = np.interp(distF,[0,2],[0,1])
 		colors = np.zeros([3,numPts])
-		colors[:,:] = dist
-		#set cost p[3] to distance from force est
-		p[3,:] = dist**2
+		colors[:,:] = distF
+		#set cost p[3] to sum of the two cost metrics
+		p[3,:] = distF**2 + fromKinematics
 		avg = np.average(p[3,:])
 		
 		#color based on force Fitness kina inefficient though
@@ -140,20 +171,30 @@ if __name__ == "__main__":
 		# while m < numPts:
 		# 	pts, = plt.plot([p[0,m]],[p[1,m]],[p[2,m]],'.',color=colors[:,m])
 		# 	m += 1
-		pts, = plt.plot(p[0,:],p[1,:],p[2,:],'b.')
+		pts, = plt.plot(p[0,:],p[2,:],p[1,:],'b.')
 
-
-		#get rid of the least fit particles and resample closer to particles of higher fitness
-		unfit = np.argwhere(p[3,:]>(0.5*avg))
+		#get rid of the least fit particles
+		unfit = np.argwhere(p[3,:]>(1.5*avg))
+		mostFit = np.argwhere(p[3,:]<0.25*avg) #take note of most fit
+		worstOfTheBest = np.max(p[3,mostFit])
+		invFit = worstOfTheBest	- p[3,:] #temporarily rank fitness as higher being better so I can do roulette wheel random selection
 		n = 0
 		while n < np.shape(unfit)[0]:
-			p[:3,unfit[n]] = np.random.rand(3,1)*2 - 1
-			print(p[:3,unfit[n]])
+			#TODO resample closer to more fit particles
+			randomVal = np.random.rand()*np.sum(invFit)
+			tempFitSum = 0
+			countVar = 0
+			while tempFitSum < randomVal:
+				tempFitSum = tempFitSum	+ invFit[mostFit[countVar]]
+				countVar += 1	
+
+			p[:3,unfit[n]] = p[:3,mostFit[countVar]] + np.random.randn(3,1)*0.1 #resample around fit points and add some noise
+			# print(p[:3,unfit[n]])
 			n = n+1
 
 		# p[:3,:] = np.interp(p[:3,:],[0,1],[-1,1])
 		plt.draw()
-		plt.pause(0.01)
+		plt.pause(0.1)
 		pts.remove()
 		count += 1
 
