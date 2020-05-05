@@ -4,6 +4,7 @@ from pyglet.window import key
 from pywavefront import visualization, Wavefront
 import numpy
 import time
+from shoulderGuesser import shoulderGuesser
 
 #file plays back path recorded during handGuidedPath and DRAWS HUMAN GUIDING ROBOT
 
@@ -17,6 +18,16 @@ window = pyglet.window.Window(width=1280, height=720, config = config)
 
 keys = key.KeyStateHandler()
 window.push_handlers(keys)
+
+sg = shoulderGuesser()
+# path = 'armPath5.txt' #standing to the left of arm
+path = 'armPath6.txt' #standing to the right of arm
+pathArr = numpy.genfromtxt(path,delimiter=" ")
+
+global shoulderX
+global shoulderY
+global shoulderZ
+global bodyRot
 
 base = Wavefront('base.obj')
 link0 = Wavefront('l0.obj')
@@ -53,7 +64,7 @@ shoulderZ = 0.3*39.7 + 15
 elbowX = shoulderX
 elbowZ = shoulderZ
 elbowY = shoulderY - upperArmLength
-bodyRot = 35
+bodyRot = 0
 bodyTilt = 0
 
 l1 = 6.5
@@ -61,9 +72,12 @@ l2 = 6.5
 l3 = 4.5
 
 i = 0
-path = 'armPath5.txt'
-pathArr = numpy.genfromtxt(path,delimiter=" ")
-
+guessFreq = 100
+mostFitThresh = 1
+leastFitThresh = 1
+forceWeight = 0.5
+kinematicsWeight = 1
+numPts = 100 #number of points in particle filter
 
 link0Rot = (180/numpy.pi)*pathArr[i,0]
 link1Rot = (180/numpy.pi)*pathArr[i,1]
@@ -103,6 +117,11 @@ def on_resize(width, height):
 
 @window.event
 def on_draw():
+    global shoulderX
+    global shoulderY
+    global shoulderZ
+    global bodyRot
+
     window.clear()
     glClearColor(1,1,1,0.5) #sets background color
     glViewport(0,0,1280,720)
@@ -114,6 +133,82 @@ def on_draw():
     # glTranslatef(0,0,cameraZ)
     glTranslatef(-cameraZ*numpy.sin(numpy.deg2rad(rotation)),0,-cameraZ*numpy.cos(numpy.deg2rad(rotation)))
     glMatrixMode(GL_MODELVIEW)
+
+    #runs particle filter
+    p = numpy.zeros([4,numPts])
+    try:
+        if i%guessFreq == 0:
+            pathSoFar = pathArr[:i]
+            pathCart = sg.getCartPath(pathSoFar)
+
+            #estimate of shoulder position from FORCE MODEL
+            #force model gives a slow big picture estimate of where it thinks the human could be while KM quickly rules out some solutions
+            fromForce = sg.estimateFromForces(pathCart) #not a normal data structure becasue one of the solutions had multiple local maxima
+            print(fromForce)
+            forceEst = numpy.zeros(3)
+            forceEst[0] = fromForce[0][0][0]
+            forceEst[1] = fromForce[0][1]
+            try:
+                forceEst[2] = fromForce[0][2]
+            except:
+                forceEst[2] = 0 #idk
+
+            #init points        
+            p[:3,:] = numpy.random.rand(3,numPts) #give each point a random starting value for x y and z
+            p[:3,:] = numpy.interp(p[:3,:],[0,1],[-1,1]) #map to size of workspace -1 to 1 in x y z
+
+            count = 0
+            while count < numPts:
+
+                #estimate of shoulder from kinematic model
+                fromKinematics = sg.estimateFromKinematics(pathCart,p[:3,:])
+
+                # print(fromKinematics)
+
+                distF = numpy.zeros(numPts)
+                k = 0
+                while k < numPts:
+                    #gets distance between each point k and the estimated pos from force model
+                    distF[k] = numpy.linalg.norm(p[:3,k]-forceEst)
+                    k += 1
+
+                distF = numpy.interp(distF,[0,2],[0,1])
+                colors = numpy.zeros([3,numPts])
+                colors[:,:] = distF
+                #set cost p[3] to sum of the two cost metrics
+                p[3,:] = distF**forceWeight + fromKinematics**kinematicsWeight
+                avg = numpy.average(p[3,:])
+
+                #get rid of the least fit particles
+                unfit = numpy.argwhere(p[3,:]>(leastFitThresh*avg))
+                mostFit = numpy.argwhere(p[3,:]<mostFitThresh*avg) #take note of most fit
+                worstOfTheBest = numpy.max(p[3,mostFit])
+                invFit = worstOfTheBest - p[3,:] #temporarily rank fitness as higher being better so I can do roulette wheel random selection
+                n = 0
+                while n < numpy.shape(unfit)[0]:
+                    #resample around most fit particles
+                    randomVal = numpy.random.rand()*numpy.sum(invFit)
+                    tempFitSum = 0
+                    countVar = 0
+                    while tempFitSum < randomVal:
+                        tempFitSum = tempFitSum + invFit[mostFit[countVar]]
+                        countVar += 1   
+
+                    p[:3,unfit[n]] = p[:3,mostFit[countVar]] + numpy.random.randn(3,1)*0.1 #resample around fit points and add some noise
+                    # print(p[:3,unfit[n]])
+                    n = n+1
+
+                count += 1
+
+            #set shoulder as center of most fit particle cloud
+            shoulderX = numpy.average(p[0,mostFit])*39.37
+            shoulderZ = 0.3*39.7 + 15 - abs(0.5*shoulderX)
+            bodyRot = numpy.sign(shoulderX)*numpy.rad2deg(numpy.arcsin(abs(shoulderX)/20))
+            # shoulderY = numpy.average(p[1,mostFit])*39.37
+            # shoulderZ = numpy.average(p[2,mostFit])*39.37
+
+    except:
+        print("Particle Filter Fail")
     link0Rot = (180/numpy.pi)*pathArr[i,0]
     link1Rot = (180/numpy.pi)*pathArr[i,1]
     link2Rot = (180/numpy.pi)*pathArr[i,2]
@@ -145,9 +240,9 @@ def on_draw():
 
     #EE relative to shoulder
     EEsR = numpy.sqrt((shoulderX-xWrist)**2 + (shoulderY-yWrist)**2 + (shoulderZ-zWrist)**2) #radius of line between shoulder and end effector
-    print("EEsR = ", EEsR)
+    # print("EEsR = ", EEsR)
     phi = -numpy.rad2deg(numpy.arcsin((shoulderY-yWrist)/(EEsR))) + 90
-    print("phi = ", phi)
+    # print("phi = ", phi)
 
     thetaArm0 = numpy.rad2deg(numpy.arctan((shoulderX-xWrist)/(shoulderZ-zWrist)))
 
@@ -382,6 +477,9 @@ def update(dt):
     global rotation
     global i
     global cameraZ
+    global shoulderX
+    global shoulderY
+    global shoulderZ
  #  rotation += 10.0 * dt
     if keys[key.A]:
         rotation -= 10
@@ -391,6 +489,19 @@ def update(dt):
         cameraZ -= 0.1
     if keys[key.W]:
         cameraZ += 0.1
+
+    if keys[key.UP]:
+        shoulderZ += 0.1
+    if keys[key.DOWN]:
+        shoulderZ -= 0.1  
+    if keys[key.LEFT]:
+        shoulderX -= 0.1
+    if keys[key.RIGHT]:
+        shoulderX += 0.1  
+
+
+    if i%guessFreq + 1 == 0:
+        shoulderZ = shoulderZ  
     #NOTE - its easy to control human position from here
     i += 1
 

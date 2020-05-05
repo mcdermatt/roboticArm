@@ -14,7 +14,7 @@ def movingAverage(values,window):
 
 sg = shoulderGuesser()
 
-path = np.loadtxt('armPath4.txt')
+path = np.loadtxt('armPath5.txt')
 pathCart = sg.getCartPath(path)
 forces = sg.getCartForces(pathCart)
 # print(forces)
@@ -35,6 +35,8 @@ zForces = forces[:,1]
 
 plt.figure()
 #Moving Average Filter - looks like this one's the winner
+plt.xlabel("t")
+plt.ylabel("Force")
 window_size = 10
 
 xForcesMA = movingAverage(xForces,window_size)
@@ -62,6 +64,8 @@ plt.legend(loc='best')
 
 plt.figure()
 plt.axis([-0.5,0.5,0,3])
+zTemp = zForcesMA
+zTemp[zTemp < 0.1] = 1
 plt.plot(pathCart[window_size-1:,0],xForcesMA/zForcesMA,'.')
 
 polyOrder = 4
@@ -71,7 +75,7 @@ xpX= np.linspace(-1,1,100)
 plt.plot(xpX,pX(xpX),'--')
 
 #put forces into bins
-numBins = 31
+numBins = 51
 xzvt = np.array([pathCart[window_size-1:,0],xForcesMA/zForcesMA])
 print(xzvt)
 bins = np.linspace(-0.5,0.5,numBins)
@@ -81,11 +85,9 @@ print(xzvt)
 binSum = np.zeros(len(bins))
 i = 0
 while i < len(bins):
-	currentBin = np.argwhere(xzvt[0,:]==i)
-	binSum[i] = np.sum(xzvt[1,currentBin])/(np.count_nonzero(xzvt[0,:]==i))#total number of times the bin is used
+	currentBin = np.argwhere([(xzvt[0,:]==i) ,(xzvt[1,:] > np.quantile(xzvt[:,1],0.8))]) #get upper 20% values from each bin
+	binSum[i] = np.sum(xzvt[1,currentBin])/(np.count_nonzero([xzvt[0,:]==i,(xzvt[1,:] > np.quantile(xzvt[:,1],0.8))]))#total number of times the bin is used
 	i += 1
-
-#TODO- normalize and integrate into func
 
 print(binSum)
 

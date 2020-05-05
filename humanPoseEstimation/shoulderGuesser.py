@@ -9,7 +9,7 @@ class shoulderGuesser:
 
 	ie = inertiaEstimator()
 	# path = np.zeros(3)
-	path = np.loadtxt('armPath3.txt')
+	path = np.loadtxt('armPath5.txt')
 
 	def getCartPath(self,path=path):
 		"""converts trajectory from joint space to cartesian space"""
@@ -56,7 +56,7 @@ class shoulderGuesser:
 		testX = pX.deriv(2)(r_critX)
 		x_maxX = r_critX[testX<0]
 		y_min = pX(x_maxX)
-		print("shoulder x is = ", max(x_maxX, key=abs))
+		# print("shoulder x is = ", max(x_maxX, key=abs))
 
 		yForces = forcesCart[forcesCart[:,2].argsort()]
 		polyOrder = 2
@@ -69,7 +69,7 @@ class shoulderGuesser:
 		testY = pY.deriv(2)(r_critY)
 		x_maxY = r_critY[testY<0]
 		y_min = pY(x_maxY)
-		print("shoulder y is = ", max(x_maxY, key=abs))
+		# print("shoulder y is = ", max(x_maxY, key=abs))
 
 		zForces = forcesCart[forcesCart[:,1].argsort()]
 		polyOrder = 2
@@ -82,7 +82,7 @@ class shoulderGuesser:
 		testZ = pZ.deriv(2)(r_critZ)
 		x_maxZ = r_critZ[testZ<0]
 		y_min = pY(x_maxZ)
-		print("shoulder Z is = ", max(x_maxZ, key=abs))
+		# print("shoulder Z is = ", max(x_maxZ, key=abs))
 
 		bestEst = np.array([[x_maxX,x_maxY,x_maxZ]])
 		#TODO look into returning weight here
