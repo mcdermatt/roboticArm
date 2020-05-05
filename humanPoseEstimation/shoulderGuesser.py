@@ -117,7 +117,7 @@ if __name__ == "__main__":
 	print("oooweee")
 	
 	mostFitThresh = 1
-	leastFitThresh = 1
+	leastFitThresh = 1.1
 	forceWeight = 0.5
 	kinematicsWeight = 1
 
@@ -193,13 +193,13 @@ if __name__ == "__main__":
 				tempFitSum = tempFitSum	+ invFit[mostFit[countVar]]
 				countVar += 1	
 
-			p[:3,unfit[n]] = p[:3,mostFit[countVar]] + np.random.randn(3,1)*0.1 #resample around fit points and add some noise
+			p[:3,unfit[n]] = p[:3,mostFit[countVar]] + np.random.randn(3,1)*0.2 #resample around fit points and add some noise
 			# print(p[:3,unfit[n]])
 			n = n+1
 
 		# p[:3,:] = np.interp(p[:3,:],[0,1],[-1,1])
 		plt.draw()
-		plt.pause(0.1)
+		plt.pause(0.5)
 		pts.remove()
 		count += 1
 

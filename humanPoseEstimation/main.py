@@ -20,8 +20,8 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 sg = shoulderGuesser()
-# path = 'armPath5.txt' #standing to the left of arm
-path = 'armPath6.txt' #standing to the right of arm
+path = 'armPath6.txt' #standing to the left of arm
+# path = 'armPath6.txt' #standing to the right of arm
 pathArr = numpy.genfromtxt(path,delimiter=" ")
 
 global shoulderX
@@ -489,16 +489,6 @@ def update(dt):
         cameraZ -= 0.1
     if keys[key.W]:
         cameraZ += 0.1
-
-    if keys[key.UP]:
-        shoulderZ += 0.1
-    if keys[key.DOWN]:
-        shoulderZ -= 0.1  
-    if keys[key.LEFT]:
-        shoulderX -= 0.1
-    if keys[key.RIGHT]:
-        shoulderX += 0.1  
-
 
     if i%guessFreq + 1 == 0:
         shoulderZ = shoulderZ  
