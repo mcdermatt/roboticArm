@@ -20,7 +20,7 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 sg = shoulderGuesser()
-path = 'armPath6.txt' #standing to the left of arm
+path = 'armPath5.txt' #standing to the left of arm
 # path = 'armPath6.txt' #standing to the right of arm
 pathArr = numpy.genfromtxt(path,delimiter=" ")
 
