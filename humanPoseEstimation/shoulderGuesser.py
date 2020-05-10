@@ -162,7 +162,7 @@ class shoulderGuesser:
 		# # print("shoulder Z is = ", max(x_maxZ, key=abs))
 
 		#assume constant shoulder heighy x_maxY
-		x_maxY = 0.3
+		x_maxY = 0.2
 
 		bestEst = np.array([[x_maxX,x_maxY,x_maxZ]])
 		print("best estimate from forces = ",bestEst)
