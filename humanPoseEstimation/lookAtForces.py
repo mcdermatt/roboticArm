@@ -14,7 +14,7 @@ def movingAverage(values,window):
 
 sg = shoulderGuesser()
 
-path = np.loadtxt('armPath6.txt')
+path = np.loadtxt('armPath5.txt')
 pathCart = sg.getCartPath(path)
 forces = sg.getCartForces(pathCart)
 # print(forces)
@@ -92,7 +92,7 @@ binSum = np.zeros(len(bins))
 i = 0
 while i < len(bins):
 	currentBin = np.argwhere([(xzvt[0,:]==i),(xzvt[1,:] > np.quantile(xzvt[:,1],mostForceThresh))]) #get upper mostForceThresh% values from each bin
-	binSum[i] = np.sum(xzvt[1,currentBin])/(np.count_nonzero([xzvt[0,:]==i,(zxvt[1,:] > np.quantile(xzvt[:,1],mostForceThresh))]))#total number of times the bin is used
+	binSum[i] = np.sum(xzvt[1,currentBin])/(np.count_nonzero([xzvt[0,:]==i,(xzvt[1,:] > np.quantile(xzvt[:,1],mostForceThresh))]))#total number of times the bin is used
 	i += 1
 
 print(binSum)
@@ -159,6 +159,48 @@ testX = pbins.deriv(2)(r_critX)
 x_maxX = r_critX[testX<0]
 y_min = pbins(x_maxX)
 print("shoulder z is = ", x_maxX)
+
+
+
+
+
+#Y estimate
+# yzvt = np.array([pathCart[window_size-1:,1],yForcesMA/zForcesMA])
+# # print(zvt)
+# bins = np.linspace(-0.5,0.5,numBins)
+# yzvt[0,:] = np.digitize(yzvt[0,:],bins)
+
+# binSum = np.zeros(len(bins))
+# i = 0
+# while i < len(bins):
+# 	currentBin = np.argwhere([(yzvt[0,:]==i),(yzvt[1,:] > np.quantile(yzvt[:,1],mostForceThresh))]) #get upper mostForceThresh% values from each bin
+# 	binSum[i] = np.sum(yzvt[1,currentBin])/(np.count_nonzero([yzvt[0,:]==i,(zxvt[1,:] > np.quantile(yzvt[:,1],mostForceThresh))]))#total number of times the bin is used
+# 	i += 1
+
+# print(binSum)
+# print(" bins ", bins)
+# print(" binSum ", binSum)
+
+
+
+# plt.figure()
+# plt.plot(bins,binSum,'b.')
+# plt.title("Fy/Fz vs y for dataset 2")
+# plt.xlabel("y (m)")
+# plt.ylabel("Fy/Fz (normalized)")
+# polyOrder = 2
+# bestFityzvt = np.polyfit(bins[np.logical_not(np.isnan(binSum))],binSum[np.logical_not(np.isnan(binSum))],polyOrder)
+# pbins = np.poly1d(bestFityzvt)
+# xpbins= np.linspace(-0.5,0.5,100)
+# plt.plot(xpbins,pbins(xpbins),'--')
+# # plt.axis([-0.5,0.5,0,2])
+
+# critX = pbins.deriv().r
+# r_critX = critX[critX.imag==0].real
+# testX = pbins.deriv(2)(r_critX)
+# x_maxX = r_critX[testX<0]
+# y_min = pbins(x_maxX)
+# print("shoulder y is = ", x_maxX)
 
 
 # xAnswer = bins[np.argwhere(binSum[:] == np.nanmax(binSum))]

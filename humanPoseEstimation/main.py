@@ -20,8 +20,8 @@ keys = key.KeyStateHandler()
 window.push_handlers(keys)
 
 sg = shoulderGuesser()
-path = 'armPath5.txt' #standing to the left of arm
-# path = 'armPath6.txt' #standing to the right of arm
+# path = 'armPath5.txt' #standing far to the left of arm
+path = 'armPath6.txt' #standing slightly to the right of arm
 pathArr = numpy.genfromtxt(path,delimiter=" ")
 
 global shoulderX
@@ -202,9 +202,11 @@ def on_draw():
 
             #set shoulder as center of most fit particle cloud
             shoulderX = numpy.average(p[0,mostFit])*39.37
-            shoulderZ = 0.3*39.7 + 15 - abs(0.5*shoulderX)
+            shoulderY = numpy.average(p[1,mostFit])*39.37
+            shoulderZ = numpy.average(p[2,mostFit])*39.37 + 15 #account for moving base of robot
+            # shoulderZ = 0.3*39.7 + 15 - abs(0.5*shoulderX)
             bodyRot = numpy.sign(shoulderX)*numpy.rad2deg(numpy.arcsin(abs(shoulderX)/20))
-            # shoulderY = numpy.average(p[1,mostFit])*39.37
+
             # shoulderZ = numpy.average(p[2,mostFit])*39.37
 
     except:
