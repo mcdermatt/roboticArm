@@ -2,7 +2,7 @@ import cloudpickle
 from numpy import zeros, array, linspace, deg2rad, sin, cos, pi
 import numpy as np
 from scipy.integrate import odeint
-from statePredictor import statePredictor
+# from statePredictor import statePredictor
 from time import time
 
 class inertiaEstimator:
@@ -40,7 +40,7 @@ class inertiaEstimator:
 	x0[1] = deg2rad(45)
 	x0[2] = deg2rad(45)
 
-	sp = statePredictor()
+	# sp = statePredictor()
 
 	def predictx(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#stateVec = zeros([3,6])
@@ -107,15 +107,27 @@ class inertiaEstimator:
 		l2 = self.numerical_constants[4] # lower arm
 		
 		r = np.sqrt((x*x)+(y*y)+(z*z))
+		print("r = ", r)
 		phi = np.arctan2((np.sqrt((x  * x) + (z * z))), y )
+		print("phi = ", phi)
 		theta = np.arctan2(z, x)
+		print("theta = ", theta)
 
-		#elbow
 		joint[2] = np.pi - 2*np.arcsin(r/(2*l2))
-		#shoulder side to side
-		joint[0] = theta + np.arcsin((l2*(np.sin(joint[2])**2))/np.sqrt(x ** 2 + z ** 2))
-		#shoulder up down
-		joint[1] = np.pi - np.arcsin((((l2*(np.sin(joint[2])**2))/np.tan(joint[0]-theta))-(l2*(np.sin(joint[2])**2)))/l1)
+
+		#always putting shoudler negative
+		joint[1] = np.pi - np.arcsin((np.sqrt(x**2 + z**2 - (l2*np.sin(np.pi - joint[2]))**2))/(l1*(1-np.cos(np.pi - joint[2]))))
+		if y > 0:
+			joint[1] = np.pi - joint[1]
+
+		joint[0] = np.pi - np.arcsin((l2*np.sin(np.pi - joint[2]))/(np.sqrt(x**2 + z**2))) -theta
+
+		#prev attempt (5/26/20)
+		# joint[0] = np.pi - np.arccos((np.sin(np.pi -joint[1])*(l1 - np.sqrt(l2**2 + (l2*np.sin(np.pi - joint[2]))**2)))/(np.sqrt(x**2 + z**2))) + theta
+
+		# joint[0] = theta + np.arcsin((l2*(np.sin(joint[2])**2))/np.sqrt(x ** 2 + z ** 2))
+
+		# joint[1] = np.pi - np.arcsin((((l2*(np.sin(joint[2])**2))/np.tan(joint[0]-theta))-(l2*(np.sin(joint[2])**2)))/l1)
 
 		joint = np.rad2deg(joint)
 
