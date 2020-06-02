@@ -14,7 +14,7 @@ class inertiaEstimator:
                              0.0,  # j0_com_length [m]
                              4.0,  # j0_mass [kg]
                              0.001,  # NOT USED j0_inertia [kg*m^2]
-                             0.264,  # j1_length [m]
+                             0.33,  # j1_length [m]
                              0.132,  # j1_com_length [m]
                              2.95,  # j1_mass (upper arm) [kg]
                              0.001,  # NOT USED j1_inertia [kg*m^2]
@@ -107,11 +107,11 @@ class inertiaEstimator:
 		l2 = self.numerical_constants[4] # lower arm
 		
 		r = np.sqrt((x*x)+(y*y)+(z*z))
-		print("r = ", r)
+		# print("r = ", r)
 		phi = np.arctan2((np.sqrt((x  * x) + (z * z))), y )
-		print("phi = ", phi)
+		# print("phi = ", phi)
 		theta = np.arctan2(z, x)
-		print("theta = ", theta)
+		# print("theta = ", theta)
 
 		joint[2] = np.pi - 2*np.arcsin(r/(2*l2))
 
