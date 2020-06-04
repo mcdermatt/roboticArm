@@ -88,9 +88,11 @@ class inertiaEstimator:
 		l1 = self.numerical_constants[4] # upper arm
 		l2 = self.numerical_constants[4] # lower arm
 
-		r = l1 + l2*np.cos(theta2)
+		# r = l1 + l2*np.cos(theta2)
 		phi = theta1
 		theta = np.pi - theta0 - np.arctan((l2*np.sin(np.pi - theta2))/(l1 - l2*np.cos(np.pi - theta2)))
+		r = (l1 + l2*np.cos(theta2))/(np.cos(np.arctan((l2*np.sin(np.pi - theta2))/(l1 - l2*np.cos(np.pi - theta2)))))
+		print('r = ', r, ' phi = ', phi, ' theta = ', theta)
 
 		#x
 		cart[0] = r*np.cos(theta)*np.sin(phi)
