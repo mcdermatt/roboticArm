@@ -45,7 +45,7 @@ class inertiaEstimator:
 	def predictx(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#stateVec = zeros([3,6])
 		#apply force in x direction [N]
-		self.numerical_constants[12] = 0.1
+		self.numerical_constants[12] = 1
 		self.numerical_constants[13] = 0
 		self.numerical_constants[14] = 0
 		fxstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
@@ -55,7 +55,7 @@ class inertiaEstimator:
 	def predicty(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#apply force in y direction [N]
 		self.numerical_constants[12] = 0
-		self.numerical_constants[13] = 0.1
+		self.numerical_constants[13] = 1
 		self.numerical_constants[14] = 0
 		fystates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 
@@ -66,7 +66,7 @@ class inertiaEstimator:
 		#apply force in z direction [N]
 		self.numerical_constants[12] = 0
 		self.numerical_constants[13] = 0
-		self.numerical_constants[14] = 0.1
+		self.numerical_constants[14] = 1
 		fzstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 		#stateVec[2,:] = newStates[-1]
 		#print(y)
@@ -84,11 +84,31 @@ class inertiaEstimator:
 	def joint2Cartesian(self, theta0, theta1, theta2):
 		#Depricated
 		cart = zeros(3)
-		l1 = 0.164
-		l2 = 0.243
-		cart[0] = (self.numerical_constants[4]*np.sin(theta1) + 0.243*np.sin(theta1+theta2)) * np.sin(-1* theta0) #x l2=0.243
-		cart[1] = self.numerical_constants[4]*np.cos(theta1) + 0.243*np.cos(theta1+theta2) #y
-		cart[2] = (self.numerical_constants[4]*np.sin(theta1) + 0.243*np.sin(theta1+theta2)) * np.cos(-1*theta0) #z
+
+		l1 = self.numerical_constants[4] # upper arm
+		l2 = self.numerical_constants[4] # lower arm
+
+		r = l1 + l2*np.cos(theta2)
+		phi = theta1
+		theta = np.pi - theta0 - np.arctan((l2*np.sin(np.pi - theta2))/(l1 - l2*np.cos(np.pi - theta2)))
+
+		#x
+		cart[0] = r*np.cos(theta)*np.sin(phi)
+		#y
+		cart[1] = r*np.cos(phi)
+		#z
+		cart[2] = r*np.sin(theta)*np.sin(phi)
+
+		# #x hand
+		# cart[0] = np.sin(theta1)*(l1*np.cos(np.pi - theta0) + l2*np.cos(np.pi - theta0 + theta2))
+		# #z hand
+		# cart[2] = np.sin(theta1)*(l1*np.sin(np.pi - theta0) + l2*np.sin(np.pi - theta0 + theta2))
+		# #y hand - correct?
+		# cart[1] = np.cos(theta1)*(l1 + l2*np.cos(np.pi - theta2))
+
+		# cart[0] = (self.numerical_constants[4]*np.sin(theta1) + 0.243*np.sin(theta1+theta2)) * np.sin(-1* theta0) #x l2=0.243
+		# cart[1] = self.numerical_constants[4]*np.cos(theta1) + 0.243*np.cos(theta1+theta2) #y
+		# cart[2] = (self.numerical_constants[4]*np.sin(theta1) + 0.243*np.sin(theta1+theta2)) * np.cos(-1*theta0) #z
 
 		# #x
 		# cart[0] = l2*(-sin(theta0)*cos(theta1 - pi/2)*cos(theta2) + sin(theta0)*sin(theta1-pi/2)*sin(theta2)) - l1*sin(theta0)*sin(theta1 - pi/2)
