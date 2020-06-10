@@ -218,9 +218,9 @@ print(os.path.abspath(inspect.getfile(right_hand_side)))
 x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
-x0[0] = deg2rad(131)
-x0[1] = deg2rad(63)
-x0[2] = deg2rad(67)
+x0[0] = deg2rad(51)
+x0[1] = deg2rad(0)
+x0[2] = deg2rad(104)
 #initial vel
 #x0[3] = deg2rad(180)
 #x0[4] = deg2rad(-90)

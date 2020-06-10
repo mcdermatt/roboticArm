@@ -45,7 +45,7 @@ class inertiaEstimator:
 	def predictx(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#stateVec = zeros([3,6])
 		#apply force in x direction [N]
-		self.numerical_constants[12] = 1
+		self.numerical_constants[12] = 0.001
 		self.numerical_constants[13] = 0
 		self.numerical_constants[14] = 0
 		fxstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
@@ -55,9 +55,20 @@ class inertiaEstimator:
 	def predicty(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#apply force in y direction [N]
 		self.numerical_constants[12] = 0
-		self.numerical_constants[13] = 1
+		self.numerical_constants[13] = 0.001
 		self.numerical_constants[14] = 0
 		fystates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
+
+		print('fystates = ' , fystates)
+
+		#try movement again in opposite direction to avoid kinemtic constraints- 
+		# self.numerical_constants[12] = 0
+		# self.numerical_constants[13] = -0.001
+		# self.numerical_constants[14] = 0
+		# altfystates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
+		# #take whichever values is larger
+		# if altfystates[1][-1] > fystates[1][-1]:
+		# 	fystates = altfystates
 
 		return(fystates)
 #		stateVec[1,:] = newStates[-1]
@@ -66,7 +77,7 @@ class inertiaEstimator:
 		#apply force in z direction [N]
 		self.numerical_constants[12] = 0
 		self.numerical_constants[13] = 0
-		self.numerical_constants[14] = 1
+		self.numerical_constants[14] = 0.001
 		fzstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 		#stateVec[2,:] = newStates[-1]
 		#print(y)
@@ -89,9 +100,10 @@ class inertiaEstimator:
 		l2 = self.numerical_constants[4] # lower arm
 
 		# r = l1 + l2*np.cos(theta2)
-		phi = theta1
 		theta = np.pi - theta0 - np.arctan((l2*np.sin(np.pi - theta2))/(l1 - l2*np.cos(np.pi - theta2)))
 		r = (l1 + l2*np.cos(theta2))/(np.cos(np.arctan((l2*np.sin(np.pi - theta2))/(l1 - l2*np.cos(np.pi - theta2)))))
+		phi = np.pi - np.arccos((l1*np.cos(np.pi- theta1) - l2*np.cos(np.pi - theta2)*np.cos(np.pi-theta1))/(r))
+
 		print('r = ', r, ' phi = ', phi, ' theta = ', theta)
 
 		#x
