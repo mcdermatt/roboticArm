@@ -14,8 +14,8 @@ def getRotAng(X,Z):
 	#loop through different angles and find volume of each ellipse
 	#	constrained by: center at 0,0 and two points 
 	#	as func of cross and angle (specified in param sweep)
-
-	theta = np.linspace(0,np.pi,20)
+	numAngles = 20 #how many angles to sweep through to find best rotation
+	theta = np.linspace(0,np.pi,numAngles)
 	bestArea= 0
 	bestAng = 0
 	bestMajor = 0
@@ -65,7 +65,7 @@ def getRotAng(X,Z):
 
 	return(bestAng,bestMajor,bestMinor)
 
-def drawCross(x,z,Ix,Iz):
+def drawCross(ax,x,z,Ix,Iz):
 	'''x and z projections of inertia'''
 
 	sf = 1 #scaling factor
@@ -78,17 +78,24 @@ def drawCross(x,z,Ix,Iz):
 
 	return
 
-def drawEllipse(bestAng,bestMajor,bestMinor):
+def drawEllipse(ax,x,z,Ix,Iz):
 
-	ellipse = Ellipse([0,0],bestMajor,bestMinor,angle = np.rad2deg(bestAng))
-	patches.append(ellipse)
-	ax.add_patch(ellipse)
+	patches = []
+	bestAng, bestMajor, bestMinor = getRotAng(Ix,Iz) #iputs are half lengths of cross line segments
+	#add first ellipse
+	ellipse1 = Ellipse([x,z],bestMajor,bestMinor,angle = np.rad2deg(bestAng))
+	patches.append(ellipse1)
+	ax.add_patch(ellipse1)
+	#this produces two solutions so we need to remember to add both
+	ellipse2 = Ellipse([x,z],bestMajor,bestMinor,angle = 180- np.rad2deg(bestAng))
+	patches.append(ellipse2)
+	ax.add_patch(ellipse2)
 	return
 
 if __name__ == "__main__":
 
-	Ix = 0.3
-	Iz = 0.1
+	Ix = 0.1
+	Iz = 0.4
 
 	patches = []
 
@@ -103,9 +110,9 @@ if __name__ == "__main__":
 
 	drawCross(0,0,Ix/2,Iz/2)
 
-	drawEllipse(bestAng,bestMajor,bestMinor)
+	drawEllipse(0,0,Ix,Iz)
 
 
 	plt.draw()
-	plt.pause(5)
+	plt.pause(15)
 

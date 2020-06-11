@@ -5,6 +5,7 @@ import numpy
 from time import sleep
 # from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 from humanInertiaEstimator import inertiaEstimator
+from ellipse import *
 
 
 #IMPORTANT NOTES
@@ -61,8 +62,10 @@ def drawRotatedEllipse(x,z,Ix,Iz):
 			bestVolume = vol
 			bestAng = ang
 
-def areaOfEllipse(l,w):
+	return
 
+def areaOfEllipse(l,w):
+	pass
 
 ie = inertiaEstimator()
 
