@@ -45,7 +45,7 @@ class inertiaEstimator:
 	def predictx(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#stateVec = zeros([3,6])
 		#apply force in x direction [N]
-		self.numerical_constants[12] = 0.001
+		self.numerical_constants[12] = 100
 		self.numerical_constants[13] = 0
 		self.numerical_constants[14] = 0
 		fxstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
@@ -55,7 +55,7 @@ class inertiaEstimator:
 	def predicty(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		#apply force in y direction [N]
 		self.numerical_constants[12] = 0
-		self.numerical_constants[13] = 0.001
+		self.numerical_constants[13] = 100
 		self.numerical_constants[14] = 0
 		fystates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 
@@ -77,7 +77,7 @@ class inertiaEstimator:
 		#apply force in z direction [N]
 		self.numerical_constants[12] = 0
 		self.numerical_constants[13] = 0
-		self.numerical_constants[14] = 0.001
+		self.numerical_constants[14] = 100
 		fzstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 		#stateVec[2,:] = newStates[-1]
 		#print(y)
@@ -140,6 +140,7 @@ class inertiaEstimator:
 		d0 = 0 #j0 and j1 at same point
 		alpha0 = np.pi/2
 		a0 = 0
+		theta0 = theta0 + np.pi/2
 		A0 = np.array([[np.cos(theta0), -np.sin(theta0)*np.cos(alpha0), np.sin(theta0)*np.sin(alpha0), a0*np.cos(theta0)],
 						[np.sin(theta0), np.cos(theta0)*np.cos(alpha0), -np.cos(theta0)*np.sin(alpha0), a0*np.sin(theta0)],
 						[0, 	np.sin(alpha0),		np.cos(alpha0), 		d0],
@@ -148,7 +149,7 @@ class inertiaEstimator:
 		# #joint 1 with respect to joint 0
 		d1 = 0 #j0 and j1 at same point
 		alpha1 = np.pi/2
-		a1 = 1
+		a1 = self.numerical_constants[4]
 		theta1 = theta1 + np.pi/2 #need to set zero position for DH table- sympy has zero at vertical
 		A1 = np.array([[np.cos(theta1), -np.sin(theta1)*np.cos(alpha1), np.sin(theta1)*np.sin(alpha1), a1*np.cos(theta1)],
 						[np.sin(theta1), np.cos(theta1)*np.cos(alpha1), -np.cos(theta1)*np.sin(alpha1), a1*np.sin(theta1)],
@@ -159,7 +160,7 @@ class inertiaEstimator:
 		# #joint 2 with respect to joint 1
 		d2 = 0 #j0 and j1 at same point
 		alpha2 = np.pi/2
-		a2 = 1
+		a2 = self.numerical_constants[4]
 		A2 = np.array([[np.cos(theta2), -np.sin(theta2)*np.cos(alpha2), np.sin(theta2)*np.sin(alpha2), a2*np.cos(theta2)],
 						[np.sin(theta2), np.cos(theta2)*np.cos(alpha2), -np.cos(theta2)*np.sin(alpha2), a2*np.sin(theta2)],
 						[0, 	np.sin(alpha2),		np.cos(alpha2), 		d2],
@@ -201,7 +202,7 @@ class inertiaEstimator:
 
 		# joint[1] = np.pi - np.arcsin((((l2*(np.sin(joint[2])**2))/np.tan(joint[0]-theta))-(l2*(np.sin(joint[2])**2)))/l1)
 
-		joint = np.rad2deg(joint)
+		# joint = np.rad2deg(joint)
 
 		return(joint)
 
@@ -213,20 +214,22 @@ class inertiaEstimator:
 
 		for i in range(0,3):
 		#convert to cartesian space
-			fin = self.joint2Cartesian(states[i,0],states[i,1],states[i,2])
+			fin = self.joint2CartesianV2(states[i,0],states[i,2],states[i,1])
 		
-			initial = self.joint2Cartesian(self.x0[0],self.x0[1],self.x0[2])
+			initial = self.joint2CartesianV2(self.x0[0],self.x0[2],self.x0[1])
 			
-			diff[i] = abs(abs(fin[i]) - abs(initial[i]))
+			diff[i] = abs(abs(fin[i,3]) - abs(initial[i,3]))
 			
 			#dy = v0t + (1/2)at^2
 			#diff = (1/2)(a)(0.1^2) #Remember to update this if you change how long to run predictx,y,z for
 			#diff = 0.005*a
 			#F = Ia
 			#0.1 = I*(200*diff)
+		print('diff = ',diff )
 		inertias = 0.1/(200*diff)
 
 		return(inertias)
+		# return(diff)
 
 	def getForces(self, cjp, ljp, dt):
 		"""gets forces required to move manipulator to next state

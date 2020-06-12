@@ -242,7 +242,7 @@ numerical_constants = array([0.0,  # j0_length [m]
                              2.27,  # j2_mass (lower arm) [kg]
                              0.001,  # NOT USED j2_inertia [kg*m^2]
                              9.81, #gravity [m/s^2]
-                             10, #Fx
+                             0, #Fx
                              0, #Fy
                              0,],  #Fz 
                             ) 

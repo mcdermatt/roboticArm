@@ -45,15 +45,14 @@ def getRotAng(X,Z):
 		# print(coeff)
 		# print(coeff.args[0]) #shows values of a and b for each angle
 
-		#get area of ellipse represented by above equation
-		major = coeff.args[0][0]
-		minor = coeff.args[0][1]
-
-		area = np.pi * major * minor
-
 		#whatever angle produes ell of largest volume will be the answer (or pi - that since there will always be 2 solutions?)
 		
 		try:
+			#get area of ellipse represented by above equation
+			major = coeff.args[0][0]
+			minor = coeff.args[0][1]
+
+			area = np.pi * major * minor
 			if area > bestArea:
 				bestArea = area
 				bestAng = ang
@@ -94,7 +93,7 @@ def drawEllipse(ax,x,z,Ix,Iz):
 
 if __name__ == "__main__":
 
-	Ix = 0.1
+	Ix = 0.05
 	Iz = 0.4
 
 	patches = []
@@ -108,9 +107,9 @@ if __name__ == "__main__":
 	fig = plt.figure()
 	ax = fig.add_subplot(xlim=(-0.5,0.5),ylim=(-0.5,0.5))
 
-	drawCross(0,0,Ix/2,Iz/2)
+	drawCross(ax,0,0,Ix/2,Iz/2)
 
-	drawEllipse(0,0,Ix,Iz)
+	drawEllipse(ax,0,0,Ix,Iz)
 
 
 	plt.draw()

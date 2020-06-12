@@ -30,10 +30,11 @@ for xstep in x:
 			joint = ie.cartesian2Joint(xstep,ystep,zstep)
 			print('joint from inverse kinematics = ', joint)
 			cart = ie.joint2Cartesian(joint[0],joint[1],joint[2])
-			print('cart from forward kinematics= ', cart)
-
 			ax.plot([cart[0]],[cart[2]],[cart[1]],'ro')
-
+			print('cart from forward kinematics v1= ', cart)
+			
+			T = ie.joint2CartesianV2(joint[0],joint[1],joint[2])
+			ax.plot([T[0,3]],[T[1,3]],[T[2,3]],'bo')
 
 
 plt.draw()

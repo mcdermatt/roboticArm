@@ -13,7 +13,9 @@ from humanInertiaEstimator import inertiaEstimator
 
 def drawEllipsoid(x,y,z,Ix,Iy,Iz):
 	
-	scalingFactor = 0.00025
+	# scalingFactor = 0.00025
+
+	scalingFactor = 1
 
 	ellipsoidDetail = 12 #number of vertices in each ellipsoid
 	phi = np.linspace(0,2*np.pi, ellipsoidDetail).reshape(ellipsoidDetail, 1) # the angle of the projection in the xy-plane
@@ -64,7 +66,7 @@ for xstep in x:
 			# inertias[inertias > cielI] = cielI
 
 			#draw ellipsoids
-			el = drawEllipsoid(xstep,zstep,0,inertias[0],inertias[2],inertias[1])
+			el = drawEllipsoid(xstep,zstep,0,inertias[0],inertias[1],inertias[2])
 
 			#dots
 			#ax.plot([xstep],[ystep],[zstep],'.' ,color = [inertias[0]/np.sum(inertias),inertias[2]/np.sum(inertias),inertias[1]/np.sum(inertias)])

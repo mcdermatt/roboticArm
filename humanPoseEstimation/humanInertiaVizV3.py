@@ -11,13 +11,13 @@ from ellipse import *
 ie = inertiaEstimator()
 
 fig = plt.figure()
-ax = fig.add_subplot(xlim=(0,0.5),ylim=(0,0.5))
+ax = fig.add_subplot(xlim=(-0.1,0.5),ylim=(0,0.5))
 ax.set_xlabel('x')
 ax.set_ylabel('z')
 
 fidelity = 0.05 #how far apart each point should be
 cielI = 1000 #cap on inertia for viz
-scalingFactor = 0.0001
+scalingFactor = 0.25
 
 x = np.arange(0,0.3 + fidelity,fidelity)
 y = 0
