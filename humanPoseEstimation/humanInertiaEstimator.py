@@ -133,6 +133,44 @@ class inertiaEstimator:
 
 		return(cart)
 
+
+	def joint2CartesianV2(self,theta0,theta1,theta2):
+
+		#joint 0 with respect to base
+		d0 = 0 #j0 and j1 at same point
+		alpha0 = np.pi/2
+		a0 = 0
+		A0 = np.array([[np.cos(theta0), -np.sin(theta0)*np.cos(alpha0), np.sin(theta0)*np.sin(alpha0), a0*np.cos(theta0)],
+						[np.sin(theta0), np.cos(theta0)*np.cos(alpha0), -np.cos(theta0)*np.sin(alpha0), a0*np.sin(theta0)],
+						[0, 	np.sin(alpha0),		np.cos(alpha0), 		d0],
+						[0,		0,		0,		1]])
+
+		# #joint 1 with respect to joint 0
+		d1 = 0 #j0 and j1 at same point
+		alpha1 = np.pi/2
+		a1 = 1
+		theta1 = theta1 + np.pi/2 #need to set zero position for DH table- sympy has zero at vertical
+		A1 = np.array([[np.cos(theta1), -np.sin(theta1)*np.cos(alpha1), np.sin(theta1)*np.sin(alpha1), a1*np.cos(theta1)],
+						[np.sin(theta1), np.cos(theta1)*np.cos(alpha1), -np.cos(theta1)*np.sin(alpha1), a1*np.sin(theta1)],
+						[0, 	np.sin(alpha1),		np.cos(alpha1), 		d1],
+						[0,		0,		0,		1]])
+
+
+		# #joint 2 with respect to joint 1
+		d2 = 0 #j0 and j1 at same point
+		alpha2 = np.pi/2
+		a2 = 1
+		A2 = np.array([[np.cos(theta2), -np.sin(theta2)*np.cos(alpha2), np.sin(theta2)*np.sin(alpha2), a2*np.cos(theta2)],
+						[np.sin(theta2), np.cos(theta2)*np.cos(alpha2), -np.cos(theta2)*np.sin(alpha2), a2*np.sin(theta2)],
+						[0, 	np.sin(alpha2),		np.cos(alpha2), 		d2],
+						[0,		0,		0,		1]])
+
+		#transform of 2 with respect to 0
+		T = A0.dot(A1).dot(A2)
+
+		return(T)
+
+
 	def cartesian2Joint(self, x, y, z):
 
 		joint = zeros(3)
