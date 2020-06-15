@@ -59,7 +59,7 @@ class inertiaEstimator:
 		self.numerical_constants[14] = 0
 		fystates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 
-		print('fystates = ' , fystates)
+		# print('fystates = ' , fystates)
 
 		#try movement again in opposite direction to avoid kinemtic constraints- 
 		# self.numerical_constants[12] = 0
@@ -208,17 +208,20 @@ class inertiaEstimator:
 
 	def getInertia(self):
 		states = self.predict()
+		print('predicted states = ',states)
 		diff = zeros(3)
 
 		print("x0 = ", self.x0)
 
 		for i in range(0,3):
 		#convert to cartesian space
-			fin = self.joint2CartesianV2(states[i,0],states[i,2],states[i,1])
-		
-			initial = self.joint2CartesianV2(self.x0[0],self.x0[2],self.x0[1])
-			
-			diff[i] = abs(abs(fin[i,3]) - abs(initial[i,3]))
+			fin = self.joint2CartesianV2(states[i,0],states[i,1],states[i,2])
+			print('fin = ', fin)
+			initial = self.joint2CartesianV2(self.x0[0],self.x0[1],self.x0[2])
+			print('initial = ',initial)
+
+			#TODO - issue somewhere in here
+			diff[i] = abs(fin[i,3] - initial[i,3])
 			
 			#dy = v0t + (1/2)at^2
 			#diff = (1/2)(a)(0.1^2) #Remember to update this if you change how long to run predictx,y,z for
@@ -228,8 +231,8 @@ class inertiaEstimator:
 		print('diff = ',diff )
 		inertias = 0.1/(200*diff)
 
-		return(inertias)
-		# return(diff)
+		# return(inertias)
+		return(diff)
 
 	def getForces(self, cjp, ljp, dt):
 		"""gets forces required to move manipulator to next state

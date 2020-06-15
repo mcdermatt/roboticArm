@@ -219,7 +219,7 @@ x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
 x0[0] = deg2rad(51)
-x0[1] = deg2rad(0)
+x0[1] = deg2rad(90)
 x0[2] = deg2rad(104)
 #initial vel
 #x0[3] = deg2rad(180)
