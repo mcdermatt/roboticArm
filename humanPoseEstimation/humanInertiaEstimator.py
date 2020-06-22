@@ -130,14 +130,14 @@ class inertiaEstimator:
 
 			i += 1
 
-		try:
-			m,b = np.polyfit(x,z,1) #will not work - need intercept to be at origen
-		except:
-			m =  0
+		# try:
+		# 	m,b = np.polyfit(x,z,1) #will not work - need intercept to be at origen
+		# except:
+		# 	m =  0
 
 		# print('theta = ',theta)
-		print('x = ',x)
-		print('z = ',z)
+		# print('x = ',x)
+		# print('z = ',z)
 
 
 
