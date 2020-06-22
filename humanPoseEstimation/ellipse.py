@@ -77,7 +77,8 @@ def drawCross(ax,x,z,Ix,Iz):
 
 	return
 
-def drawEllipse(ax,x,z,Ix,Iz):
+def drawEllipseFromCross(ax,x,z,Ix,Iz):
+	''' draws largest possible ellipse that can inscribe three points '''
 
 	patches = []
 	bestAng, bestMajor, bestMinor = getRotAng(Ix,Iz) #iputs are half lengths of cross line segments
@@ -87,13 +88,50 @@ def drawEllipse(ax,x,z,Ix,Iz):
 	ax.add_patch(ellipse1)
 	#this produces two solutions so we need to remember to add both
 	ellipse2 = Ellipse([x,z],bestMajor,bestMinor,angle = 180- np.rad2deg(bestAng))
-	patches.append(ellipse2)
-	ax.add_patch(ellipse2)
+	# patches.append(ellipse2)
+	# ax.add_patch(ellipse2)
 	return
+
+def drawEllipse(ax,x,z,lam1,lam2,theta):
+
+	patches = []
+	ellipse = Ellipse([x,z],2*np.sqrt(lam1),2*np.sqrt(lam2),angle = np.rad2deg(theta))
+	patches.append(ellipse)
+	ax.add_patch(ellipse)
+
+	return
+
+def cov2Ell(cov):
+	'''makes confidence ellipse given covariance matrix of data'''
+
+	a = cov[0,0]
+	b = cov[0,1]
+	c = cov[1,1]
+
+	#sqrt(lam1) = major radius
+	lam1 = (a + c)/2 + np.sqrt(((a-c)/2)**2 + b**2)
+
+	#sqrt(lam2) = minor radius
+	lam2 = (a + c)/2 - np.sqrt(((a-c)/2)**2 + b**2)
+
+	if b == 0:
+		if a >= c:
+			theta = 0
+		if a < c:
+			theta = np.pi/2
+	else:
+		theta = np.arctan2(lam1 - a, b)
+
+	#scale to 95% confidence interval
+	#chi-squared value of 0.95 is 5.991
+	lam1 = lam1*5.991
+	lam2 = lam2*5.991
+
+	return(lam1,lam2,theta)
 
 if __name__ == "__main__":
 
-	Ix = 0.05
+	Ix = 0.2
 	Iz = 0.4
 
 	patches = []
@@ -113,5 +151,5 @@ if __name__ == "__main__":
 
 
 	plt.draw()
-	plt.pause(15)
+	plt.pause(60)
 

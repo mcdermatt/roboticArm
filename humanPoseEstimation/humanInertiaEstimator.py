@@ -84,6 +84,66 @@ class inertiaEstimator:
 		#print(numerical_constants[12])
 		return(fzstates)
 
+	def predictxz(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
+		#apply force in z direction [N]
+		self.numerical_constants[12] = 1
+		self.numerical_constants[13] = 0
+		self.numerical_constants[14] = 1
+		fxzstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
+		#stateVec[2,:] = newStates[-1]
+		#print(y)
+		#print(numerical_constants[12])
+		initial = self.joint2CartesianV2(self.x0[0],self.x0[1],self.x0[2])[:3,3]
+		final = self.joint2CartesianV2(fxzstates[-1][0],fxzstates[-1][1],fxzstates[-1][2])[:3,3]
+
+		delta = final - initial
+		print('delta = ', delta)
+		theta = np.sign(delta[1])*np.sign(delta[0])*np.arctan(delta[1]/delta[0])
+		print('theta = ',theta)
+
+		return(theta)
+
+	def predictXZGauss(self, numTrials = 20, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
+
+		i = 0
+		thetai = 0
+		x = np.zeros(numTrials)
+		z = np.zeros(numTrials)
+
+		while i < numTrials:
+
+			self.numerical_constants[12] = np.random.randn()
+			self.numerical_constants[13] = 0
+			self.numerical_constants[14] = np.random.randn()
+			fxzstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
+			#stateVec[2,:] = newStates[-1]
+			#print(y)
+			#print(numerical_constants[12])
+			initial = self.joint2CartesianV2(self.x0[0],self.x0[1],self.x0[2])[:3,3]
+			final = self.joint2CartesianV2(fxzstates[-1][0],fxzstates[-1][1],fxzstates[-1][2])[:3,3]
+
+			delta = final - initial
+			# print('delta = ', delta)
+			
+			x[i] = delta[0]
+			z[i] = delta[1]
+
+			i += 1
+
+		try:
+			m,b = np.polyfit(x,z,1) #will not work - need intercept to be at origen
+		except:
+			m =  0
+
+		# print('theta = ',theta)
+		print('x = ',x)
+		print('z = ',z)
+
+
+
+		return(x,z)
+
+
 	def predict(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
 		stateVec = zeros([3,6])
 		stateVec[0,:] = self.predictx()[-1]
