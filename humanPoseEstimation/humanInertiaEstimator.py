@@ -108,25 +108,28 @@ class inertiaEstimator:
 		i = 0
 		thetai = 0
 		x = np.zeros(numTrials)
+		y = np.zeros(numTrials)
 		z = np.zeros(numTrials)
 
 		while i < numTrials:
 
-			self.numerical_constants[12] = np.random.randn()
-			self.numerical_constants[13] = 0
-			self.numerical_constants[14] = np.random.randn()
+			self.numerical_constants[12] = 2*np.random.randn()
+			self.numerical_constants[13] = 2*np.random.randn()
+			self.numerical_constants[14] = 2*np.random.randn()
 			fxzstates = odeint(rhs, x0, t, args=(numerical_specified, numerical_constants))
 			#stateVec[2,:] = newStates[-1]
 			#print(y)
 			#print(numerical_constants[12])
 			initial = self.joint2CartesianV2(self.x0[0],self.x0[1],self.x0[2])[:3,3]
+			# print('initial = ',initial)
 			final = self.joint2CartesianV2(fxzstates[-1][0],fxzstates[-1][1],fxzstates[-1][2])[:3,3]
-
+			# print('final = ',final)
 			delta = final - initial
 			# print('delta = ', delta)
 			
-			x[i] = delta[0]
-			z[i] = delta[1]
+			x[i] = delta[1]
+			y[i] = delta[2]
+			z[i] = delta[0]
 
 			i += 1
 
@@ -140,8 +143,8 @@ class inertiaEstimator:
 		# print('z = ',z)
 
 
-
-		return(x,z)
+		# print('x = ',x,' z = ', z)
+		return(x,y,z)
 
 
 	def predict(self, numerical_constants = numerical_constants, numerical_specified = numerical_specified, x0 = x0, rhs = rhs, t=t):
@@ -229,6 +232,9 @@ class inertiaEstimator:
 		#transform of 2 with respect to 0
 		T = A0.dot(A1).dot(A2)
 
+		#Z
+		#X
+		#Y
 		return(T)
 
 
@@ -253,6 +259,9 @@ class inertiaEstimator:
 		if y > 0:
 			joint[1] = np.pi - joint[1]
 
+		if (np.isnan(joint[1]) == 1) and (y == 0) :
+			joint[1] = np.pi/2 #temp fix
+
 		joint[0] = np.pi - np.arcsin((l2*np.sin(np.pi - joint[2]))/(np.sqrt(x**2 + z**2))) -theta
 
 		#prev attempt (5/26/20)
@@ -263,6 +272,8 @@ class inertiaEstimator:
 		# joint[1] = np.pi - np.arcsin((((l2*(np.sin(joint[2])**2))/np.tan(joint[0]-theta))-(l2*(np.sin(joint[2])**2)))/l1)
 
 		# joint = np.rad2deg(joint)
+
+
 
 		return(joint)
 

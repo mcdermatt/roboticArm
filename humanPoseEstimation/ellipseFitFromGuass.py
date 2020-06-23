@@ -13,18 +13,19 @@ import matplotlib.transforms as transforms
 if __name__ == '__main__':
 	ie = inertiaEstimator()
 
-	ie.x0[0] = 0.65 #np.deg2rad(60)
+	ie.x0[0] = 1.23 #np.deg2rad(60)
 	ie.x0[1] = 1.57 #np.deg2rad(90)
-	ie.x0[2] = 1.839 #np.deg2rad(30)
+	ie.x0[2] = 2.7097 #np.deg2rad(30)
 
 	fig = plt.figure()
-	ax = fig.add_subplot(xlim=(-0.05,0.05),ylim=(-0.05,0.05))
+	# ax = fig.add_subplot(xlim=(-0.05,0.05),ylim=(-0.05,0.05))
+	ax = fig.add_subplot()
 	ax.set_xlabel('x')
 	ax.set_ylabel('z')
 
 	patches = []
 
-	x,z = ie.predictXZGauss()
+	x,z = ie.predictXZGauss(numTrials = 50)
 
 	data = np.array([x,z])
 	cov = np.cov(data)

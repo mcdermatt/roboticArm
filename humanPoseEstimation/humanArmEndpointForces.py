@@ -218,9 +218,9 @@ print(os.path.abspath(inspect.getfile(right_hand_side)))
 x0 = zeros(6)
 # x0[:3] = deg2rad(2.0) 
 #start with pendulum upside down
-x0[0] = 0.24
-x0[1] = 1.57
-x0[2] = 1.08
+x0[0] = .5
+x0[1] = 1
+x0[2] = 2
 #initial vel
 #x0[3] = deg2rad(180)
 #x0[4] = deg2rad(-90)
@@ -242,9 +242,9 @@ numerical_constants = array([0.0,  # j0_length [m]
                              2.27,  # j2_mass (lower arm) [kg]
                              0.001,  # NOT USED j2_inertia [kg*m^2]
                              9.81, #gravity [m/s^2]
-                             0, #Fx
+                             10, #Fx
                              0, #Fy
-                             0,],  #Fz 
+                             10,],  #Fz 
                             ) 
 
 #set joint torques to zero for first simulation
