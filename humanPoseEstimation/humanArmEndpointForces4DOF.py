@@ -224,7 +224,7 @@ right_hand_side = generate_ode_function(forcing_vector, coordinates,
                                         specifieds=specified)
 
 #store right_hand_side to dill file so we don't have to go through solving every time
-EOM_file = "human_inertia_func.txt"
+EOM_file = "human_inertia_func_4DOF.txt"
 # dill.dump(right_hand_side, open(EOM_file, 'wb'))
 # rhsString = dill.dumps(right_hand_side)
 # print(rhsString)
@@ -274,7 +274,7 @@ numerical_constants = array([0.0,  # j0_length [m]
                              0.001,  # NOT USED j2_inertia [kg*m^2]
                              9.81, #gravity [m/s^2]
                              0, #Fx
-                             10, #Fy
+                             0, #Fy
                              0,],  #Fz 
                             ) 
 
