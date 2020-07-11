@@ -211,7 +211,7 @@ x0[1] = deg2rad(45)
 x0[2] = deg2rad(90)
 #initial vel
 #x0[3] = deg2rad(180)
-x0[4] = deg2rad(-90)
+# x0[4] = deg2rad(-90)
 #x0[5] = 0
 
 numerical_constants = array([0.05,  # j0_length [m]

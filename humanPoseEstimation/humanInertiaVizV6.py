@@ -8,6 +8,8 @@ from humanInertiaEstimator4DOF import inertiaEstimator4DOF
 from ellipse import *
 from matplotlib.patches import Ellipse
 
+#displays inertia ellipses about workspace and saves resulting slopes to numpy file
+
 ie = inertiaEstimator4DOF()
 
 fig = plt.figure()
@@ -29,6 +31,10 @@ ax.set_title('x vs z at y = 0.0')
 #plot origin
 ax.plot([0],[0],[0],'ro')
 
+outfile = '4DOFxz.npy'
+thetaArr = np.zeros(len(x)*len(z))
+i = 0
+
 for xstep in x:
 	# for ystep in y:
 	for zstep in z:
@@ -43,13 +49,17 @@ for xstep in x:
 		# ax.plot(x,z,'b.')
 
 		lam1,lam2,theta = cov2Ell(cov)
+		theta = theta + np.pi/2 #stiffness ell perpindicular to motion
+		thetaArr[i] = theta
 
 		drawEllipse(ax,xstep,zstep,lam1,lam2,theta)
 
 		# ax.plot([xstep,xstep + fidelity * np.cos(theta)],[zstep, zstep + fidelity * np.sin(theta)],'b-')
 
 		print(xstep,zstep)
+		i += 1
 
+np.save(outfile,thetaArr)
 plt.draw()
 plt.pause(100)
 

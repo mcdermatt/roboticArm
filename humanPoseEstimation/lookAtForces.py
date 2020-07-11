@@ -7,6 +7,10 @@ from shoulderGuesser import shoulderGuesser
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
 
+#first attempt at guessing where the shoulder is
+#   looks to try and find point in x and z where ratio of forces is min/max
+
+
 def movingAverage(values,window):
 	weights = np.repeat(1.0,window)/window
 	sma = np.convolve(values,weights,'valid')
