@@ -20,7 +20,7 @@ sg = shoulderGuesser()
 path = np.loadtxt('armPath5.txt')
 pathCart = sg.getCartPath(path)
 print(pathCart)
-forces = sg.getCartForces(pathCart)
+forces = sg.getCartForces(pathCart) #TODO make forces both + AND -
 print(forces)
 
 t = np.arange(np.shape(forces)[0])
@@ -35,7 +35,7 @@ plt.figure()
 #Moving Average Filter - looks like this one's the winner
 plt.xlabel("t")
 plt.ylabel("Force")
-window_size = 15 #KEEP THIS BIG
+window_size = 30 #KEEP THIS BIG
 
 xForcesMA = movingAverage(xForces,window_size)
 yForcesMA = movingAverage(yForces,window_size)
@@ -70,13 +70,52 @@ plt.ylabel('z')
 xzvt = np.array([pathCart[window_size-1:,0],xForcesMA/zForcesMA])
 
 point = 0
+
+#bin path data into points
 numStps = 20
+pathCart[:,0] = np.floor(pathCart[:,0]*numStps)/numStps
+pathCart[:,2] = np.floor(pathCart[:,2]*numStps)/numStps
 
 while point < np.shape(pathCart)[0]:
-	drawEllipse(ax,np.floor(pathCart[point,0]*numStps)/numStps,np.floor(pathCart[point,2]*numStps)/numStps,0.00025,0.0000125,np.arctan((pathCart[point,0]/pathCart[point,2])) + np.pi/2)
+
+	#find out if there are multiple ellipses at grid point
+	# if len(np.argwhere(pathCart[:,0] == pathCart[point,0] and pathCart[:,2] == pathCart[point,2])): 
+	# print(pathCart[point,0],pathCart[point,2])
+	# print( np.intersect1d((np.argwhere(pathCart[:,0] == pathCart[point,0])), np.argwhere(pathCart[:,2] == pathCart[point,2])) )
+
+	args = np.intersect1d((np.argwhere(pathCart[:,0] == pathCart[point,0])), np.argwhere(pathCart[:,2] == pathCart[point,2]))
+	print(point)
+	print(len(xForces))
+	print(args)
+	xForcesMA[point] = np.sum(xForcesMA[args])/len(args)
+	zForcesMA[point] = np.sum(zForcesMA[args])/len(args) #out of range axis 0
+
+	try:
+		drawEllipse(ax,pathCart[point,0], pathCart[point,2] ,0.00025,0.0000025,np.arctan((zForcesMA[point]/xForcesMA[point]))) #+ np.pi/2)
+
+	except:
+		pass
 	point += 1
 
 
+#--------------------------------------
+# #set up grid
+# fidelity = 0.1 #how far apart each point should be
+# x = np.arange(-0.7,0.7,fidelity)
+# z = np.arange(-0.7,0.7,fidelity)
+
+# for xstep in x:
+# 	for zstep in z:
+# 		print(xstep,zstep)
+# 		#find points in grid where there are more than one ellipse
+# 		ans1 = np.argwhere((abs(xstep - np.floor(11*pathCart[:,0])/11) < 0.01)) #and (abs(zstep - np.floor(11*pathCart[:,2])/11) < 0.01))
+# 		# print(ans1)
+# 		ans2 = np.argwhere((abs(zstep - np.floor(11*pathCart[:,2])/11) < 0.01))
+# 		# print(ans2)
+# 		print(np.intersect1d(ans1, ans2))
+
+
+#--------------------------------------
 numBins = 51
 mostForceThresh = 0.5
 
@@ -121,5 +160,5 @@ plt.xlabel("z (m)")
 plt.ylabel("Fz/Fx (normalized)")
 
 
-plt.pause(20)
+plt.pause(100)
 plt.draw()

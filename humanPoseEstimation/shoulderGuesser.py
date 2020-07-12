@@ -37,8 +37,8 @@ class shoulderGuesser:
 		j = 1
 		while j < (np.shape(velCart)[0]):
 			cartForces[j] = (velCart[j] - velCart[j-1])#**2
-			cartForces[cartForces == 0] = 0.0001
-			cartForces[j] = (abs(cartForces[j]))**0.25 # +/- direction of cart. components not important
+			# cartForces[cartForces == 0] = 0.0001
+			# cartForces[j] = (abs(cartForces[j]))**0.25 # +/- direction of cart. components not important
 			j += 1
 		return(cartForces)
 
