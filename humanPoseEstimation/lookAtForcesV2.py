@@ -73,30 +73,64 @@ point = 0
 
 #bin path data into points
 numStps = 20
-pathCart[:,0] = np.floor(pathCart[:,0]*numStps)/numStps
-pathCart[:,2] = np.floor(pathCart[:,2]*numStps)/numStps
+# pathCart[:,0] = np.floor(pathCart[:,0]*numStps)/numStps
+# pathCart[:,2] = np.floor(pathCart[:,2]*numStps)/numStps
 
-while point < np.shape(pathCart)[0]:
+rotdat = np.zeros([2,numStps**2]) #rotdat[0,:] is avg rotation
+rotdat[1,:] = 1 #total 
+
+thetas = [0] * numStps**2
+
+while point < np.shape(xForcesMA)[0]:
 
 	#find out if there are multiple ellipses at grid point
 	# if len(np.argwhere(pathCart[:,0] == pathCart[point,0] and pathCart[:,2] == pathCart[point,2])): 
 	# print(pathCart[point,0],pathCart[point,2])
 	# print( np.intersect1d((np.argwhere(pathCart[:,0] == pathCart[point,0])), np.argwhere(pathCart[:,2] == pathCart[point,2])) )
 
-	args = np.intersect1d((np.argwhere(pathCart[:,0] == pathCart[point,0])), np.argwhere(pathCart[:,2] == pathCart[point,2]))
-	print(point)
-	print(len(xForces))
-	print(args)
-	xForcesMA[point] = np.sum(xForcesMA[args])/len(args)
-	zForcesMA[point] = np.sum(zForcesMA[args])/len(args) #out of range axis 0
+	# args = np.intersect1d((np.argwhere(pathCart[:,0] == pathCart[point,0])), np.argwhere(pathCart[:,2] == pathCart[point,2]))
+	# print(point)
+	# print(len(xForces))
+	# print(args)
+	# xForcesMA[point] = np.sum(xForcesMA[args])/len(args)
+	# zForcesMA[point] = np.sum(zForcesMA[args])/len(args) #out of range axis 0
+
+	#get ratio of forces for current timestep
+	theta = np.arctan((zForcesMA[point]/xForcesMA[point]))
+	
+	#find out what grid interval current point is closest to
+	closestX = np.floor(numStps*pathCart[point,0]) /numStps #gives interval in meters
+	closestZ = np.floor(numStps*pathCart[point,2]) /numStps
+
+	#convert xz cords to hash
+	closest = np.int((numStps*(closestX) +numStps/2) + (numStps/2 - numStps*closestZ)*numStps)
+	print(closest)
+
+	thetas[closest].append(theta)
+
+
+	#update rotation avg for spot on grid 
+	rotdat[0,closest] = (rotdat[0,closest] + theta) / rotdat[1,closest]  
+	
+	#increment total number of samples at current location
+	rotdat[1,closest] += 1
 
 	try:
-		drawEllipse(ax,pathCart[point,0], pathCart[point,2] ,0.00025,0.0000025,np.arctan((zForcesMA[point]/xForcesMA[point]))) #+ np.pi/2)
-
+		#draw all slopes - messy
+		# drawEllipse(ax,closestX, closestZ,0.00025,0.0000025,np.arctan((zForcesMA[point]/xForcesMA[point]))) #+ np.pi/2)
+		#draw mean slope - zero
+		drawEllipse(ax,closestX, closestZ,0.00025,0.0000025,rotdat[0,closest]) #+ np.pi/2)
 	except:
 		pass
 	point += 1
 
+# i = 0
+# while i < numStps**2:
+
+
+
+# print(rotdat)
+np.savetxt("rotdata.txt",thetas)
 
 #--------------------------------------
 # #set up grid
